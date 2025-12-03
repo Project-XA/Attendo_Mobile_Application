@@ -54,7 +54,7 @@ class _AutoTextSliderState extends State<AutoTextSlider> {
           return Text(
             _texts[index],
             style: TextStyle(
-              color: AppColors.textColor,
+              color: AppColors.mainTextColorBlack,
               fontSize: 32,
               fontWeight: FontWeight.w900,
               height: 1.2,

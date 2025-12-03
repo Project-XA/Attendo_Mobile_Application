@@ -8,10 +8,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_app/attendency_app.dart';
+import 'package:mobile_app/core/routing/app_route.dart';
+import 'package:mobile_app/core/routing/routes.dart';
+
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const AttendencyApp());
+    await tester.pumpWidget(
+      AttendencyApp(appRouter: AppRoute(), initialRoute: Routes.startPage),
+    );
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
