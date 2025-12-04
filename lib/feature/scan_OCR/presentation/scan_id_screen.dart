@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -83,7 +84,6 @@ class ScanIdScreen extends StatelessWidget {
 
                   const Spacer(),
 
-                  // الأزرار
                   _buildActionButtons(context, state),
 
                   verticalSpace(20),
@@ -184,20 +184,43 @@ class ScanIdScreen extends StatelessWidget {
       );
     }
 
-    return SizedBox(
-      width: double.infinity,
-      child: CustomAppButton(
-        onPressed: state.isOpened && !state.hasCaptured
-            ? () => context.read<CameraCubit>().capturePhoto()
-            : null,
-        backgroundColor: state.isOpened && !state.hasCaptured
-            ? AppColors.mainTextColorBlack
-            : AppColors.subTextColorGrey.withOpacity(0.5),
-        child: Text(
-          "Capture",
-          style: AppTextStyle.font15SemiBoldWhite.copyWith(fontSize: 16.sp),
+    if (!state.showResult && state.photo != null && !state.isProcessing && state.hasCaptured) {
+    return Column(
+      children: [
+        Text(
+          "Invalid photo! Please capture a valid ID card.",
+          style: TextStyle(color: Colors.red, fontSize: 14.sp),
         ),
-      ),
+        SizedBox(height: 12.h),
+        SizedBox(
+          width: double.infinity,
+          child: CustomAppButton(
+            onPressed: () => context.read<CameraCubit>().retakePhoto(),
+            backgroundColor: Colors.orange,
+            child: Text(
+              "Retake",
+              style: AppTextStyle.font15SemiBoldWhite.copyWith(fontSize: 16.sp),
+            ),
+          ),
+        ),
+      ],
     );
+  }
+
+  return SizedBox(
+    width: double.infinity,
+    child: CustomAppButton(
+      onPressed: state.isOpened && !state.hasCaptured
+          ? () => context.read<CameraCubit>().capturePhoto()
+          : null,
+      backgroundColor: state.isOpened && !state.hasCaptured
+          ? AppColors.mainTextColorBlack
+          : AppColors.subTextColorGrey.withOpacity(0.5),
+      child: Text(
+        "Capture",
+        style: AppTextStyle.font15SemiBoldWhite.copyWith(fontSize: 16.sp),
+      ),
+    ),
+  );
   }
 }
