@@ -64,8 +64,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
-    - assets/label.txt
-    - assets/detect_id_card_float32.tflite
+    - assets/labels/
+    - assets/models/
 flutter_gen:
   output: lib/core/utils/
   line_length: 80

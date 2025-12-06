@@ -4,4 +4,5 @@ abstract class CameraRepository {
   Future<CapturedPhoto> capturePhoto();
   Future<void> openCamera();
   Future<bool> isCard(CapturedPhoto photo);
+   Future<List<Map<String, dynamic>>> detectFields(CapturedPhoto photo);
 }

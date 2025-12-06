@@ -34,12 +34,15 @@ class CameraCubit extends Cubit<CameraState> {
     try {
       final photo = await _repo.capturePhoto();
 
-     
+     print("\n" + "="*60);
+      print("🔍 STEP 1: Checking if image is a card...");
+      print("="*60);
       final isCard = await _repo.isCard(photo);
 
       await Future.delayed(const Duration(seconds: 1));
 
       if (!isCard) {
+                print("❌ Not a valid card. Stopping pipeline.");
         emit(
           state.copyWith(
             isProcessing: false,
@@ -50,6 +53,15 @@ class CameraCubit extends Cubit<CameraState> {
         );
         return;
       }
+   print("\n" + "="*60);
+      print("🔍 STEP 2: Card detected! Now detecting fields...");
+      print("="*60);
+      
+      await _repo.detectFields(photo); // ✅ هنا بنستدعي Model 2
+      
+      print("\n" + "="*60);
+      print("✅ PIPELINE COMPLETE");
+      print("="*60 + "\n");
 
       emit(
         state.copyWith(
