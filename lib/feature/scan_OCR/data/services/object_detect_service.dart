@@ -22,14 +22,11 @@ class ObjectDetectionService {
       ),
     );
 
-    final result = await receivePort.first as List<DetectionModel>;
-    return result;
+    return await receivePort.first as List<DetectionModel>;
   }
 
   static void _objectDetectionIsolate(_ObjectDetectionData data) async {
     try {
-      print("🔍 [Object Detection] Starting field detection...");
-
       final inputBytes = ImageProcessingService.preprocessImage(
         data.imagePath,
         targetWidth: 640,
@@ -44,25 +41,18 @@ class ObjectDetectionService {
         confidenceThreshold: data.confidenceThreshold,
       );
 
-      // Print results
-      _logDetections(detections);
-
       data.sendPort.send(detections);
     } catch (e) {
-      print("❌ [Object Detection] Error: $e");
       data.sendPort.send(<DetectionModel>[]);
     }
   }
 
   static List _runInference(Interpreter interpreter, Float32List inputBytes) {
-    print("🚀 [Object Detection] Running inference...");
-
     final input = inputBytes.reshape([1, 640, 640, 3]);
     final outputBytes = Float32List(1 * 35 * 8400);
     final output = outputBytes.reshape([1, 35, 8400]);
 
     interpreter.run(input, output);
-    print("✅ [Object Detection] Inference complete");
 
     return output;
   }
@@ -136,58 +126,16 @@ class ObjectDetectionService {
       }
     }
 
-    // Apply NMS
     detections = _applyNMS(detections, iouThreshold: 0.5);
     detections.sort((a, b) => b.confidence.compareTo(a.confidence));
 
     return detections;
   }
 
-  static void _logDetections(List<DetectionModel> detections) {
-    print("📊 [Object Detection] Processing detections...");
-    print("=" * 60);
-
-    final validDetections = detections.where((d) => !d.className.startsWith('invalid_')).toList();
-    final invalidDetections = detections.where((d) => d.className.startsWith('invalid_')).toList();
-
-    print("✅ Valid Fields: ${validDetections.length}");
-    print("❌ Invalid Fields: ${invalidDetections.length}");
-    print("");
-
-    if (validDetections.isNotEmpty) {
-      print("📗 VALID FIELDS:");
-      for (var detection in validDetections) {
-        _printDetection(detection);
-      }
-    }
-
-    if (invalidDetections.isNotEmpty) {
-      print("📕 INVALID FIELDS:");
-      for (var detection in invalidDetections) {
-        _printDetection(detection);
-      }
-    }
-
-    if (detections.isEmpty) {
-      print("⚠️ No fields detected!");
-    }
-
-    print("=" * 60);
-  }
-
-  static void _printDetection(DetectionModel detection) {
-    final x1 = ((detection.x - detection.width / 2) * 640).toInt();
-    final y1 = ((detection.y - detection.height / 2) * 640).toInt();
-    final x2 = ((detection.x + detection.width / 2) * 640).toInt();
-    final y2 = ((detection.y + detection.height / 2) * 640).toInt();
-
-    print("📍 ${detection.className.toUpperCase()}");
-    print("   Confidence: ${(detection.confidence * 100).toStringAsFixed(2)}%");
-    print("   Bounding Box: [x1: $x1, y1: $y1, x2: $x2, y2: $y2]");
-    print("");
-  }
-
-  static List<DetectionModel> _applyNMS(List<DetectionModel> detections, {double iouThreshold = 0.5}) {
+  static List<DetectionModel> _applyNMS(
+    List<DetectionModel> detections, {
+    double iouThreshold = 0.5,
+  }) {
     detections.sort((a, b) => b.confidence.compareTo(a.confidence));
     List<DetectionModel> result = [];
 
@@ -220,9 +168,7 @@ class ObjectDetectionService {
     final x2Inter = x2A < x2B ? x2A : x2B;
     final y2Inter = y2A < y2B ? y2A : y2B;
 
-    if (x2Inter <= x1Inter || y2Inter <= y1Inter) {
-      return 0.0;
-    }
+    if (x2Inter <= x1Inter || y2Inter <= y1Inter) return 0.0;
 
     final interArea = (x2Inter - x1Inter) * (y2Inter - y1Inter);
     final areaA = a.width * a.height;
@@ -246,7 +192,6 @@ class _ObjectDetectionData {
   });
 }
 
-
 extension Float32ListReshape on Float32List {
   List reshape(List<int> shape) {
     int totalElements = shape.reduce((a, b) => a * b);
@@ -254,11 +199,8 @@ extension Float32ListReshape on Float32List {
       throw Exception('Cannot reshape: $totalElements != $length');
     }
 
-    if (shape.length == 4) {
-      return _reshape4D(shape);
-    } else if (shape.length == 3) {
-      return _reshape3D(shape);
-    }
+    if (shape.length == 4) return _reshape4D(shape);
+    if (shape.length == 3) return _reshape3D(shape);
 
     throw Exception('Unsupported reshape: ${shape.length}D');
   }

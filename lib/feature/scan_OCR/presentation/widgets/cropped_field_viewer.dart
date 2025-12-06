@@ -107,7 +107,6 @@ class CroppedFieldsViewer extends StatelessWidget {
             ),
             verticalSpace(8),
 
-            // ✅ عرض النص المستخرج
             if (extractedValue != null && extractedValue.isNotEmpty) ...[
               Container(
                 width: double.infinity,
@@ -135,7 +134,7 @@ class CroppedFieldsViewer extends StatelessWidget {
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
-                      textDirection: TextDirection.rtl, // للعربي
+                      textDirection: TextDirection.rtl,
                     ),
                   ],
                 ),

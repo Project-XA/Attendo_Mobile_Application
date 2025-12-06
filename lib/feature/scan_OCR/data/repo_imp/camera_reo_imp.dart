@@ -32,9 +32,7 @@ class CameraRepImp implements CameraRepository {
     await _controller!.initialize();
     _isCameraInitialized = true;
     await _modelService.loadModel();
-    print("✅ Card Detection Model loaded");
      await OcrService.initialize();
-    print("✅ OCR Service initialized");
   }
 
   CameraController? get controller => _controller;
@@ -61,9 +59,7 @@ class CameraRepImp implements CameraRepository {
       confidenceThreshold: 0.3,
     );
     
-    print("🎯 Card Detection Result: ${result.isCardDetected}");
-    print("   Label: ${result.label}");
-    print("   Confidence: ${(result.confidence * 100).toStringAsFixed(2)}%");
+   
     
     return result.isCardDetected;
   }
@@ -71,9 +67,7 @@ class CameraRepImp implements CameraRepository {
   @override
   Future<List<DetectionModel>> detectFields(CapturedPhoto photo) async {
     if (!_fieldService.isLoaded) {
-      print("🔄 Loading Field Detection Model...");
       await _fieldService.loadModel();
-      print("✅ Field Detection Model loaded");
     }
     
     final detections = await ObjectDetectionService.detectFields(
@@ -90,14 +84,11 @@ class CameraRepImp implements CameraRepository {
     CapturedPhoto photo,
     List<DetectionModel> detections,
   ) async {
-    print("\n✂️ Cropping detected fields...");
-    
     final croppedFields = await CropService.cropFields(
       originalImagePath: photo.path,
       detections: detections,
     );
     
-    print("✅ Cropped ${croppedFields.length} fields\n");
     return croppedFields;
   }
 
@@ -105,7 +96,6 @@ class CameraRepImp implements CameraRepository {
   Future<Map<String, String>> extractTextFromFields(
     List<CroppedField> croppedFields,
   ) async {
-    print("\n📝 Extracting text from cropped fields...");
     
     Map<String, String> extractedData = {};
 
@@ -113,11 +103,9 @@ class CameraRepImp implements CameraRepository {
       try {
         // Skip invalid fields
         if (field.fieldName.startsWith('invalid_')) {
-          print("⏭️ Skipping invalid field: ${field.fieldName}");
           continue;
         }
 
-        print("🔍 Processing: ${field.fieldName}");
 
         // Determine language based on field type
         String language = _getLanguageForField(field.fieldName);
@@ -130,14 +118,11 @@ class CameraRepImp implements CameraRepository {
         );
 
         extractedData[field.fieldName] = text;
-        print("✅ ${field.fieldName}: $text");
       } catch (e) {
-        print("❌ Failed to extract text from ${field.fieldName}: $e");
         extractedData[field.fieldName] = '';
       }
     }
 
-    print("\n✅ Text extraction complete: ${extractedData.length} fields processed\n");
     return extractedData;
   }
 

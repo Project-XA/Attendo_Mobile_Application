@@ -12,7 +12,6 @@ class CropService {
     required List<DetectionModel> detections,
   }) async {
     try {
-      // Load original image
       final imageBytes = await File(originalImagePath).readAsBytes();
       final originalImage = img.decodeImage(imageBytes);
       
@@ -37,7 +36,6 @@ class CropService {
 
         if (cropWidth <= 0 || cropHeight <= 0) continue;
 
-        // Crop the field
         final croppedImage = img.copyCrop(
           originalImage,
           x: x1,
@@ -46,7 +44,6 @@ class CropService {
           height: cropHeight,
         );
 
-        // Save cropped image
         final croppedPath = await _saveCroppedImage(
           croppedImage,
           detection.className,
@@ -59,12 +56,10 @@ class CropService {
           bbox: BoundingBox(x1: x1, y1: y1, x2: x2, y2: y2),
         ));
 
-        print("✂️ Cropped: ${detection.className} → $croppedPath");
       }
 
       return croppedFields;
     } catch (e) {
-      print("❌ Error cropping fields: $e");
       return [];
     }
   }

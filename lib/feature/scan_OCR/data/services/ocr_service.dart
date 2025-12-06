@@ -12,7 +12,6 @@ class OcrService {
     if (_isInitialized) return;
 
     try {
-      print("🔄 [OCR] Initializing Tesseract...");
 
       final appDir = await getApplicationDocumentsDirectory();
       final tessdataDir = Directory('${appDir.path}/tessdata');
@@ -32,43 +31,34 @@ class OcrService {
       for (final file in files) {
         final targetFile = File('${tessdataDir.path}/$file');
         if (!await targetFile.exists()) {
-          print("📥 [OCR] Copying $file...");
           final data = await rootBundle.load('assets/tessdata/$file');
           await targetFile.writeAsBytes(
             data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
           );
-          print("✅ [OCR] $file copied");
         }
       }
 
       _isInitialized = true;
-      print("✅ [OCR] Tesseract initialized successfully");
     } catch (e) {
-      print("❌ [OCR] Initialization failed: $e");
       throw Exception('Failed to initialize OCR: $e');
     }
   }
 
-  /// Extract text from image (supports Arabic & English)
   static Future<String> extractText({
     required File imageFile,
-    String language = 'ara', // 'ara', 'eng', 'ara_combined', 'ara_number'
+    String language = 'ara', 
     bool preprocessImage = true,
   }) async {
     try {
-      // Ensure initialized
       if (!_isInitialized) {
         await initialize();
       }
 
-      print("🔍 [OCR] Extracting text from: ${imageFile.path}");
-      print("🌐 [OCR] Language: $language");
+    
 
       File processedFile = imageFile;
 
-      // Preprocess if needed
       if (preprocessImage) {
-        print("🖼️ [OCR] Preprocessing image...");
         processedFile = await _preprocessImage(imageFile);
       }
 
@@ -77,27 +67,22 @@ class OcrService {
         processedFile.path,
         language: language,
         args: {
-          'psm': '6', // Assume uniform block of text (good for ID cards)
+          'psm': '6', 
           'preserve_interword_spaces': '1',
         },
       );
 
-      print(
-        "📝 [OCR] Extracted text: ${text.substring(0, text.length > 50 ? 50 : text.length)}...",
-      );
 
       if (text.trim().isEmpty) {
         throw Exception('No text found in image');
       }
 
-      // Cleanup processed file if it's temporary
       if (preprocessImage && processedFile.path != imageFile.path) {
         await processedFile.delete();
       }
 
       return text.trim();
     } catch (e) {
-      print("❌ [OCR] Error extracting text: $e");
       throw Exception('Failed to extract text: $e');
     }
   }
@@ -134,11 +119,9 @@ class OcrService {
       final processedFile = File(processedPath);
       await processedFile.writeAsBytes(img.encodePng(processed));
 
-      print("✅ [OCR] Image preprocessed: $processedPath");
 
       return processedFile;
     } catch (e) {
-      print("❌ [OCR] Preprocessing failed: $e");
       throw Exception('Image preprocessing failed: $e');
     }
   }
@@ -153,7 +136,6 @@ class OcrService {
 
     for (var i = 0; i < images.length; i++) {
       try {
-        print("\n📄 [OCR] Processing image ${i + 1}/${images.length}");
         final text = await extractText(
           imageFile: images[i],
           language: language,
@@ -161,7 +143,6 @@ class OcrService {
         );
         results[images[i].path] = text;
       } catch (e) {
-        print("❌ [OCR] Failed to process image ${i + 1}: $e");
         results[images[i].path] = '';
       }
     }
