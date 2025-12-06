@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:mobile_app/feature/scan_OCR/data/model/cropped_field.dart';
 import 'package:mobile_app/feature/scan_OCR/domain/usecases/captured_photo.dart';
 
 class CameraState {
@@ -7,8 +8,9 @@ class CameraState {
   final bool hasCaptured;
   final CapturedPhoto? photo;
   final bool isInitializing;
-  final bool isProcessing; 
-  final bool showResult; 
+  final bool isProcessing;
+  final bool showResult;
+  final List<CroppedField>? croppedFields; 
 
   CameraState({
     this.controller,
@@ -18,6 +20,7 @@ class CameraState {
     this.isInitializing = false,
     this.isProcessing = false,
     this.showResult = false,
+    this.croppedFields, 
   });
 
   CameraState copyWith({
@@ -28,6 +31,7 @@ class CameraState {
     bool? isInitializing,
     bool? isProcessing,
     bool? showResult,
+    List<CroppedField>? croppedFields, 
   }) {
     return CameraState(
       controller: controller ?? this.controller,
@@ -37,6 +41,7 @@ class CameraState {
       isInitializing: isInitializing ?? this.isInitializing,
       isProcessing: isProcessing ?? this.isProcessing,
       showResult: showResult ?? this.showResult,
+      croppedFields: croppedFields ?? this.croppedFields, 
     );
   }
 }
