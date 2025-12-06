@@ -11,6 +11,7 @@ class CameraState {
   final bool isProcessing;
   final bool showResult;
   final List<CroppedField>? croppedFields; 
+   final Map<String, String>? extractedText;
 
   CameraState({
     this.controller,
@@ -21,6 +22,7 @@ class CameraState {
     this.isProcessing = false,
     this.showResult = false,
     this.croppedFields, 
+    this.extractedText,
   });
 
   CameraState copyWith({
@@ -32,6 +34,7 @@ class CameraState {
     bool? isProcessing,
     bool? showResult,
     List<CroppedField>? croppedFields, 
+    Map<String, String>? extractedText,
   }) {
     return CameraState(
       controller: controller ?? this.controller,
@@ -41,7 +44,8 @@ class CameraState {
       isInitializing: isInitializing ?? this.isInitializing,
       isProcessing: isProcessing ?? this.isProcessing,
       showResult: showResult ?? this.showResult,
-      croppedFields: croppedFields ?? this.croppedFields, 
+      croppedFields: croppedFields ?? this.croppedFields,
+      extractedText: extractedText ?? this.extractedText,
     );
   }
 }

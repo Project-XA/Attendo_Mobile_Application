@@ -38,7 +38,6 @@ class CameraCubit extends Cubit<CameraState> {
       final photo = await _repo.capturePhoto();
       final isCard = await _repo.isCard(photo);
       
-      await Future.delayed(const Duration(seconds: 1));
       
       if (!isCard) {
         print("❌ Not a valid card. Stopping pipeline.");
@@ -64,9 +63,18 @@ class CameraCubit extends Cubit<CameraState> {
       print("="*60);
       
       final croppedFields = await _repo.cropDetectedFields(photo, detections);
+
+        print("\n" + "="*60);
+      print("📝 STEP 4: Extracting text from fields...");
+      print("="*60);
+      
+      final extractedText = await _repo.extractTextFromFields(croppedFields);
+      
       
       print("\n" + "="*60);
-      print("✅ PIPELINE COMPLETE - ${croppedFields.length} fields cropped");
+      print("✅ PIPELINE COMPLETE");
+      print("   - ${croppedFields.length} fields cropped");
+      print("   - ${extractedText.length} texts extracted");
       print("="*60 + "\n");
       
       emit(
@@ -75,7 +83,8 @@ class CameraCubit extends Cubit<CameraState> {
           hasCaptured: true,
           isProcessing: false,
           showResult: true,
-          croppedFields: croppedFields, // ✅ حفظ الـ cropped fields
+          croppedFields: croppedFields, 
+          extractedText: extractedText,
         ),
       );
     } catch (e) {
@@ -96,6 +105,7 @@ class CameraCubit extends Cubit<CameraState> {
       hasCaptured: false,
       showResult: false,
       croppedFields: null, 
+      extractedText: null, 
     ));
   }
 

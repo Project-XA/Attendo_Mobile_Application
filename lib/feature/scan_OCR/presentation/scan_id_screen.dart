@@ -40,6 +40,7 @@ class ScanIdScreen extends StatelessWidget {
                     Expanded(
                       child: CroppedFieldsViewer(
                         croppedFields: state.croppedFields!,
+                        extractedText: state.extractedText,
                       ),
                     ),
                     verticalSpace(20),

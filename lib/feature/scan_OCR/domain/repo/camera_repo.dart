@@ -11,4 +11,5 @@ abstract class CameraRepository {
     CapturedPhoto photo,
     List<DetectionModel> detections,
   );
+    Future<Map<String, String>> extractTextFromFields(List<CroppedField> croppedFields);
 }

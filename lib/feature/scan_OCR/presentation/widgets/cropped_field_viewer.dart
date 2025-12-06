@@ -1,21 +1,21 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:mobile_app/core/services/spacing.dart';
 import 'package:mobile_app/feature/scan_OCR/data/model/cropped_field.dart';
 
 class CroppedFieldsViewer extends StatelessWidget {
   final List<CroppedField> croppedFields;
-
+  final Map<String, String>? extractedText;
   const CroppedFieldsViewer({
     super.key,
     required this.croppedFields,
+    this.extractedText,
   });
 
   @override
   Widget build(BuildContext context) {
     if (croppedFields.isEmpty) {
-      return const Center(
-        child: Text("No fields detected"),
-      );
+      return const Center(child: Text("No fields detected"));
     }
 
     final validFields = croppedFields
@@ -61,6 +61,8 @@ class CroppedFieldsViewer extends StatelessWidget {
   }
 
   Widget _buildFieldCard(CroppedField field) {
+    final extractedValue = extractedText?[field.fieldName]; // ✅ جديد
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 4,
@@ -103,13 +105,47 @@ class CroppedFieldsViewer extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            verticalSpace(8),
+
+            // ✅ عرض النص المستخرج
+            if (extractedValue != null && extractedValue.isNotEmpty) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.shade200),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "📝 Extracted Text:",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue.shade700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      extractedValue,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textDirection: TextDirection.rtl, // للعربي
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+
             Text(
               "BBox: [${field.bbox.x1}, ${field.bbox.y1}] → [${field.bbox.x2}, ${field.bbox.y2}]",
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 12),
             ClipRRect(

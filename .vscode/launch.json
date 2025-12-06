@@ -1,0 +1,45 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Mobile_App",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "Mobile_App (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "Mobile_App (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "tesseract_ocr",
+            "cwd": "lib/tesseract_ocr",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "tesseract_ocr (profile mode)",
+            "cwd": "lib/tesseract_ocr",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "tesseract_ocr (release mode)",
+            "cwd": "lib/tesseract_ocr",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

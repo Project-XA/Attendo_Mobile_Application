@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:mobile_app/feature/scan_OCR/data/model/ml_models/card_service_model.dart';
 import 'package:mobile_app/feature/scan_OCR/data/model/cropped_field.dart';
@@ -5,6 +7,7 @@ import 'package:mobile_app/feature/scan_OCR/data/model/detection_model.dart';
 import 'package:mobile_app/feature/scan_OCR/data/model/ml_models/field_service_model.dart';
 import 'package:mobile_app/feature/scan_OCR/data/services/object_detect_service.dart';
 import 'package:mobile_app/feature/scan_OCR/data/services/crop_service.dart';
+import 'package:mobile_app/feature/scan_OCR/data/services/ocr_service.dart';
 import 'package:mobile_app/feature/scan_OCR/domain/repo/camera_repo.dart';
 import 'package:mobile_app/feature/scan_OCR/domain/usecases/captured_photo.dart';
 import 'package:mobile_app/feature/scan_OCR/data/services/inference_service.dart';
@@ -30,6 +33,8 @@ class CameraRepImp implements CameraRepository {
     _isCameraInitialized = true;
     await _modelService.loadModel();
     print("✅ Card Detection Model loaded");
+     await OcrService.initialize();
+    print("✅ OCR Service initialized");
   }
 
   CameraController? get controller => _controller;
@@ -95,6 +100,62 @@ class CameraRepImp implements CameraRepository {
     print("✅ Cropped ${croppedFields.length} fields\n");
     return croppedFields;
   }
+
+   @override
+  Future<Map<String, String>> extractTextFromFields(
+    List<CroppedField> croppedFields,
+  ) async {
+    print("\n📝 Extracting text from cropped fields...");
+    
+    Map<String, String> extractedData = {};
+
+    for (var field in croppedFields) {
+      try {
+        // Skip invalid fields
+        if (field.fieldName.startsWith('invalid_')) {
+          print("⏭️ Skipping invalid field: ${field.fieldName}");
+          continue;
+        }
+
+        print("🔍 Processing: ${field.fieldName}");
+
+        // Determine language based on field type
+        String language = _getLanguageForField(field.fieldName);
+
+        // Extract text
+        final text = await OcrService.extractText(
+          imageFile: File(field.imagePath),
+          language: language,
+          preprocessImage: true,
+        );
+
+        extractedData[field.fieldName] = text;
+        print("✅ ${field.fieldName}: $text");
+      } catch (e) {
+        print("❌ Failed to extract text from ${field.fieldName}: $e");
+        extractedData[field.fieldName] = '';
+      }
+    }
+
+    print("\n✅ Text extraction complete: ${extractedData.length} fields processed\n");
+    return extractedData;
+  }
+
+  /// Determine which language to use based on field name
+  String _getLanguageForField(String fieldName) {
+    // Fields that are typically in English
+    if (fieldName.contains('nid') || 
+        fieldName.contains('serial') || 
+        fieldName.contains('expiry') ||
+        fieldName.contains('issue') ||
+        fieldName.contains('dob')) {
+      return 'ara_number'; // Numbers and dates
+    }
+    
+    // Arabic text fields
+    return 'ara';
+  }
+
 
   void close() {
     _controller?.dispose();

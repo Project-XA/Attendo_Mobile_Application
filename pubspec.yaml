@@ -68,6 +68,12 @@ flutter:
     - assets/images/
     - assets/labels/
     - assets/models/
+    - assets/tessdata/
+    - assets/tessdata/ara.traineddata
+    - assets/tessdata/eng.traineddata
+    - assets/tessdata/ara_combined.traineddata
+    - assets/tessdata/ara_number.traineddata
+    - assets/tessdata_config.json 
 flutter_gen:
   output: lib/core/utils/
   line_length: 80
