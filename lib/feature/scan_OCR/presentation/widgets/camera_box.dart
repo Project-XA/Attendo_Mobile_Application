@@ -1,6 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_app/core/services/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/widgets/custom_app_button.dart';
@@ -33,7 +35,7 @@ class CameraBox extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(Icons.camera_alt, size: 40, color: Colors.grey),
-                    const SizedBox(height: 8),
+                    verticalSpace(8),
                     const Text(
                       "Ready to scan",
                       style: TextStyle(color: Colors.grey, fontSize: 16),
@@ -52,7 +54,7 @@ class CameraBox extends StatelessWidget {
                   ],
                 )
               : ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(14.r),
                   child: SizedBox(
                     width: double.infinity,
                     height: double.infinity,

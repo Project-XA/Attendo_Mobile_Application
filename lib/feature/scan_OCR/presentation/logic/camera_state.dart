@@ -10,8 +10,10 @@ class CameraState {
   final bool isInitializing;
   final bool isProcessing;
   final bool showResult;
-  final List<CroppedField>? croppedFields; 
-   final Map<String, String>? extractedText;
+  final bool hasError; 
+  final List<CroppedField>? croppedFields;
+  final Map<String, String>? extractedText;
+  final Map<String, String>? finalData;
 
   CameraState({
     this.controller,
@@ -21,8 +23,10 @@ class CameraState {
     this.isInitializing = false,
     this.isProcessing = false,
     this.showResult = false,
-    this.croppedFields, 
+    this.hasError = false, 
+    this.croppedFields,
     this.extractedText,
+    this.finalData,
   });
 
   CameraState copyWith({
@@ -33,8 +37,10 @@ class CameraState {
     bool? isInitializing,
     bool? isProcessing,
     bool? showResult,
-    List<CroppedField>? croppedFields, 
+    bool? hasError, 
+    List<CroppedField>? croppedFields,
     Map<String, String>? extractedText,
+    Map<String, String>? finalData,
   }) {
     return CameraState(
       controller: controller ?? this.controller,
@@ -44,8 +50,10 @@ class CameraState {
       isInitializing: isInitializing ?? this.isInitializing,
       isProcessing: isProcessing ?? this.isProcessing,
       showResult: showResult ?? this.showResult,
+      hasError: hasError ?? this.hasError, 
       croppedFields: croppedFields ?? this.croppedFields,
       extractedText: extractedText ?? this.extractedText,
+      finalData: finalData ?? this.finalData,
     );
   }
 }

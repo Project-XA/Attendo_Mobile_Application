@@ -26,7 +26,6 @@ class InferenceService {
 
   static void _cardDetectionIsolate(_IsolateData data) async {
     try {
-
       final inputBytes = ImageProcessingService.preprocessImage(
         data.imagePath,
         targetWidth: 640,
@@ -55,7 +54,6 @@ class InferenceService {
   }
 
   static List _runInference(Interpreter interpreter, Float32List inputBytes) {
-
     final input = inputBytes.reshape([1, 640, 640, 3]);
     final outputBytes = Float32List(1 * 12 * 8400);
     final output = outputBytes.reshape([1, 12, 8400]);
@@ -69,7 +67,6 @@ class InferenceService {
     List output, {
     required double confidenceThreshold,
   }) {
-
     double maxConfidence = 0.0;
     int bestClass = -1;
 
@@ -95,11 +92,9 @@ class InferenceService {
       'front-up',
     ];
 
-    final label = bestClass >= 0 && bestClass < labels.length 
-        ? labels[bestClass] 
+    final label = bestClass >= 0 && bestClass < labels.length
+        ? labels[bestClass]
         : null;
-
-  
 
     final isDetected = maxConfidence > confidenceThreshold && bestClass != -1;
 
@@ -138,53 +133,4 @@ class CardDetectionResult {
     required this.detectedClass,
     required this.label,
   });
-}
-
-extension Float32ListReshape on Float32List {
-  List reshape(List<int> shape) {
-    int totalElements = shape.reduce((a, b) => a * b);
-    if (totalElements != length) {
-      throw Exception('Cannot reshape: $totalElements != $length');
-    }
-
-    if (shape.length == 4) {
-      return _reshape4D(shape);
-    } else if (shape.length == 3) {
-      return _reshape3D(shape);
-    }
-
-    throw Exception('Unsupported reshape: ${shape.length}D');
-  }
-
-  List _reshape4D(List<int> shape) {
-    return List.generate(
-      shape[0],
-      (b) => List.generate(
-        shape[1],
-        (h) => List.generate(
-          shape[2],
-          (w) => List.generate(shape[3], (c) {
-            int index = b * (shape[1] * shape[2] * shape[3]) +
-                h * (shape[2] * shape[3]) +
-                w * shape[3] +
-                c;
-            return this[index];
-          }),
-        ),
-      ),
-    );
-  }
-
-  List _reshape3D(List<int> shape) {
-    return List.generate(
-      shape[0],
-      (b) => List.generate(
-        shape[1],
-        (c) => List.generate(shape[2], (d) {
-          int index = b * (shape[1] * shape[2]) + c * shape[2] + d;
-          return this[index];
-        }),
-      ),
-    );
-  }
 }

@@ -31,4 +31,12 @@ class OcrRepoImpl implements OcrRepo {
       preprocessImage: true,
     );
   }
+  @override
+  Future<String> extractNumbers(File imageFile) async {
+    return await OcrService.extractText(
+      imageFile: imageFile,
+      language: 'ara_number', // استخدام traineddata الخاص بالأرقام
+      preprocessImage: true,
+    );
+  }
 }

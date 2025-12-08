@@ -19,25 +19,25 @@ class ActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Processing
     if (state.isProcessing) {
       return _buildProcessingIndicator();
     }
 
+    // Success - show verify and retake
     if (state.showResult) {
       return _buildVerifyAndRetakeButtons(context);
     }
 
-    if (!state.showResult &&
-        state.photo != null &&
-        !state.isProcessing &&
-        state.hasCaptured) {
-      return _buildInvalidPhotoSection(context);
+    // ✅ Error - show retake only
+    if (state.hasError) {
+      return _buildErrorState(context);
     }
 
+    // Ready to capture
     return _buildCaptureButton(context);
   }
 
-  // Processing Indicator
   Widget _buildProcessingIndicator() {
     return Container(
       width: double.infinity,
@@ -73,7 +73,6 @@ class ActionButtons extends StatelessWidget {
     );
   }
 
-  // Verify & Retake Buttons
   Widget _buildVerifyAndRetakeButtons(BuildContext context) {
     return Row(
       children: [
@@ -126,13 +125,34 @@ class ActionButtons extends StatelessWidget {
     );
   }
 
-  // Invalid Photo Section
-  Widget _buildInvalidPhotoSection(BuildContext context) {
+  // ✅ جديد: Error state مع retake button
+  Widget _buildErrorState(BuildContext context) {
     return Column(
       children: [
-        Text(
-          "Invalid photo! Please capture a valid ID card.",
-          style: TextStyle(color: Colors.red, fontSize: 14.sp),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(12.h),
+          decoration: BoxDecoration(
+            color: Colors.red.shade50,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.red.shade200),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.red.shade700, size: 24),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Text(
+                  "Invalid photo! Please capture a valid ID card.",
+                  style: TextStyle(
+                    color: Colors.red.shade700,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         SizedBox(height: 12.h),
         SizedBox(
@@ -140,9 +160,18 @@ class ActionButtons extends StatelessWidget {
           child: CustomAppButton(
             onPressed: () => context.read<CameraCubit>().retakePhoto(),
             backgroundColor: Colors.orange,
-            child: Text(
-              "Retake",
-              style: AppTextStyle.font15SemiBoldWhite.copyWith(fontSize: 16.sp),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.refresh, color: Colors.white),
+                SizedBox(width: 8.w),
+                Text(
+                  "Retake Photo",
+                  style: AppTextStyle.font15SemiBoldWhite.copyWith(
+                    fontSize: 16.sp,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -150,7 +179,6 @@ class ActionButtons extends StatelessWidget {
     );
   }
 
-  // Capture Button
   Widget _buildCaptureButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
