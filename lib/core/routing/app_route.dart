@@ -8,21 +8,46 @@ import 'package:mobile_app/feature/profile/presentation/profile_page.dart';
 
 class AppRoute {
   Route generateRoute(RouteSettings settings) {
+    Widget page;
+
     switch (settings.name) {
       case Routes.startPage:
-        return MaterialPageRoute(builder: (_) => const StartPage());
+        page = const StartPage();
+        break;
 
       case Routes.scanIdScreen:
-        return MaterialPageRoute(builder: (_) => const ScanIdScreen());
+        page = const ScanIdScreen();
+        break;
+
       case Routes.registrationToOrganization:
-        return MaterialPageRoute(builder: (_) => RegistrationToOrganization());
+        page = RegistrationToOrganization();
+        break;
+
       case Routes.homePage:
         final role = settings.arguments as String? ?? 'User';
-        return MaterialPageRoute(builder: (_) => HomePage(userRole: role));
+        page = HomePage(userRole: role);
+        break;
+
       case Routes.profilePage:
-        return MaterialPageRoute(builder: (_) => const ProfilePage());
+        page = const ProfilePage();
+        break;
+
       default:
-        return MaterialPageRoute(builder: (_) => const Scaffold());
+        page = const Scaffold();
     }
+
+    return PageRouteBuilder(
+      transitionDuration: const Duration(milliseconds: 280),
+      pageBuilder: (_, __, ___) => page,
+      transitionsBuilder: (_, animation, __, child) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0.05, 0),
+            end: Offset.zero,
+          ).animate(animation),
+          child: FadeTransition(opacity: animation, child: child),
+        );
+      },
+    );
   }
 }

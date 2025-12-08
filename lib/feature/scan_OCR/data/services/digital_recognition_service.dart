@@ -10,8 +10,6 @@ class DigitRecognitionService {
     required int interpreterAddress,
     double confidenceThreshold = 0.1,
   }) async {
-
-
     final receivePort = ReceivePort();
 
     await Isolate.spawn(
@@ -26,24 +24,18 @@ class DigitRecognitionService {
 
     final result = await receivePort.first as String;
 
-
-
     return result;
   }
 
   static void _digitRecognitionIsolate(_DigitRecognitionData data) async {
     try {
-
       final inputBytes = ImageProcessingService.preprocessImage(
         data.imagePath,
         targetWidth: 640,
         targetHeight: 640,
       );
 
-      
       final interpreter = Interpreter.fromAddress(data.interpreterAddress);
-
-    
 
       final output = _runInference(interpreter, inputBytes);
 
@@ -52,17 +44,13 @@ class DigitRecognitionService {
         confidenceThreshold: data.confidenceThreshold,
       );
 
-   
-
       data.sendPort.send(digits);
     } catch (e) {
-   
       data.sendPort.send('');
     }
   }
 
   static List _runInference(Interpreter interpreter, Float32List inputBytes) {
-
     final input = inputBytes.reshape([1, 640, 640, 3]);
 
     final outputBytes = Float32List(1 * 14 * 8400);
@@ -77,8 +65,6 @@ class DigitRecognitionService {
     List output, {
     required double confidenceThreshold,
   }) {
- 
-
     List<DigitDetection> detections = [];
     int totalAboveThreshold = 0;
 
@@ -109,33 +95,26 @@ class DigitRecognitionService {
             confidence: maxConfidence,
             x: x,
             y: y,
-            width: w, 
-            height: h, 
+            width: w,
+            height: h,
           ),
         );
       }
     }
 
-
-
-  
     detections = _applyNMS(detections, iouThreshold: 0.5);
 
     detections.sort((a, b) => a.x.compareTo(b.x));
 
- 
     final result = detections.map((d) => d.digit.toString()).join();
 
-   
     return result;
   }
 
-  /// ✅ Apply Non-Maximum Suppression (NMS)
   static List<DigitDetection> _applyNMS(
     List<DigitDetection> detections, {
     double iouThreshold = 0.5,
   }) {
-    // Sort by confidence (highest first)
     detections.sort((a, b) => b.confidence.compareTo(a.confidence));
     List<DigitDetection> result = [];
 
@@ -151,7 +130,6 @@ class DigitRecognitionService {
       });
     }
 
-   
     return result;
   }
 

@@ -1,5 +1,3 @@
-
-
 import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_app/feature/scan_OCR/domain/repo/camera_repo.dart';
@@ -59,7 +57,6 @@ class CameraCubit extends Cubit<CameraState> {
     emit(state.copyWith(isProcessing: true, hasError: false));
 
     try {
-      
       final photo = await _captureUseCase.execute();
 
       final isValid = await _validateUseCase.execute(photo);
