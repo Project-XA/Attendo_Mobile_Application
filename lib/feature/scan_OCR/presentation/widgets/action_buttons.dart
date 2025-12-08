@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_app/core/routing/routes.dart';
+import 'package:mobile_app/core/services/extensions.dart';
 import 'package:mobile_app/core/services/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
@@ -12,10 +14,7 @@ import 'package:mobile_app/feature/scan_OCR/presentation/logic/camera_state.dart
 class ActionButtons extends StatelessWidget {
   final CameraState state;
 
-  const ActionButtons({
-    super.key,
-    required this.state,
-  });
+  const ActionButtons({super.key, required this.state});
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +78,7 @@ class ActionButtons extends StatelessWidget {
         Expanded(
           child: CustomAppButton(
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('ID Verified Successfully!')),
-              );
+              context.pushNamed(Routes.registrationToOrganization);
             },
             backgroundColor: Colors.green,
             child: Row(
@@ -125,7 +122,6 @@ class ActionButtons extends StatelessWidget {
     );
   }
 
-  // ✅ جديد: Error state مع retake button
   Widget _buildErrorState(BuildContext context) {
     return Column(
       children: [
