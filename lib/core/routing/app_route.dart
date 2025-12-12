@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/core/routing/routes.dart';
+import 'package:mobile_app/feature/home/presentation/admin/home/presentation/admin_home.dart';
 import 'package:mobile_app/feature/scan_OCR/presentation/scan_id_screen.dart';
 import 'package:mobile_app/feature/start_screen/start_page.dart';
 import 'package:mobile_app/feature/registration_to_organization/presentation/registration_to_organization.dart';
-import 'package:mobile_app/feature/home/presentation/home_page.dart';
+import 'package:mobile_app/feature/home/presentation/user/presentation/home_page.dart';
 import 'package:mobile_app/feature/profile/presentation/profile_page.dart';
 
 class AppRoute {
@@ -20,7 +21,7 @@ class AppRoute {
         break;
 
       case Routes.registrationToOrganization:
-        page = RegistrationToOrganization();
+        page = const RegistrationToOrganization();
         break;
 
       case Routes.homePage:
@@ -31,7 +32,9 @@ class AppRoute {
       case Routes.profilePage:
         page = const ProfilePage();
         break;
-
+      case Routes.adminHome:
+        page = const AdminHome();
+        break;
       default:
         page = const Scaffold();
     }

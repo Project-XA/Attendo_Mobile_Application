@@ -4,4 +4,5 @@ class Routes {
   static const String registrationToOrganization='/registrationToOrganization';
   static const String homePage='/homePage';
   static const String profilePage='/profilePage';
+  static const String adminHome='/adminHome';
 }

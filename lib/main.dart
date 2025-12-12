@@ -1,22 +1,16 @@
-import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/attendency_app.dart';
-import 'package:mobile_app/core/DI/get_it.dart';
+import 'package:mobile_app/core/app_initializer.dart';
 import 'package:mobile_app/core/routing/app_route.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 
-List<CameraDescription> cameras = [];
 Future<void> main() async {
-  try {
-    cameras = await availableCameras();
-  } catch (e) {
-    if (kDebugMode) {
-      print('Error initializing cameras: $e');
-    }
-  }
-  setup();
-  WidgetsFlutterBinding.ensureInitialized();
+  await initializeApp();
 
-  runApp(AttendencyApp(appRouter: AppRoute(), initialRoute: Routes.startPage));
+  runApp(
+    AttendencyApp(
+      appRouter: AppRoute(),
+      initialRoute: Routes.registrationToOrganization,
+    ),
+  );
 }

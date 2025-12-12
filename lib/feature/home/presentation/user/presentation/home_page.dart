@@ -11,10 +11,7 @@ import 'package:mobile_app/core/widgets/custom_app_button.dart';
 class HomePage extends StatelessWidget {
   final String userRole;
 
-  const HomePage({
-    super.key,
-    required this.userRole,
-  });
+  const HomePage({super.key, required this.userRole});
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +78,6 @@ class HomePage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // Right: Logout/Back Button
                   GestureDetector(
                     onTap: () {
                       context.pushReplacmentNamed(
@@ -113,7 +109,6 @@ class HomePage extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
                   child: Container(
-                    padding: EdgeInsets.all(0),
                     decoration: BoxDecoration(
                       color: AppColors.backGroundColorWhite,
                       borderRadius: BorderRadius.circular(16.r),
@@ -220,7 +215,9 @@ class HomePage extends StatelessWidget {
                                   // Handle take attendance action
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                      content: Text('No active session available'),
+                                      content: Text(
+                                        'No active session available',
+                                      ),
                                     ),
                                   );
                                 },
@@ -228,10 +225,11 @@ class HomePage extends StatelessWidget {
                                 borderRadius: 12.r,
                                 child: Text(
                                   'Take Attendance',
-                                  style: AppTextStyle.font15SemiBoldWhite.copyWith(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeightHelper.bold,
-                                  ),
+                                  style: AppTextStyle.font15SemiBoldWhite
+                                      .copyWith(
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeightHelper.bold,
+                                      ),
                                 ),
                               ),
                               verticalSpace(16),
@@ -245,10 +243,11 @@ class HomePage extends StatelessWidget {
                                 borderRadius: 12.r,
                                 child: Text(
                                   'View Profile',
-                                  style: AppTextStyle.font15SemiBoldWhite.copyWith(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeightHelper.bold,
-                                  ),
+                                  style: AppTextStyle.font15SemiBoldWhite
+                                      .copyWith(
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeightHelper.bold,
+                                      ),
                                 ),
                               ),
                               verticalSpace(24),
@@ -267,4 +266,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-

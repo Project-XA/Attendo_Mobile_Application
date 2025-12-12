@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 extension Float32ListReshape on Float32List {
   List reshape(List<int> shape) {
-    int totalElements = shape.reduce((a, b) => a * b);
+    final int totalElements = shape.reduce((a, b) => a * b);
     if (totalElements != length) {
       throw Exception('Cannot reshape: $totalElements != $length');
     }
@@ -21,7 +21,7 @@ extension Float32ListReshape on Float32List {
         (h) => List.generate(
           shape[2],
           (w) => List.generate(shape[3], (c) {
-            int index =
+            final int index =
                 b * (shape[1] * shape[2] * shape[3]) +
                 h * (shape[2] * shape[3]) +
                 w * shape[3] +
@@ -39,7 +39,7 @@ extension Float32ListReshape on Float32List {
       (b) => List.generate(
         shape[1],
         (c) => List.generate(shape[2], (d) {
-          int index = b * (shape[1] * shape[2]) + c * shape[2] + d;
+          final int index = b * (shape[1] * shape[2]) + c * shape[2] + d;
           return this[index];
         }),
       ),
