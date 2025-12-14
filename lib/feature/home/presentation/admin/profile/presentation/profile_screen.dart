@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_app/core/DI/get_it.dart';
+import 'package:mobile_app/feature/home/presentation/admin/profile/presentation/logic/user_profile_cubit.dart';
+import 'package:mobile_app/feature/home/presentation/admin/profile/presentation/widgets/profile_screen_body.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(child: Column(children: [
-        Container(
-          width: 70.w,
-          height: 70.h,
-          child: ClipRect(),
-        )
-      ],)),
-
-
+    return BlocProvider(
+      create: (context) => getIt<UserProfileCubit>()..loadUser(),
+      child: const ProfileScreenBody(),
     );
   }
 }

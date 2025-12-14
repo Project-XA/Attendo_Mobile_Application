@@ -52,7 +52,6 @@ class AdminHome extends StatelessWidget {
 
                     verticalSpace(16.h),
 
-                    // Toggle Tabs
                     BlocBuilder<AdminCubit, AdminState>(
                       builder: (context, state) {
                         int selectedIndex = 0;
