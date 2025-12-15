@@ -7,17 +7,26 @@ class RegisterUseCase {
 
   RegisterUseCase(this.repo);
 
-  Future<ApiResult<String>> call({
+  Future<ApiResult<UserModel>> call({
     required String orgId,
     required String email,
     required String password,
     required UserModel localUserData,
   }) {
-    return repo.getRole(
+    print('🔷 [RegisterUseCase] call() started');
+    print('📧 Email: $email');
+    print('🏢 OrgId: $orgId');
+    print('🔐 Password length: ${password.length}');
+
+    final result = repo.registerUser(
       orgId: orgId,
       email: email,
       password: password,
       localUserData: localUserData,
     );
+
+    print('🔷 [RegisterUseCase] Calling repo.registerUser()');
+
+    return result;
   }
 }

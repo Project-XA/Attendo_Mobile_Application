@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app/attendency_app.dart';
-import 'package:mobile_app/core/app_initializer.dart';
-import 'package:mobile_app/core/routing/app_route.dart';
-import 'package:mobile_app/core/routing/routes.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:mobile_app/core/app_boot_strap.dart';
+import 'package:mobile_app/feature/home/data/models/organization_model.dart';
+import 'package:mobile_app/feature/home/data/models/user_model.dart';
+import 'package:mobile_app/feature/home/data/models/user_org_model.dart';
 
 Future<void> main() async {
-  await initializeApp();
+  WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(
-    AttendencyApp(appRouter: AppRoute(), initialRoute: Routes.registeScreen),
-  );
+  await Hive.initFlutter();
+  Hive.registerAdapter(UserOrgModelAdapter());
+  Hive.registerAdapter(UserModelAdapter());
+  Hive.registerAdapter(OrganizationModelAdapter());
+
+  runApp(const AppBootstrap());
 }

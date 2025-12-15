@@ -10,7 +10,7 @@ import 'package:mobile_app/feature/home/presentation/admin/profile/presentation/
 import 'package:mobile_app/feature/home/presentation/admin/profile/presentation/widgets/profile_body.dart';
 
 class ProfileScreenBody extends StatelessWidget {
-  const ProfileScreenBody({super.key});
+ const ProfileScreenBody({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -60,8 +60,8 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
               sessionNameController: _sessionNameController,
               locationController: _locationController,
               durationController: _durationController,
-              selectedTime: _selectedTime,
-              selectedWifiOption: _selectedWifiOption,
+              initialTime: _selectedTime,
+              initialWifiOption: _selectedWifiOption,
               onTimeSelected: (time) {
                 setState(() {
                   _selectedTime = time;

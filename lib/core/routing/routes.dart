@@ -8,4 +8,6 @@ class Routes {
   static const String adminHome = '/adminHome';
   static const String profileScreen = '/profile_screen';
   static const String registeScreen = '/registerScreen';
+  static const String navigation = '/navigation';
+  static const String mainNavigation = '/main-navigation';
 }

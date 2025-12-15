@@ -46,14 +46,14 @@ class _RegisterFormState extends State<RegisterForm> {
         if (!mounted) return;
 
         await context.read<RegisterCubit>().register(
-              orgId: _orgIdController.text.trim(),
-              email: _emailController.text.trim(),
-              password: _passwordController.text.trim(),
-              localUserData: localUserData,
-            );
+          orgId: _orgIdController.text.trim(),
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+          localUserData: localUserData,
+        );
       } catch (e) {
         if (!mounted) return;
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to get user data: ${e.toString()}'),
@@ -72,7 +72,9 @@ class _RegisterFormState extends State<RegisterForm> {
           // Success - Navigate
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Registered successfully as ${state.userRole}'),
+              content: Text(
+                'Registered successfully as ${state.user.organizations?.first.role}',
+              ),
               backgroundColor: Colors.green,
               duration: const Duration(seconds: 2),
             ),
@@ -80,15 +82,9 @@ class _RegisterFormState extends State<RegisterForm> {
 
           Future.delayed(const Duration(milliseconds: 500), () {
             if (!mounted) return;
-            
-            if (state.userRole.toLowerCase() == 'admin') {
-              // ignore: use_build_context_synchronously
-              context.pushReplacmentNamed(Routes.adminHome);
-            } else {
-              
-              // ignore: use_build_context_synchronously
-              context.pushReplacmentNamed(Routes.adminHome);
-            }
+
+            // ignore: use_build_context_synchronously
+            context.pushReplacmentNamed(Routes.navigation);
           });
         } else if (state is RegisterFailureState) {
           ScaffoldMessenger.of(context).showSnackBar(

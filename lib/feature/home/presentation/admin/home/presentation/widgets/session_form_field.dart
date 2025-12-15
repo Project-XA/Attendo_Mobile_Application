@@ -6,12 +6,12 @@ import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/core/widgets/app_text_form_field.dart';
 
-class SessionFormFields extends StatelessWidget {
+class SessionFormFields extends StatefulWidget { // ✅ غيرناها لـ StatefulWidget
   final TextEditingController sessionNameController;
   final TextEditingController locationController;
   final TextEditingController durationController;
-  final TimeOfDay? selectedTime;
-  final String? selectedWifiOption;
+  final TimeOfDay? initialTime;
+  final String? initialWifiOption;
   final Function(TimeOfDay) onTimeSelected;
   final Function(String?) onWifiOptionChanged;
 
@@ -20,23 +20,38 @@ class SessionFormFields extends StatelessWidget {
     required this.sessionNameController,
     required this.locationController,
     required this.durationController,
-    required this.selectedTime,
-    required this.selectedWifiOption,
+    this.initialTime,
+    this.initialWifiOption,
     required this.onTimeSelected,
     required this.onWifiOptionChanged,
   });
 
-  final List<String> _wifiOptions = const [
+  @override
+  State<SessionFormFields> createState() => _SessionFormFieldsState();
+}
+
+class _SessionFormFieldsState extends State<SessionFormFields> {
+  static const List<String> _wifiOptions = [
     'WiFi',
     'Bluetooth',
     'NFC',
     'QR Code',
   ];
 
+  late TimeOfDay? _selectedTime;
+  late String? _selectedWifiOption;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedTime = widget.initialTime;
+    _selectedWifiOption = widget.initialWifiOption ?? 'WiFi';
+  }
+
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: _selectedTime ?? TimeOfDay.now(),
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -49,8 +64,11 @@ class SessionFormFields extends StatelessWidget {
       },
     );
 
-    if (picked != null) {
-      onTimeSelected(picked);
+    if (picked != null && picked != _selectedTime) {
+      setState(() {
+        _selectedTime = picked;
+      });
+      widget.onTimeSelected(picked);
     }
   }
 
@@ -59,51 +77,63 @@ class SessionFormFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Session Name Field
-        AppTextFormField(
-          borderRadius: 20.r,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 10.w,
-            vertical: 15.h,
-          ),
-          focusedBorderColor: AppColors.mainTextColorBlack,
-          enabledBorderColor: Colors.grey,
-          controller: sessionNameController,
-          hintText: "Enter session name",
-          labelStyle: AppTextStyle.font14MediamGrey,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Session name is required';
-            }
-            return null;
-          },
-        ),
-
+        _buildSessionNameField(),
         verticalSpace(15.h),
 
-        // Location Field
-        AppTextFormField(
-          borderRadius: 20.r,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 10.w,
-            vertical: 15.h,
-          ),
-          focusedBorderColor: AppColors.mainTextColorBlack,
-          enabledBorderColor: Colors.grey,
-          controller: locationController,
-          hintText: "Enter location name (e.g., Room 101, Main Hall)",
-          labelStyle: AppTextStyle.font14MediamGrey,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Location is required';
-            }
-            return null;
-          },
-        ),
-
+        _buildLocationField(),
         verticalSpace(15.h),
 
-        // WiFi/Connection Method Dropdown
+        _buildWifiDropdown(),
+        verticalSpace(15.h),
+
+        _buildTimePicker(context),
+        verticalSpace(15.h),
+
+        _buildDurationField(),
+      ],
+    );
+  }
+
+  Widget _buildSessionNameField() {
+    return AppTextFormField(
+      borderRadius: 20.r,
+      contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
+      focusedBorderColor: AppColors.mainTextColorBlack,
+      enabledBorderColor: Colors.grey,
+      controller: widget.sessionNameController,
+      hintText: "Enter session name",
+      labelStyle: AppTextStyle.font14MediamGrey,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Session name is required';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildLocationField() {
+    return AppTextFormField(
+      borderRadius: 20.r,
+      contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
+      focusedBorderColor: AppColors.mainTextColorBlack,
+      enabledBorderColor: Colors.grey,
+      controller: widget.locationController,
+      hintText: "Enter location name (e.g., Room 101, Main Hall)",
+      labelStyle: AppTextStyle.font14MediamGrey,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Location is required';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildWifiDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Text(
           'CONNECTION METHOD',
           style: AppTextStyle.font14MediamGrey.copyWith(
@@ -120,7 +150,7 @@ class SessionFormFields extends StatelessWidget {
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
-              value: selectedWifiOption,
+              value: _selectedWifiOption,
               isExpanded: true,
               icon: const Icon(Icons.keyboard_arrow_down),
               style: AppTextStyle.font14MediamGrey.copyWith(
@@ -132,13 +162,25 @@ class SessionFormFields extends StatelessWidget {
                   child: Text(value),
                 );
               }).toList(),
-              onChanged: onWifiOptionChanged,
+              onChanged: (option) {
+                if (option != null && option != _selectedWifiOption) {
+                  setState(() {
+                    _selectedWifiOption = option;
+                  });
+                  widget.onWifiOptionChanged(option);
+                }
+              },
             ),
           ),
         ),
+      ],
+    );
+  }
 
-        verticalSpace(15.h),
-
+  Widget _buildTimePicker(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Text(
           'SESSION START TIME',
           style: AppTextStyle.font14MediamGrey.copyWith(
@@ -159,11 +201,11 @@ class SessionFormFields extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  selectedTime == null
+                  _selectedTime == null
                       ? '--:-- --'
-                      : selectedTime!.format(context),
+                      : _selectedTime!.format(context),
                   style: AppTextStyle.font14MediamGrey.copyWith(
-                    color: selectedTime == null
+                    color: _selectedTime == null
                         ? Colors.grey
                         : AppColors.mainTextColorBlack,
                   ),
@@ -173,10 +215,14 @@ class SessionFormFields extends StatelessWidget {
             ),
           ),
         ),
+      ],
+    );
+  }
 
-        verticalSpace(15.h),
-
-        // Session Duration
+  Widget _buildDurationField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Text(
           'SESSION DURATION (MINUTES)',
           style: AppTextStyle.font14MediamGrey.copyWith(
@@ -187,13 +233,10 @@ class SessionFormFields extends StatelessWidget {
         verticalSpace(8.h),
         AppTextFormField(
           borderRadius: 20.r,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 10.w,
-            vertical: 15.h,
-          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
           focusedBorderColor: AppColors.mainTextColorBlack,
           enabledBorderColor: Colors.grey,
-          controller: durationController,
+          controller: widget.durationController,
           hintText: "60",
           keyboardType: TextInputType.number,
           labelStyle: AppTextStyle.font14MediamGrey,

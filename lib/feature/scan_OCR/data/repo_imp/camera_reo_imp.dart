@@ -30,8 +30,6 @@ class CameraRepImp implements CameraRepository {
     _fieldProcessingService = FieldProcessingService(_idModel);
   }
 
-  CameraController? get controller => _controller;
-
   // ========== Camera Operations ==========
   @override
   Future<void> openCamera() async {
@@ -90,7 +88,6 @@ class CameraRepImp implements CameraRepository {
     );
   }
 
-  // ========== Field Processing - delegate to service ==========
   @override
   Future<List<CroppedField>> cropDetectedFields(
     CapturedPhoto photo,
@@ -136,4 +133,7 @@ class CameraRepImp implements CameraRepository {
       await model.loadModel();
     }
   }
+
+  @override
+  CameraController? get controller => _controller;
 }
