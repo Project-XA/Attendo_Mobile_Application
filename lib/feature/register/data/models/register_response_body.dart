@@ -1,23 +1,31 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'register_response_body.g.dart';
+
+@JsonSerializable()
 class RegisterResponseBody {
+  final String id;
+  final String fullName;
+  final String userName;
+  final String email;
+  final String? phoneNumber;
   final String role;
+  final String createdAt;
+  final String updatedAt;
 
-  RegisterResponseBody({required this.role});
+  RegisterResponseBody({
+    required this.id,
+    required this.fullName,
+    required this.userName,
+    required this.email,
+    this.phoneNumber,
+    required this.role,
+    required this.createdAt,
+    required this.updatedAt,
+  });
 
-  factory RegisterResponseBody.fromResponse(dynamic response) {
-    if (response is String) {
-      return RegisterResponseBody(role: response.trim());
-    } else if (response is Map<String, dynamic>) {
-      return RegisterResponseBody(role: response['role']);
-    } else {
-      throw Exception('Invalid response format');
-    }
-  }
+  factory RegisterResponseBody.fromJson(Map<String, dynamic> json) =>
+      _$RegisterResponseBodyFromJson(json);
 
-  factory RegisterResponseBody.fromJson(Map<String, dynamic> json) {
-    return RegisterResponseBody(role: json['role']);
-  }
-
-  Map<String, dynamic> toJson() {
-    return {"role": role};
-  }
+  Map<String, dynamic> toJson() => _$RegisterResponseBodyToJson(this);
 }

@@ -30,6 +30,7 @@ class UserEmailSection extends StatelessWidget {
     return Text(
       email,
       style: AppTextStyle.font14MediamGrey.copyWith(
+        // ignore: deprecated_member_use
         color: Colors.white.withOpacity(0.9),
         fontSize: 14.sp,
       ),
@@ -47,6 +48,7 @@ class UserRoleSection extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: Colors.white.withOpacity(0.2),
         borderRadius: BorderRadius.circular(20.r),
       ),

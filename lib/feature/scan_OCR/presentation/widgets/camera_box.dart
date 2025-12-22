@@ -72,6 +72,7 @@ class CameraBox extends StatelessWidget {
                 child: Icon(
                   Icons.credit_card,
                   size: 60, 
+                  // ignore: deprecated_member_use
                   color: Colors.white.withOpacity(0.5 + (value * 0.5)),
                 ),
               );
@@ -90,7 +91,7 @@ class CameraBox extends StatelessWidget {
             'Processing ID Card...',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 14.sp, // ✅ صغرت الخط
+              fontSize: 14.sp,
               fontWeight: FontWeight.w500,
             ),
           ),

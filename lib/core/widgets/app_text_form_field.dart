@@ -32,7 +32,7 @@ class AppTextFormField extends StatelessWidget {
     this.validator,
     this.label,
     this.labelStyle,
-    this.keyboardType, // ✅ هنا
+    this.keyboardType, 
   });
 
   @override

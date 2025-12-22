@@ -9,9 +9,8 @@ import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/core/widgets/custom_app_button.dart';
 
 class HomePage extends StatelessWidget {
-  final String userRole;
 
-  const HomePage({super.key, required this.userRole});
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +36,7 @@ class HomePage extends StatelessWidget {
                         Container(
                           width: 50.w,
                           height: 50.w,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: AppColors.buttonColorBlue,
                             shape: BoxShape.circle,
                           ),
@@ -114,6 +113,7 @@ class HomePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16.r),
                       boxShadow: [
                         BoxShadow(
+                          // ignore: deprecated_member_use
                           color: Colors.black.withOpacity(0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 2),

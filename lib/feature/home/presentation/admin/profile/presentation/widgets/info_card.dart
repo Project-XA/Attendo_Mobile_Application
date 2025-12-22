@@ -27,6 +27,7 @@ class InfoCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.grey.withOpacity(0.08),
             spreadRadius: 1,
             blurRadius: 8,
@@ -39,6 +40,7 @@ class InfoCard extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(10.w),
             decoration: BoxDecoration(
+              // ignore: deprecated_member_use
               color: AppColors.mainTextColorBlack.withOpacity(0.08),
               borderRadius: BorderRadius.circular(10.r),
             ),

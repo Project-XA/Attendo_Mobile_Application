@@ -26,7 +26,6 @@ class CameraHelper {
       _isInitialized = true;
       return _cameras!;
     } catch (e) {
-      print('Error initializing cameras: $e');
       return [];
     } finally {
       _isInitializing = false;

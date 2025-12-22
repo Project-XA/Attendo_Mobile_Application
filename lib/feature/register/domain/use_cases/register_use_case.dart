@@ -13,10 +13,7 @@ class RegisterUseCase {
     required String password,
     required UserModel localUserData,
   }) {
-    print('🔷 [RegisterUseCase] call() started');
-    print('📧 Email: $email');
-    print('🏢 OrgId: $orgId');
-    print('🔐 Password length: ${password.length}');
+ 
 
     final result = repo.registerUser(
       orgId: orgId,
@@ -25,7 +22,6 @@ class RegisterUseCase {
       localUserData: localUserData,
     );
 
-    print('🔷 [RegisterUseCase] Calling repo.registerUser()');
 
     return result;
   }

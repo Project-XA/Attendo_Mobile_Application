@@ -1,49 +1,37 @@
-// feature/home/presentation/screens/main_navigation_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/DI/init_admin_home.dart';
 import 'package:mobile_app/core/DI/init_profile.dart';
-import 'package:mobile_app/core/DI/navigation_get_it.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/feature/home/presentation/admin/home/presentation/admin_home.dart';
 import 'package:mobile_app/feature/home/presentation/admin/profile/presentation/profile_screen.dart';
 import 'package:mobile_app/feature/home/presentation/user/presentation/home_page.dart';
 
 class MainNavigationScreen extends StatefulWidget {
-  final String user;
+  final String userRole;
 
-  const MainNavigationScreen({super.key, required this.user});
+  const MainNavigationScreen({super.key, required this.userRole});
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
+  int _currentIndex = 0;
+
   @override
   void initState() {
     super.initState();
-
-    initNavigation();
     initAdminHome();
     initProfile();
   }
 
-  int _currentIndex = 0;
-  bool admin = true;
-  bool get _isAdmin {
-    if (
-        widget.user.isEmpty) {
-      return false;
-    }
-    return widget.user.toLowerCase() == 'admin';
-  }
+  bool get _isAdmin => widget.userRole.toLowerCase() == 'admin';
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> screens = [
-      _isAdmin
-          ? const AdminHome()
-          : const HomePage(userRole: 'user'), 
+    final List<Widget> screens = <Widget>[
+      _isAdmin ? const AdminHome() : const HomePage(),
       const ProfileScreen(),
     ];
 
@@ -58,6 +46,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, -2),

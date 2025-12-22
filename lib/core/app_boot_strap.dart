@@ -22,7 +22,7 @@ class _AppBootstrapState extends State<AppBootstrap> {
     await initCore();
 
     runApp(
-      AttendencyApp(appRouter: AppRoute(), initialRoute: Routes.startPage),
+      AttendencyApp(appRouter: AppRoute(), initialRoute: Routes.registeScreen),
     );
   }
 

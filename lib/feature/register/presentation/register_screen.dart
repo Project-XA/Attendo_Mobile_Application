@@ -40,6 +40,7 @@ class RegisterScreen extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             AppColors.mainTextColorBlack,
+            // ignore: deprecated_member_use
             AppColors.mainTextColorBlack.withOpacity(0.8),
           ],
         ),

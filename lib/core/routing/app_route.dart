@@ -5,7 +5,6 @@ import 'package:mobile_app/feature/home/presentation/admin/home/presentation/adm
 import 'package:mobile_app/feature/home/presentation/admin/profile/presentation/profile_screen.dart';
 import 'package:mobile_app/feature/home/presentation/user/presentation/home_page.dart';
 import 'package:mobile_app/feature/navigation_screen/presentation/main_navigation_screen.dart';
-import 'package:mobile_app/feature/navigation_screen/presentation/navigation_screen.dart';
 import 'package:mobile_app/feature/profile/presentation/profile_page.dart';
 import 'package:mobile_app/feature/register/presentation/register_screen.dart';
 import 'package:mobile_app/feature/registration_to_organization/presentation/registration_to_organization.dart';
@@ -33,19 +32,14 @@ class AppRoute {
         page = const RegisterScreen();
         break;
 
-      // ========== NEW: Navigation Routes ==========
-      case Routes.navigation:
-        page = const NavigationScreen();
-        break;
 
       case Routes.mainNavigation:
         final role = settings.arguments as String? ?? 'User';
-        page = MainNavigationScreen(user: role);
+        page = MainNavigationScreen(userRole: role);
         break;
 
       case Routes.homePage:
-        final role = settings.arguments as String? ?? 'User';
-        page = HomePage(userRole: role);
+        page = const HomePage();
         break;
 
       case Routes.profilePage:

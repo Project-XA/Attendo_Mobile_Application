@@ -37,6 +37,7 @@ class ProfileImageSection extends StatelessWidget {
                 border: Border.all(color: Colors.white, width: 3),
                 boxShadow: [
                   BoxShadow(
+                    // ignore: deprecated_member_use
                     color: AppColors.mainTextColorBlack.withOpacity(0.2),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
@@ -74,6 +75,7 @@ class ProfileImageSection extends StatelessWidget {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
+                        // ignore: deprecated_member_use
                         color: AppColors.mainTextColorBlack.withOpacity(0.15),
                         blurRadius: 5,
                         offset: const Offset(0, 2),

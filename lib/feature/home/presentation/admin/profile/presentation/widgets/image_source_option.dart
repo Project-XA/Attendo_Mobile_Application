@@ -24,6 +24,7 @@ class ImageSourceOption extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 30.w),
         decoration: BoxDecoration(
+          // ignore: deprecated_member_use
           color: AppColors.mainTextColorBlack.withOpacity(0.05),
           borderRadius: BorderRadius.circular(15.r),
         ),

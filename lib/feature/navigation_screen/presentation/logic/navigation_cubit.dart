@@ -12,25 +12,20 @@ class NavigationCubit extends Cubit<NavigationState> {
     try {
       emit(NavigationLoading());
       
-      // ✅ Get user from local storage
       final userModel = await localDataSource.getCurrentUser();
       final user = userModel.toEntity();
       
-      // ✅ Check if registered
       if (!user.isRegistered || 
           user.organizations == null || 
           user.organizations!.isEmpty) {
         throw Exception('User is not registered in any organization');
       }
       
-      // ✅ Get role
       final role = user.organizations!.first.role;
       
-      // ✅ Emit with role string
       emit(NavigationToMainScreen(role));
       
     } catch (e) {
-      print('❌ Navigation error: $e');
       emit(NavigationError(e.toString()));
     }
   }

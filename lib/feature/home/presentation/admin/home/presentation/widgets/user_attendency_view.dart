@@ -14,6 +14,7 @@ class UserAttendanceView extends StatelessWidget {
           Icon(
             Icons.people_alt,
             size: 80.sp,
+            // ignore: deprecated_member_use
             color: Colors.green.withOpacity(0.5),
           ),
           verticalSpace(16.h),

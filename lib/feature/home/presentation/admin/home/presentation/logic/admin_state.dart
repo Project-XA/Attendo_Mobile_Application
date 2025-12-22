@@ -20,6 +20,6 @@ final class AdminError extends AdminState {
 
 final class ToggleTabChanged extends AdminState {
   final int selectedIndex;
-  final User? user; // ✅ Add user to keep it available
+  final User? user;
   ToggleTabChanged(this.selectedIndex, this.user);
 }

@@ -70,7 +70,7 @@ class StartPage extends StatelessWidget {
 
                   /// STEPS
                 const  Column(
-                    children: const [
+                    children:  [
                       StepItem(
                         icon: Icons.phone_android,
                         title: "Device Registration",

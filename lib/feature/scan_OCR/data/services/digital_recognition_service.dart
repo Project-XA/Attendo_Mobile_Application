@@ -66,7 +66,7 @@ class DigitRecognitionService {
     required double confidenceThreshold,
   }) {
     List<DigitDetection> detections = [];
-    int totalAboveThreshold = 0;
+   // int totalAboveThreshold = 0;
 
     for (int i = 0; i < 8400; i++) {
       final x = output[0][0][i] as double;
@@ -87,7 +87,7 @@ class DigitRecognitionService {
       }
 
       if (maxConfidence > confidenceThreshold && bestDigit != -1) {
-        totalAboveThreshold++;
+      //  totalAboveThreshold++;
 
         detections.add(
           DigitDetection(

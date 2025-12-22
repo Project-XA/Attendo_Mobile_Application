@@ -38,6 +38,7 @@ class ActionButtons extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 16.h),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: AppColors.mainTextColorBlack.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
       ),
@@ -190,6 +191,7 @@ class ActionButtons extends StatelessWidget {
             : null,
         backgroundColor: state.isOpened && !state.hasCaptured
             ? AppColors.mainTextColorBlack
+            // ignore: deprecated_member_use
             : AppColors.subTextColorGrey.withOpacity(0.5),
         child: Text(
           "Capture",

@@ -1,7 +1,6 @@
 // feature/home/presentation/admin/home/presentation/logic/admin_cubit.dart
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_app/feature/home/domain/entities/organization.dart';
 import 'package:mobile_app/feature/home/domain/entities/user.dart';
 import 'package:mobile_app/feature/home/presentation/admin/home/presentation/logic/admin_state.dart';
 import 'package:mobile_app/feature/home/presentation/admin/home/domain/use_cases/get_current_user_use_case.dart';
@@ -20,12 +19,9 @@ class AdminCubit extends Cubit<AdminState> {
     try {
       emit(AdminLoading());
 
-      // Simulate delay
       await Future.delayed(const Duration(milliseconds: 500));
 
-      final org1 = Organization(orgId: 'org1', orgName: 'Assuit University');
 
-      // Dummy user
       _currentUser = await getCurrentUserUseCase.call();
 
       emit(AdminUserLoaded(_currentUser!));
@@ -37,6 +33,6 @@ class AdminCubit extends Cubit<AdminState> {
   void changeTab(int index) {
     if (_selectedTabIndex == index) return;
     _selectedTabIndex = index;
-    emit(ToggleTabChanged(index, _currentUser)); // ✅ Pass user with state
+    emit(ToggleTabChanged(index, _currentUser)); 
   }
 }

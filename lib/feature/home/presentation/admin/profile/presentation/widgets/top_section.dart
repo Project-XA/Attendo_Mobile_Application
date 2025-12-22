@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -113,7 +115,6 @@ class TopSection extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(ctx);
-              // TODO: Add logout logic
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.mainTextColorBlack,
