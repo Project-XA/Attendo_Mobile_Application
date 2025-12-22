@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/DI/get_it.dart';
+import 'package:mobile_app/core/DI/scan_ocr_di.dart';
 import 'package:mobile_app/core/services/extensions.dart';
 import 'package:mobile_app/core/services/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
@@ -19,6 +20,7 @@ class ScanIdScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    setupScanOcrFeature();
     return BlocProvider(
       create: (context) => getIt<CameraCubit>()..openCamera(),
       child: Scaffold(
@@ -73,7 +75,7 @@ class ScanIdScreen extends StatelessWidget {
     return AppBar(
       leading: IconButton(
         onPressed: () => context.pop(),
-        icon:const Icon(
+        icon: const Icon(
           Icons.arrow_back_ios_new,
           color: AppColors.mainTextColorBlack,
         ),

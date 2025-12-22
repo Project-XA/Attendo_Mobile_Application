@@ -1,10 +1,17 @@
+// feature/home/presentation/admin/home/presentation/logic/admin_state.dart
+
+import 'package:mobile_app/feature/home/domain/entities/user.dart';
+
 sealed class AdminState {}
 
 final class AdminInitial extends AdminState {}
 
-final class AdminLoading extends AdminState {}
+final class AdminLoading extends AdminState {} 
 
-final class AdminLoaded extends AdminState {}
+final class AdminUserLoaded extends AdminState {
+  final User user;
+  AdminUserLoaded(this.user);
+}
 
 final class AdminError extends AdminState {
   final String message;
@@ -13,5 +20,6 @@ final class AdminError extends AdminState {
 
 final class ToggleTabChanged extends AdminState {
   final int selectedIndex;
-  ToggleTabChanged(this.selectedIndex);
+  final User? user;
+  ToggleTabChanged(this.selectedIndex, this.user);
 }

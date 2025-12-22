@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/DI/get_it.dart';
+import 'package:mobile_app/core/DI/register_get_it.dart';
 import 'package:mobile_app/core/services/extensions.dart';
 import 'package:mobile_app/core/services/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
@@ -14,17 +15,15 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    initRegister();
     return BlocProvider(
-      create: (context) => getIt<RegisterCubit>(), 
+      create: (context) => getIt<RegisterCubit>(),
       child: Scaffold(
         backgroundColor: AppColors.backGroundColorWhite,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
-              children: [
-                _buildTopSection(context),
-                _buildMainContent(),
-              ],
+              children: [_buildTopSection(context), _buildMainContent()],
             ),
           ),
         ),
@@ -41,6 +40,7 @@ class RegisterScreen extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             AppColors.mainTextColorBlack,
+            // ignore: deprecated_member_use
             AppColors.mainTextColorBlack.withOpacity(0.8),
           ],
         ),

@@ -1,4 +1,6 @@
 // data/repo_imp/profile_repo_imp.dart
+// ignore_for_file: empty_catches
+
 import 'dart:io';
 import 'package:mobile_app/core/Data/local_data_soruce/cache_exception.dart';
 import 'package:mobile_app/core/Data/local_data_soruce/user_local_data_source.dart';
@@ -33,7 +35,6 @@ class ProfileRepoImp extends ProfileRepo {
       await localDataSource.updateProfileImage(imagePath);
 
       // await deleteOldProfileImage(oldImagePath);
-
     } on CacheException {
       rethrow;
     } catch (e) {
@@ -60,9 +61,7 @@ class ProfileRepoImp extends ProfileRepo {
         if (await oldFile.exists()) {
           await oldFile.delete();
         }
-      } catch (e) {
-        print('Error occurred while deleting old image: $e');
-      }
+      } catch (e) {}
     }
   }
 }

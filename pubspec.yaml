@@ -21,7 +21,7 @@ dependencies:
   flutter_tesseract_ocr:
     path: lib/tesseract_ocr
   fluttertoast: ^9.0.0
-  freezed_annotation: ^2.4.1  # ⬅️ annotation فقط في dependencies
+  freezed_annotation: ^2.4.1 
   get_it: ^9.2.0
   hive: ^2.2.3
   hive_flutter: ^1.1.0
@@ -33,19 +33,21 @@ dependencies:
   path: ^1.9.1
   path_provider: ^2.1.5
   pretty_dio_logger: ^1.4.0
-  retrofit: ^4.4.1  # ⬅️ غيرها من 4.7.2
+  retrofit: ^4.4.1  
   shared_preferences: ^2.5.3
+  shimmer_animation: ^2.2.2+1
   tflite_flutter: ^0.12.1
 
 dev_dependencies:
-  build_runner: ^2.4.13  # ⬅️ غيرها من 2.1.11
+  build_runner: ^2.4.13  
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
-  freezed: ^2.4.5  # ⬅️ freezed في dev_dependencies فقط
+  freezed: ^2.4.5  
   hive_generator: ^2.0.1
   json_serializable: ^6.8.0
-  retrofit_generator: ^8.2.1  # ⬅️ شيلها من dependencies وحطها هنا
+  retrofit_generator: ^8.2.1  
+  test: ^1.26.3
 
 flutter:
   uses-material-design: true

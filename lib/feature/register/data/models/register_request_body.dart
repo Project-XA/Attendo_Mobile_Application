@@ -1,5 +1,5 @@
 class RegisterRequestBody {
-  final String organizationCode; 
+  final int organizationCode;
   final String email;
   final String password;
 
@@ -11,7 +11,7 @@ class RegisterRequestBody {
 
   factory RegisterRequestBody.fromJson(Map<String, dynamic> json) {
     return RegisterRequestBody(
-      organizationCode: json["organization_code"], 
+      organizationCode: json["organizationCode"],
       email: json["email"],
       password: json["password"],
     );
@@ -19,7 +19,7 @@ class RegisterRequestBody {
 
   Map<String, dynamic> toJson() {
     return {
-      "organization_code": organizationCode,
+      "organizationCode": organizationCode,
       "email": email,
       "password": password,
     };

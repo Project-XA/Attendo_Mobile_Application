@@ -47,7 +47,6 @@ class UserLocalDataSourceImp extends UserLocalDataSource {
   @override
   Future<String> saveImageLocally(File imageFile) async {
     try {
-      // Check if file exists
       if (!await imageFile.exists()) {
         throw CacheException('Selected file does not exist');
       }
@@ -56,20 +55,16 @@ class UserLocalDataSourceImp extends UserLocalDataSource {
       final localPath = '${appDir.path}/profile_images';
       final directory = Directory(localPath);
 
-      // Create directory if it doesn't exist
       if (!await directory.exists()) {
         await directory.create(recursive: true);
       }
 
-      // Use timestamp to avoid duplicate names
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final fileName = 'profile_$timestamp.png';
       final targetPath = '$localPath/$fileName';
 
-      // Copy file
       final savedImage = await imageFile.copy(targetPath);
 
-      // Verify copy success
       if (!await savedImage.exists()) {
         throw CacheException('Failed to save image');
       }
@@ -92,7 +87,7 @@ class UserLocalDataSourceImp extends UserLocalDataSource {
         await file.delete();
       }
     } catch (e) {
-      print('Warning: Failed to delete old profile image: $e');
+      throw CacheException('Failed to delete old profile image: $e');
     }
   }
 
@@ -128,20 +123,15 @@ class UserLocalDataSourceImp extends UserLocalDataSource {
   @override
   Future<void> updateProfileImage(String imagePath) async {
     try {
-      // Get current user
       final user = await getCurrentUser();
 
-      // Store old image path for deletion
       final oldImagePath = user.profileImage;
 
-      // Update image path
       user.profileImage = imagePath;
 
-      // Save changes
       await user.save();
       await userBox.flush();
 
-      // Delete old image
       if (oldImagePath != null && oldImagePath.isNotEmpty) {
         await deleteOldProfileImage(oldImagePath);
       }

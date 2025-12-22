@@ -24,11 +24,11 @@ class RegisterCubit extends Cubit<RegisterState> {
     );
 
     result.when(
-      onSuccess: (role) {
-        emit(RegisterLoadedState(userRole: role));
+      onSuccess: (user) {
+        emit(RegisterLoadedState(user: user));
       },
       onError: (error) {
-        emit(RegisterFailureState(message: error.message));
+        emit(RegisterFailureState(message: error.toString()));
       },
     );
   }

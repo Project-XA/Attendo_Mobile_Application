@@ -36,7 +36,7 @@ class CameraCubit extends Cubit<CameraState> {
         state.copyWith(
           isOpened: true,
           isInitializing: false,
-          controller: (_repository as dynamic).controller,
+          controller: _repository.controller,
           hasError: false,
         ),
       );
@@ -60,20 +60,20 @@ class CameraCubit extends Cubit<CameraState> {
 
     try {
       final photo = await _captureUseCase.execute();
-      
+
       await _repository.closeCamera();
-            emit(
+      emit(
         state.copyWith(
           isOpened: false,
           controller: null,
           hasCaptured: true,
           photo: photo,
-          isProcessing: true, 
+          isProcessing: true,
         ),
       );
-      
+
       final isValid = await _validateUseCase.execute(photo);
-      
+
       if (!isValid) {
         emit(
           state.copyWith(
@@ -86,9 +86,9 @@ class CameraCubit extends Cubit<CameraState> {
       }
 
       final result = await _processUseCase.execute(photo);
-      
-     // print('📋 OCR Result: ${result.finalData}');
-      
+
+      // print('📋 OCR Result: ${result.finalData}');
+
       emit(
         state.copyWith(
           isProcessing: false,
@@ -99,7 +99,7 @@ class CameraCubit extends Cubit<CameraState> {
         ),
       );
     } catch (e) {
-     // print('❌ Error in capturePhoto: $e');
+      // print('❌ Error in capturePhoto: $e');
       emit(
         state.copyWith(
           isProcessing: false,
@@ -118,16 +118,16 @@ class CameraCubit extends Cubit<CameraState> {
 
     try {
       await _saveCardUseCase.execute(state.finalData!);
-    //  print('✅ User data saved successfully on verify');
+      //  print('✅ User data saved successfully on verify');
     } catch (e) {
-    //  print('❌ Failed to save user data: $e');
-      rethrow; 
+      //  print('❌ Failed to save user data: $e');
+      rethrow;
     }
   }
 
   Future<void> retakePhoto() async {
     if (!state.canRetake) return;
-    
+
     emit(
       state.copyWith(
         photo: null,
@@ -139,7 +139,7 @@ class CameraCubit extends Cubit<CameraState> {
         hasError: false,
       ),
     );
-    
+
     await openCamera();
   }
 

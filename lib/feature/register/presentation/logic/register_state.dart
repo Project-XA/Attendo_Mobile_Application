@@ -1,3 +1,5 @@
+import 'package:mobile_app/feature/home/data/models/user_model.dart';
+
 sealed class RegisterState {}
 
 final class RegisterInitialState extends RegisterState {}
@@ -5,8 +7,8 @@ final class RegisterInitialState extends RegisterState {}
 final class RegisterLoadingState extends RegisterState {}
 
 final class RegisterLoadedState extends RegisterState {
-  final String userRole;
-  RegisterLoadedState({required this.userRole});
+  final UserModel user;
+  RegisterLoadedState({required this.user});
 }
 
 final class RegisterFailureState extends RegisterState {

@@ -16,32 +16,50 @@ class RegisterRepoImp implements RegisterRepo {
   });
 
   @override
-  Future<ApiResult<String>> getRole({
+  Future<ApiResult<UserModel>> registerUser({
     required String orgId,
     required String email,
     required String password,
     required UserModel localUserData,
   }) async {
     try {
+      final orgIdInt = int.tryParse(orgId);
+      if (orgIdInt == null) {
+        throw Exception('Invalid organization ID: $orgId');
+      }
+
       final request = RegisterRequestBody(
-        organizationCode: orgId,
+        organizationCode: orgIdInt,
         email: email,
         password: password,
       );
 
-      final role = await userRemoteDataSource.getRole(request);
+      final apiResponse = await userRemoteDataSource.registerUser(request);
 
-      localUserData.organizations = [
-        UserOrgModel(
-          orgId: orgId,
-          role: role,
-        ),
-      ];
-      localUserData.email = email;
+      final nameParts = apiResponse.fullName.split(' ');
+      final firstNameEn = nameParts.isNotEmpty ? nameParts.first : '';
+      final lastNameEn = nameParts.length > 1
+          ? nameParts.sublist(1).join(' ')
+          : '';
 
-      await localDataSource.saveUserLogin(localUserData);
+      final completeUserData = UserModel(
+        nationalId: localUserData.nationalId,
+        firstNameAr: localUserData.firstNameAr,
+        lastNameAr: localUserData.lastNameAr,
+        address: localUserData.address,
+        birthDate: localUserData.birthDate,
+        profileImage: localUserData.profileImage,
 
-      return ApiResult.success(role);
+        email: apiResponse.email,
+        firstNameEn: firstNameEn,
+        lastNameEn: lastNameEn,
+
+        organizations: [UserOrgModel(orgId: orgId, role: apiResponse.role)],
+      );
+
+      await localDataSource.saveUserLogin(completeUserData);
+
+      return ApiResult.success(completeUserData);
     } catch (e) {
       return ApiResult.error(e);
     }

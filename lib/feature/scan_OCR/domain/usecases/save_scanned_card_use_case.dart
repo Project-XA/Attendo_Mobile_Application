@@ -9,8 +9,7 @@ class SaveScannedCardUseCase {
   SaveScannedCardUseCase(this._dataSource);
 
   Future<void> execute(Map<String, String> ocrData) async {
-    // print('🔍 OCR Data Keys: ${ocrData.keys.toList()}');
-    // print('🔍 OCR Data Values: $ocrData');
+    
 
     String getOcrValue(List<String> possibleKeys, {String defaultValue = 'N/A'}) {
       for (final key in possibleKeys) {
@@ -63,6 +62,5 @@ class SaveScannedCardUseCase {
     // }
 
     await _dataSource.saveLocalUserData(userModel);
-    print('✅ User saved to Hive successfully');
   }
 }
