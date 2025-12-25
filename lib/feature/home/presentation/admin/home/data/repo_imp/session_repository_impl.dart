@@ -10,7 +10,7 @@ class SessionRepositoryImpl implements SessionRepository {
   Session? _currentSession;
 
   SessionRepositoryImpl({required HttpServerService serverService})
-      : _serverService = serverService;
+    : _serverService = serverService;
 
   @override
   Future<Session> createSession({
@@ -48,13 +48,14 @@ class SessionRepositoryImpl implements SessionRepository {
         throw Exception('Session not found');
       }
 
-      // Start HTTP Server + mDNS
-      final serverInfo = await _serverService.startServer(sessionId);
+      // ✅ Pass session data to server
+      final serverInfo = await _serverService.startServer(
+        sessionId,
+        _currentSession!,
+      );
 
       // Update session status
-      _currentSession = _currentSession!.copyWith(
-        status: SessionStatus.active,
-      );
+      _currentSession = _currentSession!.copyWith(status: SessionStatus.active);
 
       return serverInfo;
     } catch (e) {
@@ -71,11 +72,8 @@ class SessionRepositoryImpl implements SessionRepository {
 
       await _serverService.stopServer();
 
-      _currentSession = _currentSession!.copyWith(
-        status: SessionStatus.ended,
-      );
+      _currentSession = _currentSession!.copyWith(status: SessionStatus.ended);
 
-      
       _currentSession = null;
     } catch (e) {
       throw Exception('Failed to end session: $e');
@@ -84,8 +82,25 @@ class SessionRepositoryImpl implements SessionRepository {
 
   @override
   Stream<AttendanceRecord> getAttendanceStream() {
-    return _serverService.attendanceStream
-        .map((request) => request.toAttendanceRecord());
+    return _serverService.attendanceStream.map((request) {
+      final record = request.toAttendanceRecord();
+
+      // ✅ Update session data in server when new attendance arrives
+      if (_currentSession != null) {
+        final updatedAttendance = List<AttendanceRecord>.from(
+          _currentSession!.attendanceList,
+        )..add(record);
+
+        _currentSession = _currentSession!.copyWith(
+          attendanceList: updatedAttendance,
+          connectedClients: updatedAttendance.length,
+        );
+
+        _serverService.updateSessionData(_currentSession!);
+      }
+
+      return record;
+    });
   }
 
   @override

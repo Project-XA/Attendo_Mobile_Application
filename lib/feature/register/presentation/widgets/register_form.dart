@@ -5,6 +5,7 @@ import 'package:mobile_app/core/DI/get_it.dart';
 import 'package:mobile_app/core/Data/local_data_soruce/user_local_data_source.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/core/services/extensions.dart';
+import 'package:mobile_app/core/services/onboarding_service.dart';
 import 'package:mobile_app/core/services/spacing.dart';
 import 'package:mobile_app/feature/register/presentation/logic/register_cubit.dart';
 import 'package:mobile_app/feature/register/presentation/logic/register_state.dart';
@@ -59,8 +60,17 @@ class _RegisterFormState extends State<RegisterForm> {
     }
   }
 
-  void _handleSuccess(RegisterLoadedState state) {
+  void _handleSuccess(RegisterLoadedState state) async {
     final userRole = state.user.organizations?.first.role ?? 'User';
+    
+    try {
+      final onboardingService = getIt<OnboardingService>();
+      await onboardingService.markOnboardingComplete(userRole);
+    } catch (e) {
+      debugPrint('Failed to save onboarding state: $e');
+    }
+    
+    if (!mounted) return;
     
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

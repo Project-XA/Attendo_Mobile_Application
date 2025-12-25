@@ -6,7 +6,9 @@ import 'package:mobile_app/core/Data/local_data_soruce/user_local_data_source.da
 import 'package:mobile_app/core/Data/remote_data_source/user_remote_data_source.dart';
 import 'package:mobile_app/core/networking/dio_factory.dart';
 import 'package:mobile_app/core/networking/network_service.dart';
+import 'package:mobile_app/core/services/onboarding_service.dart';
 import 'package:mobile_app/feature/home/data/models/user_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final getIt = GetIt.instance;
 
@@ -14,6 +16,10 @@ Future<void> initCore() async {
   // Hive
   final userBox = await Hive.openBox<UserModel>('users');
   getIt.registerLazySingleton<Box<UserModel>>(() => userBox);
+
+  // SharedPreferences
+  final prefs = await SharedPreferences.getInstance();
+  getIt.registerLazySingleton<SharedPreferences>(() => prefs);
 
   // Network
   getIt.registerLazySingleton<Dio>(() => DioFactory.getDio());
@@ -26,5 +32,10 @@ Future<void> initCore() async {
 
   getIt.registerLazySingleton<UserRemoteDataSource>(
     () => UserRemoteDataSourceImp(getIt()),
+  );
+
+  // Services
+  getIt.registerLazySingleton<OnboardingService>(
+    () => OnboardingService(getIt()),
   );
 }

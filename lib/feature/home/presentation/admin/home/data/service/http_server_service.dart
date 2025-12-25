@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:mobile_app/feature/home/presentation/admin/home/data/models/attendence_request.dart';
 import 'package:mobile_app/feature/home/presentation/admin/home/data/models/server_info.dart';
+import 'package:mobile_app/feature/home/presentation/admin/home/domain/entities/session.dart';
 import 'package:nsd/nsd.dart';
 
 class HttpServerService {
@@ -14,24 +15,32 @@ class HttpServerService {
   Stream<AttendanceRequest> get attendanceStream => _attendanceController.stream;
   
   String? _currentSessionId;
+  Session? _currentSession; // ✅ Store session data
   bool get isServerRunning => _server != null;
 
-  Future<ServerInfo> startServer(String sessionId) async {
+  // ✅ Update session data when it changes
+  void updateSessionData(Session session) {
+    _currentSession = session;
+    print('📝 Session data updated: ${session.name}');
+  }
+
+  Future<ServerInfo> startServer(String sessionId, Session session) async {
     try {
       _server = await HttpServer.bind(InternetAddress.anyIPv4, 8080);
       _currentSessionId = sessionId;
+      _currentSession = session; // ✅ Store initial session
 
       print('✅ HTTP Server started on port 8080');
 
-      // 2. Handle incoming requests
+      // Handle incoming requests
       _server!.listen((HttpRequest request) {
         _handleRequest(request);
       });
 
-      // 3. Register mDNS service
+      // Register mDNS service
       await _registerMdnsService();
 
-      // 4. Get local IP
+      // Get local IP
       final localIp = await _getLocalIpAddress();
 
       return ServerInfo(
@@ -56,6 +65,9 @@ class HttpServerService {
         await _handleAttendanceRequest(request);
       } else if (request.method == 'GET' && request.uri.path == '/health') {
         _handleHealthCheck(request);
+      } else if (request.method == 'GET' && request.uri.path == '/session-info') {
+        // ✅ NEW ENDPOINT: Return session details
+        _handleSessionInfo(request);
       } else {
         request.response
           ..statusCode = HttpStatus.notFound
@@ -73,14 +85,11 @@ class HttpServerService {
   // Handle Attendance POST Request
   Future<void> _handleAttendanceRequest(HttpRequest request) async {
     try {
-      // Read request body
       final body = await utf8.decoder.bind(request).join();
       final data = jsonDecode(body) as Map<String, dynamic>;
 
-      // Parse attendance request
       final attendanceRequest = AttendanceRequest.fromJson(data);
 
-      // Validate session
       if (_currentSessionId == null) {
         request.response
           ..statusCode = HttpStatus.badRequest
@@ -99,7 +108,7 @@ class HttpServerService {
         ..statusCode = HttpStatus.ok
         ..write(jsonEncode({
           'status': 'success',
-          'time': DateTime.now().toString(),
+          'time': DateTime.now().toIso8601String(),
           'sessionId': _currentSessionId,
         }));
 
@@ -126,6 +135,48 @@ class HttpServerService {
       }));
   }
 
+  // ✅ NEW: Session Info Endpoint - Returns full session details
+  void _handleSessionInfo(HttpRequest request) {
+    if (_currentSession == null) {
+      request.response
+        ..statusCode = HttpStatus.notFound
+        ..write(jsonEncode({
+          'error': 'No active session',
+        }));
+      return;
+    }
+
+    final sessionData = {
+      'sessionId': _currentSession!.id,
+      'name': _currentSession!.name,
+      'location': _currentSession!.location,
+      'connectionMethod': _currentSession!.connectionMethod,
+      'startTime': _currentSession!.startTime.toIso8601String(),
+      'durationMinutes': _currentSession!.durationMinutes,
+      'status': _statusToString(_currentSession!.status),
+      'attendeeCount': _currentSession!.attendanceList.length,
+      'connectedClients': _currentSession!.connectedClients,
+      'timestamp': DateTime.now().toIso8601String(),
+    };
+
+    request.response
+      ..statusCode = HttpStatus.ok
+      ..write(jsonEncode(sessionData));
+
+    print('📤 Session info sent to client');
+  }
+
+  String _statusToString(SessionStatus status) {
+    switch (status) {
+      case SessionStatus.active:
+        return 'active';
+      case SessionStatus.inactive:
+        return 'inactive';
+      case SessionStatus.ended:
+        return 'ended';
+    }
+  }
+
   // Register mDNS Service
   Future<void> _registerMdnsService() async {
     try {
@@ -141,7 +192,6 @@ class HttpServerService {
       print('✅ mDNS service registered: attendance.local');
     } catch (e) {
       print('⚠️ mDNS registration failed: $e');
-      // Continue without mDNS (can still use direct IP)
     }
   }
 
@@ -170,17 +220,16 @@ class HttpServerService {
   // Stop Server
   Future<void> stopServer() async {
     try {
-      // 1. Unregister mDNS
       if (_mdnsRegistration != null) {
         await unregister(_mdnsRegistration!);
         _mdnsRegistration = null;
         print('✅ mDNS service unregistered');
       }
 
-      // 2. Close HTTP Server
       await _server?.close(force: true);
       _server = null;
       _currentSessionId = null;
+      _currentSession = null;
 
       print('✅ HTTP Server stopped');
     } catch (e) {
