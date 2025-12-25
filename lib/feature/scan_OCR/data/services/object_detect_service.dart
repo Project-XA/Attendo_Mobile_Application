@@ -132,7 +132,7 @@ class ObjectDetectionService {
       }
     }
 
-    detections = _applyNMS(detections, iouThreshold: 0.5);
+    detections = _applyNMS(detections);
     detections.sort((a, b) => b.confidence.compareTo(a.confidence));
 
     return detections;
@@ -143,7 +143,7 @@ class ObjectDetectionService {
     double iouThreshold = 0.5,
   }) {
     detections.sort((a, b) => b.confidence.compareTo(a.confidence));
-    List<DetectionModel> result = [];
+    final List<DetectionModel> result = [];
 
     while (detections.isNotEmpty) {
       final best = detections.removeAt(0);

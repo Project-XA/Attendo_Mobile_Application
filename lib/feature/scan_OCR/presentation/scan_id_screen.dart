@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_app/core/DI/get_it.dart';
+import 'package:mobile_app/core/DI/scan_ocr_di.dart';
 import 'package:mobile_app/core/services/extensions.dart';
 import 'package:mobile_app/core/services/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
@@ -12,15 +14,15 @@ import 'package:mobile_app/feature/scan_OCR/presentation/widgets/scan_header.dar
 import 'package:mobile_app/feature/scan_OCR/presentation/widgets/action_buttons.dart';
 import 'package:mobile_app/feature/scan_OCR/presentation/logic/camera_cubit.dart';
 import 'package:mobile_app/feature/scan_OCR/presentation/logic/camera_state.dart';
-import 'package:mobile_app/feature/scan_OCR/data/repo_imp/camera_reo_imp.dart';
 
 class ScanIdScreen extends StatelessWidget {
   const ScanIdScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    setupScanOcrFeature();
     return BlocProvider(
-      create: (context) => CameraCubit(CameraRepImp()),
+      create: (context) => getIt<CameraCubit>()..openCamera(),
       child: Scaffold(
         appBar: _buildAppBar(context),
         body: BlocBuilder<CameraCubit, CameraState>(
@@ -73,7 +75,7 @@ class ScanIdScreen extends StatelessWidget {
     return AppBar(
       leading: IconButton(
         onPressed: () => context.pop(),
-        icon: Icon(
+        icon: const Icon(
           Icons.arrow_back_ios_new,
           color: AppColors.mainTextColorBlack,
         ),

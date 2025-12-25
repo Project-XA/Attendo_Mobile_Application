@@ -69,8 +69,8 @@ class StartPage extends StatelessWidget {
                   verticalSpace(30),
 
                   /// STEPS
-                  Column(
-                    children: const [
+                  const Column(
+                    children: [
                       StepItem(
                         icon: Icons.phone_android,
                         title: "Device Registration",
@@ -103,7 +103,7 @@ class StartPage extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      context.pushNamed(Routes.scanIdScreen);
+                      context.pushNamed(Routes.registeScreen);
                     },
                   ),
                 ],

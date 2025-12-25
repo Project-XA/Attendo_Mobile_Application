@@ -14,7 +14,7 @@ class CropService {
     try {
       final imageBytes = await File(originalImagePath).readAsBytes();
       final originalImage = img.decodeImage(imageBytes);
-      
+
       if (originalImage == null) {
         throw Exception("Failed to decode image");
       }
@@ -26,10 +26,18 @@ class CropService {
 
       for (var detection in detections) {
         // Convert normalized coordinates (0-1) to pixel coordinates
-        final x1 = ((detection.x - detection.width / 2) * originalWidth).toInt().clamp(0, originalWidth);
-        final y1 = ((detection.y - detection.height / 2) * originalHeight).toInt().clamp(0, originalHeight);
-        final x2 = ((detection.x + detection.width / 2) * originalWidth).toInt().clamp(0, originalWidth);
-        final y2 = ((detection.y + detection.height / 2) * originalHeight).toInt().clamp(0, originalHeight);
+        final x1 = ((detection.x - detection.width / 2) * originalWidth)
+            .toInt()
+            .clamp(0, originalWidth);
+        final y1 = ((detection.y - detection.height / 2) * originalHeight)
+            .toInt()
+            .clamp(0, originalHeight);
+        final x2 = ((detection.x + detection.width / 2) * originalWidth)
+            .toInt()
+            .clamp(0, originalWidth);
+        final y2 = ((detection.y + detection.height / 2) * originalHeight)
+            .toInt()
+            .clamp(0, originalHeight);
 
         final cropWidth = x2 - x1;
         final cropHeight = y2 - y1;
@@ -49,13 +57,14 @@ class CropService {
           detection.className,
         );
 
-        croppedFields.add(CroppedField(
-          fieldName: detection.className,
-          confidence: detection.confidence,
-          imagePath: croppedPath,
-          bbox: BoundingBox(x1: x1, y1: y1, x2: x2, y2: y2),
-        ));
-
+        croppedFields.add(
+          CroppedField(
+            fieldName: detection.className,
+            confidence: detection.confidence,
+            imagePath: croppedPath,
+            bbox: BoundingBox(x1: x1, y1: y1, x2: x2, y2: y2),
+          ),
+        );
       }
 
       return croppedFields;
@@ -79,5 +88,3 @@ class CropService {
     return filePath;
   }
 }
-
-

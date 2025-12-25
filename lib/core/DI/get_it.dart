@@ -1,14 +1,41 @@
+// core/di/core_injection.dart
 import 'package:get_it/get_it.dart';
-import 'package:mobile_app/feature/scan_OCR/data/repo_imp/camera_reo_imp.dart';
-import 'package:mobile_app/feature/scan_OCR/domain/repo/camera_repo.dart';
-import 'package:mobile_app/feature/scan_OCR/presentation/logic/camera_cubit.dart';
+import 'package:hive/hive.dart';
+import 'package:dio/dio.dart';
+import 'package:mobile_app/core/Data/local_data_soruce/user_local_data_source.dart';
+import 'package:mobile_app/core/Data/remote_data_source/user_remote_data_source.dart';
+import 'package:mobile_app/core/networking/dio_factory.dart';
+import 'package:mobile_app/core/networking/network_service.dart';
+import 'package:mobile_app/core/services/onboarding_service.dart';
+import 'package:mobile_app/feature/home/data/models/user_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final getIt = GetIt.instance;
 
-void setup() {
+Future<void> initCore() async {
+  // Hive
+  final userBox = await Hive.openBox<UserModel>('users');
+  getIt.registerLazySingleton<Box<UserModel>>(() => userBox);
 
-  
-  //camera dependency 
-  getIt.registerLazySingleton<CameraRepository>(() => CameraRepImp());
-  getIt.registerFactory(() => CameraCubit(getIt<CameraRepository>()));
+  // SharedPreferences
+  final prefs = await SharedPreferences.getInstance();
+  getIt.registerLazySingleton<SharedPreferences>(() => prefs);
+
+  // Network
+  getIt.registerLazySingleton<Dio>(() => DioFactory.getDio());
+  getIt.registerLazySingleton<NetworkService>(() => NetworkServiceImp());
+
+  // Data Sources
+  getIt.registerLazySingleton<UserLocalDataSource>(
+    () => UserLocalDataSourceImp(userBox: getIt()),
+  );
+
+  getIt.registerLazySingleton<UserRemoteDataSource>(
+    () => UserRemoteDataSourceImp(getIt()),
+  );
+
+  // Services
+  getIt.registerLazySingleton<OnboardingService>(
+    () => OnboardingService(getIt()),
+  );
 }

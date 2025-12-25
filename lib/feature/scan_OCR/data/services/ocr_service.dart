@@ -1,18 +1,19 @@
+// ignore_for_file: avoid_slow_async_io
+
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
+import 'package:mobile_app/feature/scan_OCR/data/constant/ocr_constants.dart';
 import 'package:mobile_app/tesseract_ocr/lib/android_ios.dart';
 import 'package:path_provider/path_provider.dart';
 
 class OcrService {
   static bool _isInitialized = false;
 
-  /// Initialize Tesseract (call once at app start)
   static Future<void> initialize() async {
     if (_isInitialized) return;
 
     try {
-
       final appDir = await getApplicationDocumentsDirectory();
       final tessdataDir = Directory('${appDir.path}/tessdata');
 
@@ -20,16 +21,9 @@ class OcrService {
         await tessdataDir.create(recursive: true);
       }
 
-      // Copy all traineddata files
-      final files = [
-        'ara.traineddata',
-        'eng.traineddata',
-        'ara_combined.traineddata',
-        'ara_number.traineddata',
-      ];
-
-      for (final file in files) {
+      for (final file in OcrConstants.tessdataFiles) {
         final targetFile = File('${tessdataDir.path}/$file');
+
         if (!await targetFile.exists()) {
           final data = await rootBundle.load('assets/tessdata/$file');
           await targetFile.writeAsBytes(
@@ -46,7 +40,7 @@ class OcrService {
 
   static Future<String> extractText({
     required File imageFile,
-    String language = 'ara', 
+    String language = OcrConstants.arabicLanguage,
     bool preprocessImage = true,
   }) async {
     try {
@@ -54,24 +48,20 @@ class OcrService {
         await initialize();
       }
 
-    
-
       File processedFile = imageFile;
 
       if (preprocessImage) {
         processedFile = await _preprocessImage(imageFile);
       }
 
-      // Extract text
       final text = await FlutterTesseractOcr.extractText(
         processedFile.path,
         language: language,
         args: {
-          'psm': '6', 
+          'psm': OcrConstants.defaultPsmMode,
           'preserve_interword_spaces': '1',
         },
       );
-
 
       if (text.trim().isEmpty) {
         throw Exception('No text found in image');
@@ -87,7 +77,6 @@ class OcrService {
     }
   }
 
-  /// Preprocess image for better OCR results
   static Future<File> _preprocessImage(File imageFile) async {
     try {
       final bytes = await imageFile.readAsBytes();
@@ -97,28 +86,19 @@ class OcrService {
         throw Exception("Failed to decode image");
       }
 
-      // Apply preprocessing steps
       var processed = original;
 
-      // 1. Convert to grayscale
-      processed = img.grayscale(processed);
+      processed = img.grayscale(processed); 
+      processed = img.adjustColor(processed, contrast: 1.5); 
+      processed = img.gaussianBlur(processed, radius: 1); 
+      processed = img.normalize(processed, min: 0, max: 255); 
 
-      // 2. Increase contrast
-      processed = img.adjustColor(processed, contrast: 1.5);
-
-      // 3. Apply slight blur to reduce noise
-      processed = img.gaussianBlur(processed, radius: 1);
-
-      // 4. Normalize brightness
-      processed = img.normalize(processed, min: 0, max: 255);
-
-      // Save processed image
       final dir = await getTemporaryDirectory();
       final processedPath =
           '${dir.path}/ocr_processed_${DateTime.now().millisecondsSinceEpoch}.png';
+
       final processedFile = File(processedPath);
       await processedFile.writeAsBytes(img.encodePng(processed));
-
 
       return processedFile;
     } catch (e) {
@@ -126,13 +106,12 @@ class OcrService {
     }
   }
 
-  /// Extract text from multiple images (for batch processing)
   static Future<Map<String, String>> extractTextFromMultipleImages({
     required List<File> images,
-    String language = 'ara',
+    String language = OcrConstants.arabicLanguage,
     bool preprocessImage = true,
   }) async {
-    Map<String, String> results = {};
+  const  Map<String, String> results = {};
 
     for (var i = 0; i < images.length; i++) {
       try {

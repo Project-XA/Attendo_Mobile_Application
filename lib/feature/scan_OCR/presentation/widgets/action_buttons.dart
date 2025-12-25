@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_app/core/routing/routes.dart';
+import 'package:mobile_app/core/services/extensions.dart';
 import 'package:mobile_app/core/services/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
@@ -12,29 +14,22 @@ import 'package:mobile_app/feature/scan_OCR/presentation/logic/camera_state.dart
 class ActionButtons extends StatelessWidget {
   final CameraState state;
 
-  const ActionButtons({
-    super.key,
-    required this.state,
-  });
+  const ActionButtons({super.key, required this.state});
 
   @override
   Widget build(BuildContext context) {
-    // Processing
     if (state.isProcessing) {
       return _buildProcessingIndicator();
     }
 
-    // Success - show verify and retake
     if (state.showResult) {
       return _buildVerifyAndRetakeButtons(context);
     }
 
-    // ✅ Error - show retake only
     if (state.hasError) {
       return _buildErrorState(context);
     }
 
-    // Ready to capture
     return _buildCaptureButton(context);
   }
 
@@ -43,6 +38,7 @@ class ActionButtons extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 16.h),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: AppColors.mainTextColorBlack.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
       ),
@@ -52,16 +48,16 @@ class ActionButtons extends StatelessWidget {
           SizedBox(
             width: 20.w,
             height: 20.h,
-            child: CircularProgressIndicator(
+            child:const CircularProgressIndicator(
               strokeWidth: 2,
               valueColor: AlwaysStoppedAnimation<Color>(
                 AppColors.mainTextColorBlack,
               ),
             ),
           ),
-          SizedBox(width: 12.w),
+          horizontalSpace( 12.w),
           Text(
-            "Processing...",
+            "Processing ID Card...",
             style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeightHelper.semiBold,
@@ -78,10 +74,18 @@ class ActionButtons extends StatelessWidget {
       children: [
         Expanded(
           child: CustomAppButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('ID Verified Successfully!')),
-              );
+            onPressed: () async {
+              try {
+                await context.read<CameraCubit>().verifyAndSaveData();
+                
+                if (context.mounted) {
+                  context.pushNamed(Routes.registeScreen);
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  _showErrorDialog(context, 'Failed to save data: $e');
+                }
+              }
             },
             backgroundColor: Colors.green,
             child: Row(
@@ -125,7 +129,6 @@ class ActionButtons extends StatelessWidget {
     );
   }
 
-  // ✅ جديد: Error state مع retake button
   Widget _buildErrorState(BuildContext context) {
     return Column(
       children: [
@@ -154,7 +157,7 @@ class ActionButtons extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(height: 12.h),
+        verticalSpace( 12.h),
         SizedBox(
           width: double.infinity,
           child: CustomAppButton(
@@ -188,11 +191,28 @@ class ActionButtons extends StatelessWidget {
             : null,
         backgroundColor: state.isOpened && !state.hasCaptured
             ? AppColors.mainTextColorBlack
+            // ignore: deprecated_member_use
             : AppColors.subTextColorGrey.withOpacity(0.5),
         child: Text(
           "Capture",
           style: AppTextStyle.font15SemiBoldWhite.copyWith(fontSize: 16.sp),
         ),
+      ),
+    );
+  }
+
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
       ),
     );
   }
