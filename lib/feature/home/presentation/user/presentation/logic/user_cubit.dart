@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_app/feature/home/domain/entities/user.dart';
 import 'package:mobile_app/feature/home/domain/entities/user_org.dart';
@@ -28,7 +27,8 @@ class UserCubit extends Cubit<UserState> {
   Timer? _searchTimeoutTimer;
   Duration searchTimeout = const Duration(seconds: 30);
 
-  // يمكن تغيير الـ timeout من الخارج
+  bool _sessionFound = false; // ✅ Track if session was found
+
   void setSearchTimeout(Duration duration) {
     searchTimeout = duration;
   }
@@ -49,7 +49,6 @@ class UserCubit extends Cubit<UserState> {
     try {
       emit(const UserLoading());
 
-      // final user = await getCurrentUserUseCase.call();
       final user = User(
         nationalId: '1234569582577',
         firstNameAr: 'احمد',
@@ -66,7 +65,6 @@ class UserCubit extends Cubit<UserState> {
       final stats = await getAttendanceStatsUseCase.call();
 
       emit(UserIdle(user: user, stats: stats));
-
     } catch (e) {
       emit(UserError('Failed to load user: $e'));
     }
@@ -79,6 +77,8 @@ class UserCubit extends Cubit<UserState> {
     if (currentState is! UserStateWithUser) return;
 
     try {
+      _sessionFound = false; // ✅ Reset flag
+
       emit(
         SessionDiscoveryActive(
           user: currentState.user,
@@ -89,13 +89,19 @@ class UserCubit extends Cubit<UserState> {
 
       await startDiscoveryUseCase.call();
 
+      // ✅ Start timeout timer (only triggers if no session found)
       _searchTimeoutTimer?.cancel();
       _searchTimeoutTimer = Timer(searchTimeout, () {
-        _handleSearchTimeout();
+        if (!_sessionFound) {
+          // ✅ Only timeout if no session found
+          _handleSearchTimeout();
+        }
       });
 
       _discoverySubscription?.cancel();
       _discoverySubscription = discoverSessionsUseCase.call().listen((session) {
+        _sessionFound = true; // ✅ Mark session as found
+        _searchTimeoutTimer?.cancel(); // ✅ Cancel timeout
         _handleDiscoveredSession(session);
       }, onError: (error) => _handleDiscoveryError(error));
 
@@ -120,27 +126,24 @@ class UserCubit extends Cubit<UserState> {
     final currentState = state;
     if (currentState is! SessionDiscoveryActive) return;
 
-    print('⏰ Search timeout - no sessions found');
+    print('⏰ Search timeout');
 
-    _discoverySubscription?.cancel();
-    _sessionRefreshTimer?.cancel();
+    // ✅ Check if we have sessions
+    final hasSessions = currentState.discoveredSessions.isNotEmpty;
 
     emit(
       currentState.copyWith(
         isSearching: false,
-        discoveredSessions: [],
-        clearActiveSession: true,
+        clearActiveSession: !hasSessions, 
       ),
     );
-
-    stopDiscoveryUseCase.call().catchError((e) {
-      print('❌ Failed to stop discovery: $e');
-    });
   }
 
   void _handleDiscoveredSession(NearbySession session) {
     final currentState = state;
     if (currentState is! SessionDiscoveryActive) return;
+
+    print('✅ Session discovered: ${session.name} at ${session.ipAddress}');
 
     final existingSessions = currentState.discoveredSessions;
     final exists = existingSessions.any(
@@ -151,7 +154,7 @@ class UserCubit extends Cubit<UserState> {
       final updatedSessions = [...existingSessions, session];
 
       final activeSession =
-          currentState.activeSession ?? (session.isActive ? session : null);
+          currentState.activeSession ?? session; 
 
       emit(
         currentState.copyWith(
@@ -160,9 +163,6 @@ class UserCubit extends Cubit<UserState> {
           isSearching: false,
         ),
       );
-
-      _searchTimeoutTimer?.cancel();
-      _searchTimeoutTimer = null;
     }
   }
 
@@ -181,6 +181,13 @@ class UserCubit extends Cubit<UserState> {
 
     if (activeSessions.length != currentState.discoveredSessions.length) {
       emit(currentState.copyWith(discoveredSessions: activeSessions));
+
+      // ✅ If no active sessions remain, show "no sessions found"
+      if (activeSessions.isEmpty) {
+        emit(
+          currentState.copyWith(clearActiveSession: true, isSearching: false),
+        );
+      }
     }
   }
 
@@ -194,6 +201,8 @@ class UserCubit extends Cubit<UserState> {
 
       _searchTimeoutTimer?.cancel();
       _searchTimeoutTimer = null;
+
+      _sessionFound = false; // ✅ Reset flag
 
       await stopDiscoveryUseCase.call();
 
@@ -270,7 +279,6 @@ class UserCubit extends Cubit<UserState> {
           ),
         );
 
-        // Return to discovery after 2 seconds
         await Future.delayed(const Duration(seconds: 2));
         if (currentState is SessionDiscoveryActive) {
           emit(currentState);
@@ -295,7 +303,6 @@ class UserCubit extends Cubit<UserState> {
       }
     }
   }
-
 
   Future<void> loadAttendanceHistory() async {
     final currentState = state;
@@ -337,22 +344,22 @@ class UserCubit extends Cubit<UserState> {
   Future<void> refreshSessions() async {
     final currentState = state;
     if (currentState is SessionDiscoveryActive) {
-      await _discoverySubscription?.cancel();
-      _discoverySubscription = null;
-      _sessionRefreshTimer?.cancel();
-      _sessionRefreshTimer = null;
-      _searchTimeoutTimer?.cancel();
-      _searchTimeoutTimer = null;
+      _sessionFound = false;
 
       emit(
         currentState.copyWith(
           isSearching: true,
-          discoveredSessions: [],
-          clearActiveSession: true,
+          // Keep existing sessions
+          clearActiveSession: false,
         ),
       );
 
-      await startSessionDiscovery();
+      _searchTimeoutTimer?.cancel();
+      _searchTimeoutTimer = Timer(searchTimeout, () {
+        if (!_sessionFound) {
+          _handleSearchTimeout();
+        }
+      });
     } else if (currentState is UserStateWithUser) {
       await startSessionDiscovery();
     }

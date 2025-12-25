@@ -1,9 +1,11 @@
+// core/app_boot_strap.dart
 import 'package:flutter/material.dart';
 import 'package:mobile_app/attendency_app.dart';
 import 'package:mobile_app/core/DI/get_it.dart';
 import 'package:mobile_app/core/routing/app_route.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/core/services/onboarding_service.dart';
+import 'package:mobile_app/feature/splash/animated_splash_screen.dart';
 
 class AppBootstrap extends StatefulWidget {
   const AppBootstrap({super.key});
@@ -13,6 +15,11 @@ class AppBootstrap extends StatefulWidget {
 }
 
 class _AppBootstrapState extends State<AppBootstrap> {
+  bool _showAnimatedSplash = true;
+  bool _isInitialized = false;
+  String? _initialRoute;
+  String? _routeArgument;
+
   @override
   void initState() {
     super.initState();
@@ -21,13 +28,12 @@ class _AppBootstrapState extends State<AppBootstrap> {
 
   Future<void> _init() async {
     await initCore();
-
     final onboardingService = getIt<OnboardingService>();
     final hasCompleted = await onboardingService.hasCompletedOnboarding();
-    
+
     String initialRoute;
     String? routeArgument;
-    
+
     if (hasCompleted) {
       final userRole = await onboardingService.getUserRole();
       initialRoute = Routes.mainNavigation;
@@ -36,20 +42,33 @@ class _AppBootstrapState extends State<AppBootstrap> {
       initialRoute = Routes.startPage;
     }
 
-    runApp(
-      AttendencyApp(
-        appRouter: AppRoute(),
-        initialRoute: initialRoute,
-        initialRouteArguments: routeArgument,
-      ),
-    );
+    setState(() {
+      _initialRoute = initialRoute;
+      _routeArgument = routeArgument;
+      _isInitialized = true;
+    });
+  }
+
+  void _onAnimationComplete() {
+    setState(() {
+      _showAnimatedSplash = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(body: Center(child: CircularProgressIndicator())),
+    // لو لسه بيحمّل أو الأنيميشن شغال، نعرض الـ animated splash
+    if (!_isInitialized || _showAnimatedSplash) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: AnimatedSplashScreen(onAnimationComplete: _onAnimationComplete),
+      );
+    }
+
+    return AttendencyApp(
+      appRouter: AppRoute(),
+      initialRoute: _initialRoute!,
+      initialRouteArguments: _routeArgument,
     );
   }
 }

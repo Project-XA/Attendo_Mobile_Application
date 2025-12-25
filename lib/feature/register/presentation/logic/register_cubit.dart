@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_app/feature/home/data/models/user_model.dart';
+import 'package:mobile_app/feature/home/domain/entities/user.dart';
+import 'package:mobile_app/feature/home/domain/entities/user_org.dart';
 import 'package:mobile_app/feature/register/domain/use_cases/register_use_case.dart';
 import 'package:mobile_app/feature/register/presentation/logic/register_state.dart';
 
@@ -15,6 +17,8 @@ class RegisterCubit extends Cubit<RegisterState> {
     required UserModel localUserData,
   }) async {
     emit(RegisterLoadingState());
+
+   
 
     final result = await registerUseCase(
       orgId: orgId,

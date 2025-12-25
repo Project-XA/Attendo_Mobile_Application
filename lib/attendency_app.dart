@@ -9,11 +9,9 @@ class AttendencyApp extends StatelessWidget {
     required this.initialRoute,
     this.initialRouteArguments,
   });
-
   final AppRoute appRouter;
   final String initialRoute;
   final Object? initialRouteArguments;
-
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(

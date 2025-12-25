@@ -5,9 +5,7 @@ import 'package:mobile_app/feature/home/presentation/admin/home/presentation/adm
 import 'package:mobile_app/feature/home/presentation/admin/profile/presentation/profile_screen.dart';
 import 'package:mobile_app/feature/home/presentation/user/presentation/home_page.dart';
 import 'package:mobile_app/feature/navigation_screen/presentation/main_navigation_screen.dart';
-import 'package:mobile_app/feature/profile/presentation/profile_page.dart';
 import 'package:mobile_app/feature/register/presentation/register_screen.dart';
-import 'package:mobile_app/feature/registration_to_organization/presentation/registration_to_organization.dart';
 import 'package:mobile_app/feature/scan_OCR/presentation/scan_id_screen.dart';
 import 'package:mobile_app/feature/start_screen/start_page.dart';
 
@@ -24,14 +22,9 @@ class AppRoute {
         page = const ScanIdScreen();
         break;
 
-      case Routes.registrationToOrganization:
-        page = const RegistrationToOrganization();
-        break;
-
       case Routes.registeScreen:
         page = const RegisterScreen();
         break;
-
 
       case Routes.mainNavigation:
         final role = settings.arguments as String? ?? 'User';
@@ -40,10 +33,6 @@ class AppRoute {
 
       case Routes.homePage:
         page = const HomePage();
-        break;
-
-      case Routes.profilePage:
-        page = const ProfilePage();
         break;
 
       case Routes.adminHome:

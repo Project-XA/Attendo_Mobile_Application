@@ -2,6 +2,7 @@
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_app/feature/home/domain/entities/user.dart';
+import 'package:mobile_app/feature/home/domain/entities/user_org.dart';
 import 'package:mobile_app/feature/home/presentation/admin/profile/domain/usecases/get_current_user_use_case.dart';
 import 'package:mobile_app/feature/home/presentation/admin/profile/domain/usecases/update_user_profile_image.dart';
 import 'package:mobile_app/feature/home/presentation/admin/profile/domain/usecases/update_user_use_case.dart';
@@ -24,8 +25,21 @@ class UserProfileCubit extends Cubit<UserProfileState> {
   Future<void> loadUser() async {
     try {
       emit(UserProfileLoading());
-      final user = await getCurrentUserUseCase.getCurrentUser();
-      _currentUser = user; 
+      //final user = await getCurrentUserUseCase.getCurrentUser();
+      final user = User(
+        nationalId: '123456667',
+        firstNameAr: 'عادل',
+        lastNameAr: 'محمد',
+        address: 'أسيوط - مصر',
+        birthDate: '1999-05-10',
+        email: 'adel@gmail.com',
+        firstNameEn: 'Adel',
+        lastNameEn: 'Mohamed',
+        organizations: [UserOrg(orgId: '1234', role: 'admin')],
+        profileImage: null,
+      );
+
+      _currentUser = user;
       emit(UserProfileLoaded(user));
     } catch (e) {
       emit(UserProfileFailure(e.toString()));
@@ -40,12 +54,12 @@ class UserProfileCubit extends Cubit<UserProfileState> {
 
     try {
       emit(ProfileImageUpdating());
-      
+
       await updateUserProfileImage.updateprofileImage(imageFile);
-      
+
       final updatedUser = await getCurrentUserUseCase.getCurrentUser();
       _currentUser = updatedUser;
-      
+
       emit(ProfileImageUpdated(updatedUser.profileImage ?? ''));
       emit(UserProfileLoaded(updatedUser));
     } catch (e) {
@@ -84,7 +98,7 @@ class UserProfileCubit extends Cubit<UserProfileState> {
       );
 
       await updateUserUseCase.updateUserUseCase(updatedUser);
-      
+
       _currentUser = updatedUser;
       emit(ProfileUpdated(updatedUser));
       emit(UserProfileLoaded(updatedUser));
@@ -102,4 +116,3 @@ class UserProfileCubit extends Cubit<UserProfileState> {
     return super.close();
   }
 }
-
