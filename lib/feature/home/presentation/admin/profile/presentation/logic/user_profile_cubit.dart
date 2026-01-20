@@ -24,18 +24,19 @@ class UserProfileCubit extends Cubit<UserProfileState> {
   Future<void> loadUser() async {
     try {
       emit(UserProfileLoading());
-     // final user = await getCurrentUserUseCase.getCurrentUser();
-      final user = User(
-        nationalId: '123456667',
-        firstNameAr: 'عادل',
-        lastNameAr: 'محمد',
-        address: 'أسيوط - مصر',
-        birthDate: '1999-05-10',
-        email: 'adel@gmail.com',
-        firstNameEn: 'Adel',
-        lastNameEn: 'Mohamed',
-        profileImage: null,
-      );
+      final user = await getCurrentUserUseCase.getCurrentUser();
+      // final user = User(
+      //   nationalId: '123456667',
+      //   firstNameAr: 'عادل',
+      //   lastNameAr: 'محمد',
+      //   address: 'أسيوط - مصر',
+      //   birthDate: '1999-05-10',
+      //   email: 'adel@gmail.com',
+      //   firstNameEn: 'Adel',
+      //   lastNameEn: 'Mohamed',
+      //   organizations: [UserOrg(orgId: '1234', role: 'admin')],
+      //   profileImage: null,
+      // );
 
       _currentUser = user;
       emit(UserProfileLoaded(user));

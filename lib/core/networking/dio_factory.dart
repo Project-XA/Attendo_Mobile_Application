@@ -113,6 +113,9 @@ class DioFactory {
     return null;
   }
 
+static Future<void> setToken(String token) async {
+  await _saveToken(token);
+}
   static Future<void> clearTokens() async {
     await _storage.delete(key: 'auth_token');
     await _storage.delete(key: 'refresh_token');

@@ -1,8 +1,10 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_app/core/DI/get_it.dart';
+import 'package:mobile_app/core/routing/routes.dart';
+import 'package:mobile_app/core/services/extensions.dart';
+import 'package:mobile_app/core/services/onboarding_service.dart';
 import 'package:mobile_app/core/services/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
@@ -68,7 +70,7 @@ class TopSection extends StatelessWidget {
 
                 verticalSpace(10.h),
 
-                UserNameSection(fullNameAr: user.fullNameAr),
+                UserNameSection(fullNameEn: user.fullNameEn),
 
                 verticalSpace(5.h),
 
@@ -113,8 +115,33 @@ class TopSection extends StatelessWidget {
             child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
+              // Close dialog first
               Navigator.pop(ctx);
+
+              try {
+                final onboardingService = getIt<OnboardingService>();
+                await onboardingService.logout();
+
+                if (!context.mounted) return;
+
+                context.pushNameAndRemoveUntil(
+                  Routes.registeScreen,
+                  predicate: (route) => false,
+                );
+              } catch (e) {
+                debugPrint('Logout error: $e');
+                
+                if (!context.mounted) return;
+                
+                // Show error message
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Logout failed: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.mainTextColorBlack,

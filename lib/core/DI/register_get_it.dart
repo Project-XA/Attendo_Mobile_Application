@@ -4,7 +4,6 @@ import 'package:mobile_app/feature/register/domain/repos/register_repo.dart';
 import 'package:mobile_app/feature/register/domain/use_cases/register_use_case.dart';
 import 'package:mobile_app/feature/register/presentation/logic/register_cubit.dart';
 
-
 void initRegister() {
   if (getIt.isRegistered<RegisterRepo>()) return;
 
@@ -12,12 +11,11 @@ void initRegister() {
     () => RegisterRepoImp(
       userRemoteDataSource: getIt(),
       localDataSource: getIt(),
+      onboardingService: getIt(),
     ),
   );
 
   getIt.registerLazySingleton(() => RegisterUseCase(getIt()));
 
-  getIt.registerFactory(
-    () => RegisterCubit(getIt()),
-  );
+  getIt.registerFactory(() => RegisterCubit(getIt()));
 }

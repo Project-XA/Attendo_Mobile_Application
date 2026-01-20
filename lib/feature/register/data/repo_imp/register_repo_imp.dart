@@ -1,6 +1,8 @@
 import 'package:mobile_app/core/Data/local_data_soruce/user_local_data_source.dart';
 import 'package:mobile_app/core/Data/remote_data_source/user_remote_data_source.dart';
 import 'package:mobile_app/core/networking/api_result.dart';
+import 'package:mobile_app/core/networking/dio_factory.dart';
+import 'package:mobile_app/core/services/onboarding_service.dart';
 import 'package:mobile_app/feature/home/data/models/user_model.dart';
 import 'package:mobile_app/feature/home/data/models/user_org_model.dart';
 import 'package:mobile_app/feature/register/data/models/register_request_body.dart';
@@ -9,10 +11,12 @@ import 'package:mobile_app/feature/register/domain/repos/register_repo.dart';
 class RegisterRepoImp implements RegisterRepo {
   final UserRemoteDataSource userRemoteDataSource;
   final UserLocalDataSource localDataSource;
+  final OnboardingService onboardingService;
 
   RegisterRepoImp({
     required this.userRemoteDataSource,
     required this.localDataSource,
+    required this.onboardingService,
   });
 
   @override
@@ -53,6 +57,8 @@ class RegisterRepoImp implements RegisterRepo {
         email: apiResponse.userResponse.email,
         firstNameEn: firstNameEn,
         lastNameEn: lastNameEn,
+        loginToken: apiResponse.loginToken,
+        idCardImage: localUserData.idCardImage,
 
         organizations: [
           UserOrgModel(orgId: orgId, role: apiResponse.userResponse.role),
@@ -60,6 +66,12 @@ class RegisterRepoImp implements RegisterRepo {
       );
 
       await localDataSource.saveUserLogin(completeUserData);
+      await DioFactory.setToken(apiResponse.loginToken);
+      await onboardingService.markOnboardingComplete(
+        apiResponse.userResponse.role,
+      );
+
+      await onboardingService.markLoggedIn(apiResponse.userResponse.role);
 
       return ApiResult.success(completeUserData);
     } catch (e) {

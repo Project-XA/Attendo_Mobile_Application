@@ -103,7 +103,7 @@ class StartPage extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      context.pushNamed(Routes.registeScreen);
+                      context.pushNamed(Routes.scanIdScreen);
                     },
                   ),
                 ],
