@@ -1,4 +1,3 @@
-import 'package:mobile_app/feature/home/domain/entities/user.dart';
 import 'package:mobile_app/feature/home/presentation/user/domain/entities/attendance_history.dart';
 import 'package:mobile_app/feature/home/presentation/user/domain/entities/attendency_state.dart';
 import 'package:mobile_app/feature/home/presentation/user/domain/entities/nearby_session.dart';
@@ -20,39 +19,36 @@ final class UserError extends UserState {
   const UserError(this.message);
 }
 
-sealed class UserStateWithUser extends UserState {
-  final User user;
-  const UserStateWithUser({required this.user});
+// ✅ شيل UserStateWithUser واعمل UserStateWithStats بدلها
+sealed class UserStateWithStats extends UserState {
+  const UserStateWithStats();
 }
 
-final class UserIdle extends UserStateWithUser {
+// ✅ شيل الـ user من هنا
+final class UserIdle extends UserStateWithStats {
   final AttendanceStats? stats;
   
   const UserIdle({
-    required super.user,
     this.stats,
   });
 
   UserIdle copyWith({
-    User? user,
     AttendanceStats? stats,
   }) {
     return UserIdle(
-      user: user ?? this.user,
       stats: stats ?? this.stats,
     );
   }
 }
 
-// Session discovery states
-final class SessionDiscoveryActive extends UserStateWithUser {
+// ✅ شيل الـ user من هنا
+final class SessionDiscoveryActive extends UserStateWithStats {
   final NearbySession? activeSession;
   final List<NearbySession> discoveredSessions;
   final bool isSearching;
   final AttendanceStats? stats;
-  
+
   const SessionDiscoveryActive({
-    required super.user,
     this.activeSession,
     this.discoveredSessions = const [],
     this.isSearching = false,
@@ -60,7 +56,6 @@ final class SessionDiscoveryActive extends UserStateWithUser {
   });
 
   SessionDiscoveryActive copyWith({
-    User? user,
     NearbySession? activeSession,
     List<NearbySession>? discoveredSessions,
     bool? isSearching,
@@ -68,7 +63,6 @@ final class SessionDiscoveryActive extends UserStateWithUser {
     bool clearActiveSession = false,
   }) {
     return SessionDiscoveryActive(
-      user: user ?? this.user,
       activeSession: clearActiveSession ? null : (activeSession ?? this.activeSession),
       discoveredSessions: discoveredSessions ?? this.discoveredSessions,
       isSearching: isSearching ?? this.isSearching,
@@ -77,10 +71,8 @@ final class SessionDiscoveryActive extends UserStateWithUser {
   }
 }
 
-// Check-in operation states
-enum CheckInOperation { idle, checkingIn, success, failed }
-
-final class CheckInState extends UserStateWithUser {
+// ✅ شيل الـ user من هنا
+final class CheckInState extends UserStateWithStats {
   final NearbySession session;
   final CheckInOperation operation;
   final String? errorMessage;
@@ -88,7 +80,6 @@ final class CheckInState extends UserStateWithUser {
   final AttendanceStats? stats;
 
   const CheckInState({
-    required super.user,
     required this.session,
     required this.operation,
     this.errorMessage,
@@ -101,7 +92,6 @@ final class CheckInState extends UserStateWithUser {
   bool get isFailed => operation == CheckInOperation.failed;
 
   CheckInState copyWith({
-    User? user,
     NearbySession? session,
     CheckInOperation? operation,
     String? errorMessage,
@@ -109,7 +99,6 @@ final class CheckInState extends UserStateWithUser {
     AttendanceStats? stats,
   }) {
     return CheckInState(
-      user: user ?? this.user,
       session: session ?? this.session,
       operation: operation ?? this.operation,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -119,27 +108,26 @@ final class CheckInState extends UserStateWithUser {
   }
 }
 
-// Attendance history view state
-final class AttendanceHistoryState extends UserStateWithUser {
+enum CheckInOperation { idle, checkingIn, success, failed }
+
+// ✅ شيل الـ user من هنا
+final class AttendanceHistoryState extends UserStateWithStats {
   final List<AttendanceHistory> history;
   final AttendanceStats stats;
   final bool isLoading;
 
   const AttendanceHistoryState({
-    required super.user,
     required this.history,
     required this.stats,
     this.isLoading = false,
   });
 
   AttendanceHistoryState copyWith({
-    User? user,
     List<AttendanceHistory>? history,
     AttendanceStats? stats,
     bool? isLoading,
   }) {
     return AttendanceHistoryState(
-      user: user ?? this.user,
       history: history ?? this.history,
       stats: stats ?? this.stats,
       isLoading: isLoading ?? this.isLoading,

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/DI/get_it.dart';
+import 'package:mobile_app/core/curren_user/presentation/cubits/current_user_cubit.dart';
+import 'package:mobile_app/core/curren_user/presentation/cubits/current_user_state.dart';
 import 'package:mobile_app/core/services/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
@@ -19,8 +21,6 @@ import 'package:mobile_app/feature/home/presentation/user/presentation/widgets/n
 import 'package:mobile_app/feature/home/presentation/user/presentation/widgets/searching_session_card.dart';
 import 'package:mobile_app/feature/home/presentation/widgets/info_card.dart';
 import 'package:mobile_app/feature/home/presentation/widgets/user_header.dart';
-
-
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -68,8 +68,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isSmallScreen = width < 360;
+    
     return BlocProvider(
-      create: (context) => getIt<UserCubit>()..loadUser(),
+      create: (context) => getIt<UserCubit>()..loadStats(),
       child: Scaffold(
         backgroundColor: AppColors.backGroundColorWhite,
         body: BlocListener<UserCubit, UserState>(
@@ -81,27 +82,34 @@ class _HomePageState extends State<HomePage> {
             }
           },
           child: BlocBuilder<UserCubit, UserState>(
-            builder: (context, state) {
-              if (state is UserLoading || state is UserInitial) {
+            builder: (context, attendanceState) {
+              // ✅ جيب الـ user من CurrentUserCubit (موجود في الـ parent)
+              final currentUserCubit = context.read<CurrentUserCubit>();
+              final user = currentUserCubit.currentUser;
+
+              if (attendanceState is UserLoading || 
+                  attendanceState is UserInitial ||
+                  user == null) {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              if (state is UserError) {
-                return _buildErrorView(context, state.message);
-              }
-
-              final user = state is UserStateWithUser ? state.user : null;
-              if (user == null) {
-                return const Center(child: Text('No user data'));
+              if (attendanceState is UserError) {
+                return _buildErrorView(context, attendanceState.message);
               }
 
               return SafeArea(
                 child: Column(
                   children: [
-                    UserHeader(
-                      userName: user.fullNameEn,
-                      userRole: user.organizations?.first.role ?? 'Student',
-                      userImage: user.profileImage ?? Assets.assetsImagesUser,
+                    // ✅ لف UserHeader بـ BlocBuilder عشان يسمع لتحديثات الصورة
+                    BlocBuilder<CurrentUserCubit, CurrentUserState>(
+                      builder: (context, userState) {
+                        final latestUser = currentUserCubit.currentUser;
+                        return UserHeader(
+                          userName: latestUser?.fullNameEn ?? '',
+                          userRole: latestUser?.organizations?.first.role ?? 'Student',
+                          userImage: latestUser?.profileImage ?? Assets.assetsImagesUser,
+                        );
+                      },
                     ),
                     verticalSpace(20),
                     Padding(
@@ -116,7 +124,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     verticalSpace(20.h),
-                    Expanded(child: _buildContent(context, state)),
+                    Expanded(
+                      child: _buildContent(context, attendanceState),
+                    ),
                   ],
                 ),
               );
@@ -144,7 +154,7 @@ class _HomePageState extends State<HomePage> {
           ),
           verticalSpace(16.h),
           ElevatedButton(
-            onPressed: () => context.read<UserCubit>().loadUser(),
+            onPressed: () => context.read<UserCubit>().loadStats(),
             child: const Text('Retry'),
           ),
         ],
@@ -201,12 +211,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildMyAttendanceSection(BuildContext context, UserState state) {
-    final stats = state is UserStateWithUser
+    // ✅ جيب الـ stats من UserStateWithStats
+    final stats = state is UserStateWithStats
         ? (state is SessionDiscoveryActive
               ? state.stats
               : state is UserIdle
-              ? state.stats
-              : null)
+                  ? state.stats
+                  : null)
         : null;
 
     return Column(

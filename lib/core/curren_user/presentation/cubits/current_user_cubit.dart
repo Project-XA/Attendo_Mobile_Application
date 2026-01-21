@@ -25,7 +25,7 @@ class CurrentUserCubit extends Cubit<CurrentUserState> {
   Future<void> loadUser() async {
     try {
       emit(const CurrentUserLoading());
-      final user = await _getCurrentUserUseCase.call();
+     final user = await _getCurrentUserUseCase.call();
       emit(CurrentUserLoaded(user));
     } catch (e) {
       emit(CurrentUserError('Failed to load user: $e'));

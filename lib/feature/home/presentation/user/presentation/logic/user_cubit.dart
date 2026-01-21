@@ -1,22 +1,16 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_app/feature/home/domain/entities/user.dart';
-import 'package:mobile_app/feature/home/domain/entities/user_org.dart';
-// import 'package:mobile_app/feature/home/domain/entities/user.dart';
-// import 'package:mobile_app/feature/home/domain/entities/user_org.dart';
 import 'package:mobile_app/feature/home/presentation/user/domain/entities/attendency_state.dart';
 import 'package:mobile_app/feature/home/presentation/user/domain/entities/nearby_session.dart';
 import 'package:mobile_app/feature/home/presentation/user/domain/use_cases/check_in_use_case.dart';
 import 'package:mobile_app/feature/home/presentation/user/domain/use_cases/discover_session_use_case.dart';
 import 'package:mobile_app/feature/home/presentation/user/domain/use_cases/get_attendence_history_use_case.dart';
 import 'package:mobile_app/feature/home/presentation/user/domain/use_cases/get_attendence_status_use_case.dart';
-import 'package:mobile_app/feature/home/presentation/user/domain/use_cases/get_current_user_use_case.dart';
 import 'package:mobile_app/feature/home/presentation/user/domain/use_cases/start_discovery_use_case.dart';
 import 'package:mobile_app/feature/home/presentation/user/domain/use_cases/stop_discover_use_case.dart';
 import 'package:mobile_app/feature/home/presentation/user/presentation/logic/user_state.dart';
 
 class UserCubit extends Cubit<UserState> {
-  final GetCurrentUserUseCase getCurrentUserUseCase;
   final StartDiscoveryUseCase startDiscoveryUseCase;
   final StopDiscoveryUseCase stopDiscoveryUseCase;
   final DiscoverSessionsUseCase discoverSessionsUseCase;
@@ -36,7 +30,6 @@ class UserCubit extends Cubit<UserState> {
   }
 
   UserCubit({
-    required this.getCurrentUserUseCase,
     required this.startDiscoveryUseCase,
     required this.stopDiscoveryUseCase,
     required this.discoverSessionsUseCase,
@@ -45,29 +38,13 @@ class UserCubit extends Cubit<UserState> {
     required this.getAttendanceStatsUseCase,
   }) : super(const UserInitial());
 
-  // ===================== User Loading =====================
-
-  Future<void> loadUser() async {
+  Future<void> loadStats() async {
     try {
       emit(const UserLoading());
-
-      // final user = User(
-      //   nationalId: '1234569582577',
-      //   firstNameAr: 'احمد',
-      //   lastNameAr: 'محمد',
-      //   address: 'أسيوط - مصر',
-      //   birthDate: '1399-05-10',
-      //   email: 'ahmed@gmail.com',
-      //   firstNameEn: 'Ahmed',
-      //   lastNameEn: 'Mohamed',
-      //   profileImage: null,
-      // );
-      final user = await getCurrentUserUseCase.call();
       final stats = await getAttendanceStatsUseCase.call();
-
-      emit(UserIdle(user: user, stats: stats));
+      emit(UserIdle(stats: stats));
     } catch (e) {
-      emit(UserError('Failed to load user: $e'));
+      emit(UserError('Failed to load stats: $e'));
     }
   }
 
@@ -75,14 +52,11 @@ class UserCubit extends Cubit<UserState> {
 
   Future<void> startSessionDiscovery() async {
     final currentState = state;
-    if (currentState is! UserStateWithUser) return;
-
     try {
       _sessionFound = false;
 
       emit(
         SessionDiscoveryActive(
-          user: currentState.user,
           isSearching: true,
           stats: _getStatsFromState(currentState),
         ),
@@ -98,11 +72,14 @@ class UserCubit extends Cubit<UserState> {
       });
 
       _discoverySubscription?.cancel();
-      _discoverySubscription = discoverSessionsUseCase.call().listen((session) {
-        _sessionFound = true;
-        _searchTimeoutTimer?.cancel();
-        _handleDiscoveredSession(session);
-      }, onError: (error) => _handleDiscoveryError(error));
+      _discoverySubscription = discoverSessionsUseCase.call().listen(
+        (session) {
+          _sessionFound = true;
+          _searchTimeoutTimer?.cancel();
+          _handleDiscoveredSession(session);
+        },
+        onError: (error) => _handleDiscoveryError(error),
+      );
 
       _sessionRefreshTimer?.cancel();
       _sessionRefreshTimer = Timer.periodic(
@@ -112,7 +89,6 @@ class UserCubit extends Cubit<UserState> {
     } catch (e) {
       emit(
         UserIdle(
-          user: currentState.user,
           stats: _getStatsFromState(currentState),
         ),
       );
@@ -144,7 +120,6 @@ class UserCubit extends Cubit<UserState> {
 
     if (!exists) {
       final updatedSessions = [...existingSessions, session];
-
       final activeSession = currentState.activeSession ?? session;
 
       emit(
@@ -197,29 +172,27 @@ class UserCubit extends Cubit<UserState> {
       await stopDiscoveryUseCase.call();
 
       final currentState = state;
-      if (currentState is UserStateWithUser) {
-        emit(
-          UserIdle(
-            user: currentState.user,
-            stats: _getStatsFromState(currentState),
-          ),
-        );
-      }
+      emit(
+        UserIdle(
+          stats: _getStatsFromState(currentState),
+        ),
+      );
     } catch (e) {
       // Stop discovery error handled silently
     }
   }
 
   // ===================== Check-In =====================
-
-  Future<void> checkIn(NearbySession session) async {
+  Future<void> checkIn(
+    NearbySession session, {
+    required String userId,
+    required String userName,
+  }) async {
     final currentState = state;
-    if (currentState is! UserStateWithUser) return;
 
     try {
       emit(
         CheckInState(
-          user: currentState.user,
           session: session,
           operation: CheckInOperation.checkingIn,
           stats: _getStatsFromState(currentState),
@@ -229,8 +202,8 @@ class UserCubit extends Cubit<UserState> {
       final success = await checkInUseCase.call(
         sessionId: session.sessionId,
         baseUrl: session.baseUrl,
-        userId: currentState.user.nationalId,
-        userName: currentState.user.fullNameEn,
+        userId: userId,
+        userName: userName,
         location: session.location,
       );
 
@@ -239,7 +212,6 @@ class UserCubit extends Cubit<UserState> {
 
         emit(
           CheckInState(
-            user: currentState.user,
             session: session,
             operation: CheckInOperation.success,
             checkInTime: DateTime.now(),
@@ -251,11 +223,10 @@ class UserCubit extends Cubit<UserState> {
 
         await stopSessionDiscovery();
 
-        emit(UserIdle(user: currentState.user, stats: updatedStats));
+        emit(UserIdle(stats: updatedStats));
       } else {
         emit(
           CheckInState(
-            user: currentState.user,
             session: session,
             operation: CheckInOperation.failed,
             errorMessage: 'Check-in failed. Please try again.',
@@ -265,13 +236,11 @@ class UserCubit extends Cubit<UserState> {
 
         await Future.delayed(const Duration(seconds: 2));
 
-        // Return to previous state
         if (currentState is SessionDiscoveryActive) {
           emit(currentState);
         } else {
           emit(
             UserIdle(
-              user: currentState.user,
               stats: _getStatsFromState(currentState),
             ),
           );
@@ -279,7 +248,6 @@ class UserCubit extends Cubit<UserState> {
       }
     } catch (e) {
       final failedState = CheckInState(
-        user: currentState.user,
         session: session,
         operation: CheckInOperation.failed,
         errorMessage: e.toString(),
@@ -290,13 +258,11 @@ class UserCubit extends Cubit<UserState> {
 
       await Future.delayed(const Duration(seconds: 2));
 
-      // Return to previous state
       if (currentState is SessionDiscoveryActive) {
         emit(currentState);
       } else {
         emit(
           UserIdle(
-            user: currentState.user,
             stats: _getStatsFromState(currentState),
           ),
         );
@@ -306,15 +272,12 @@ class UserCubit extends Cubit<UserState> {
 
   Future<void> loadAttendanceHistory() async {
     final currentState = state;
-    if (currentState is! UserStateWithUser) return;
 
     try {
       emit(
         AttendanceHistoryState(
-          user: currentState.user,
           history: const [],
-          stats:
-              _getStatsFromState(currentState) ??
+          stats: _getStatsFromState(currentState) ??
               AttendanceStats(
                 totalSessions: 0,
                 attendedSessions: 0,
@@ -330,7 +293,6 @@ class UserCubit extends Cubit<UserState> {
 
       emit(
         AttendanceHistoryState(
-          user: currentState.user,
           history: history,
           stats: stats,
           isLoading: false,
@@ -349,7 +311,6 @@ class UserCubit extends Cubit<UserState> {
       emit(
         currentState.copyWith(
           isSearching: true,
-          // Keep existing sessions
           clearActiveSession: false,
         ),
       );
@@ -360,7 +321,7 @@ class UserCubit extends Cubit<UserState> {
           _handleSearchTimeout();
         }
       });
-    } else if (currentState is UserStateWithUser) {
+    } else {
       await startSessionDiscovery();
     }
   }

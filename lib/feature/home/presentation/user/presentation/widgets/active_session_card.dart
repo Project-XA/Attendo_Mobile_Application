@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_app/core/curren_user/presentation/cubits/current_user_cubit.dart';
 import 'package:mobile_app/core/services/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
@@ -13,10 +14,7 @@ import 'package:mobile_app/feature/home/presentation/user/presentation/logic/use
 class ActiveSessionCard extends StatelessWidget {
   final NearbySession session;
 
-  const ActiveSessionCard({
-    super.key,
-    required this.session,
-  });
+  const ActiveSessionCard({super.key, required this.session});
 
   @override
   Widget build(BuildContext context) {
@@ -105,17 +103,9 @@ class ActiveSessionCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildInfoRow(
-            Icons.event_note,
-            'Session:',
-            session.name,
-          ),
+          _buildInfoRow(Icons.event_note, 'Session:', session.name),
           verticalSpace(8.h),
-          _buildInfoRow(
-            Icons.location_on,
-            'Location:',
-            session.location,
-          ),
+          _buildInfoRow(Icons.location_on, 'Location:', session.location),
           verticalSpace(8.h),
           _buildInfoRow(
             Icons.access_time,
@@ -165,7 +155,16 @@ class ActiveSessionCard extends StatelessWidget {
 
   Widget _buildCheckInButton(BuildContext context) {
     return CustomAppButton(
-      onPressed: () => context.read<UserCubit>().checkIn(session),
+      onPressed: () {
+        final user = context.read<CurrentUserCubit>().currentUser;
+        if (user != null) {
+          context.read<UserCubit>().checkIn(
+            session,
+            userId: user.nationalId,
+            userName: user.fullNameEn,
+          );
+        }
+      },
       backgroundColor: Colors.white,
       borderRadius: 20.r,
       width: double.infinity,
