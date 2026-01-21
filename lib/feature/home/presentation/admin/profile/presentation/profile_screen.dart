@@ -9,7 +9,7 @@ class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    initProfile();
+   // initProfile();
     return BlocProvider(
       create: (context) => getIt<UserProfileCubit>()..loadUser(),
       child: const ProfileScreenBody(),

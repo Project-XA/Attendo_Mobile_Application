@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/DI/init_admin_home.dart';
 import 'package:mobile_app/core/DI/init_profile.dart';
+import 'package:mobile_app/core/DI/init_user_home.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/feature/home/presentation/admin/home/presentation/admin_home.dart';
 import 'package:mobile_app/feature/home/presentation/admin/profile/presentation/profile_screen.dart';
@@ -23,7 +24,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   void initState() {
     super.initState();
-    initAdminHome();
+    if (widget.userRole.toLowerCase() == 'admin') {
+      initAdminHome();
+    } else {
+      initUserHome();
+    }
+    // initAdminHome();
     initProfile();
   }
 

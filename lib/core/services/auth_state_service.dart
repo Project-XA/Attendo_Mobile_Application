@@ -1,5 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:mobile_app/core/Data/Auth_services/auth_state_model.dart';
+import 'package:mobile_app/core/curren_user/Data/Auth_services/auth_state_model.dart';
 
 class AuthStateService {
   static const String _boxName = 'auth_state_box';

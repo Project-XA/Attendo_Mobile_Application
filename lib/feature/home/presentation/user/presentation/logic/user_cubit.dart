@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_app/feature/home/domain/entities/user.dart';
+import 'package:mobile_app/feature/home/domain/entities/user_org.dart';
 // import 'package:mobile_app/feature/home/domain/entities/user.dart';
 // import 'package:mobile_app/feature/home/domain/entities/user_org.dart';
 import 'package:mobile_app/feature/home/presentation/user/domain/entities/attendency_state.dart';
@@ -49,19 +51,18 @@ class UserCubit extends Cubit<UserState> {
     try {
       emit(const UserLoading());
 
-      // final user = User(
-      //   nationalId: '1234569582577',
-      //   firstNameAr: 'احمد',
-      //   lastNameAr: 'محمد',
-      //   address: 'أسيوط - مصر',
-      //   birthDate: '1399-05-10',
-      //   email: 'ahmed@gmail.com',
-      //   firstNameEn: 'Ahmed',
-      //   lastNameEn: 'Mohamed',
-      //   organizations: [UserOrg(orgId: '1234', role: 'user')],
-      //   profileImage: null,
-      // );
-      final user = await getCurrentUserUseCase.call();
+      final user = User(
+        nationalId: '1234569582577',
+        firstNameAr: 'احمد',
+        lastNameAr: 'محمد',
+        address: 'أسيوط - مصر',
+        birthDate: '1399-05-10',
+        email: 'ahmed@gmail.com',
+        firstNameEn: 'Ahmed',
+        lastNameEn: 'Mohamed',
+        profileImage: null,
+      );
+    //  final user = await getCurrentUserUseCase.call();
       final stats = await getAttendanceStatsUseCase.call();
 
       emit(UserIdle(user: user, stats: stats));

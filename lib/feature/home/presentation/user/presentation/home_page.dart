@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/DI/get_it.dart';
-import 'package:mobile_app/core/DI/init_user_home.dart';
 import 'package:mobile_app/core/services/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
@@ -69,9 +68,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isSmallScreen = width < 360;
-
-    initUserHome();
-
     return BlocProvider(
       create: (context) => getIt<UserCubit>()..loadUser(),
       child: Scaffold(
@@ -176,7 +172,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildActiveSessionCard(BuildContext context, UserState state) {
-    // ✅ Check for both activeSession AND discoveredSessions
     final hasActiveSession = state is SessionDiscoveryActive &&
         (state.activeSession != null || state.discoveredSessions.isNotEmpty) &&
         !state.isSearching;

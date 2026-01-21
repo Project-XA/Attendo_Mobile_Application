@@ -15,7 +15,6 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    initRegister();
     return BlocProvider(
       create: (context) => getIt<RegisterCubit>(),
       child: Scaffold(

@@ -1,5 +1,10 @@
 // core/routing/app_route.dart
 import 'package:flutter/material.dart';
+import 'package:mobile_app/core/DI/init_admin_home.dart';
+import 'package:mobile_app/core/DI/init_user_home.dart';
+import 'package:mobile_app/core/DI/navigation_get_it.dart';
+import 'package:mobile_app/core/DI/register_get_it.dart';
+import 'package:mobile_app/core/DI/scan_ocr_di.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/feature/home/presentation/admin/home/presentation/admin_home.dart';
 import 'package:mobile_app/feature/home/presentation/admin/profile/presentation/profile_screen.dart';
@@ -19,19 +24,23 @@ class AppRoute {
         break;
 
       case Routes.scanIdScreen:
+        setupScanOcrFeature();
         page = const ScanIdScreen();
         break;
 
       case Routes.registeScreen:
+        initRegister();
         page = const RegisterScreen();
         break;
 
       case Routes.mainNavigation:
+        initNavigation();
         final role = settings.arguments as String? ?? 'User';
         page = MainNavigationScreen(userRole: role);
         break;
 
       case Routes.homePage:
+        initUserHome();
         page = const HomePage();
         break;
 

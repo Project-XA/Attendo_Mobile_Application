@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/DI/get_it.dart';
-import 'package:mobile_app/core/Data/local_data_soruce/user_local_data_source.dart';
+import 'package:mobile_app/core/curren_user/Data/local_data_soruce/user_local_data_source.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/core/services/extensions.dart';
 import 'package:mobile_app/core/services/onboarding_service.dart';
@@ -37,16 +37,16 @@ class _RegisterFormState extends State<RegisterForm> {
   Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
       try {
-         final localDataSource = getIt<UserLocalDataSource>();
-        final localUserData = await localDataSource.getCurrentUser();
-        // final user = UserModel(
-        //   nationalId: '123456667',
-        //   firstNameAr: 'عادل',
-        //   lastNameAr: 'محمد',
-        //   address: 'أسيوط - مصر',
-        //   birthDate: '1999-05-10',
-        //   profileImage: null,
-        // );
+        //  final localDataSource = getIt<UserLocalDataSource>();
+        // final localUserData = await localDataSource.getCurrentUser();
+        final user = UserModel(
+          nationalId: '123456667',
+          firstNameAr: 'عادل',
+          lastNameAr: 'محمد',
+          address: 'أسيوط - مصر',
+          birthDate: '1999-05-10',
+          profileImage: null,
+        );
 
         if (!mounted) return;
 
@@ -54,7 +54,7 @@ class _RegisterFormState extends State<RegisterForm> {
           orgId: _orgIdController.text.trim(),
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
-          localUserData: localUserData,
+          localUserData: user,
         );
       } catch (e) {
         if (!mounted) return;
