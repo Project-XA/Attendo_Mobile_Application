@@ -1,5 +1,6 @@
 // feature/splash/presentation/animated_splash_screen.dart
 import 'package:flutter/material.dart';
+import 'package:mobile_app/core/utils/app_assets.dart';
 
 class AnimatedSplashScreen extends StatefulWidget {
   final VoidCallback onAnimationComplete;
@@ -58,7 +59,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final logoSize = size.width * 0.4;
+    final logoSize = size.width * 0.9;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -74,7 +75,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      'assets/images/check-mark.png',
+                      Assets.assetsImagesAttendoLogo,
                       width: logoSize,
                       height: logoSize,
                     ),

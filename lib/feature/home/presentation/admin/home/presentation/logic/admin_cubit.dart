@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_app/feature/home/domain/entities/user.dart';
-import 'package:mobile_app/feature/home/domain/entities/user_org.dart';
 import 'package:mobile_app/feature/home/presentation/admin/home/data/models/server_info.dart';
 import 'package:mobile_app/feature/home/presentation/admin/home/domain/entities/attendency_record.dart';
 import 'package:mobile_app/feature/home/presentation/admin/home/domain/entities/session.dart';
@@ -21,7 +20,7 @@ class AdminCubit extends Cubit<AdminState> {
   final ListenAttendanceUseCase listenAttendanceUseCase;
 
   StreamSubscription<AttendanceRecord>? _attendanceSubscription;
-
+  
   AdminCubit({
     required this.getCurrentUserUseCase,
     required this.createSessionUseCase,
@@ -38,21 +37,20 @@ class AdminCubit extends Cubit<AdminState> {
 
       await Future.delayed(const Duration(milliseconds: 500));
 
-      // TODO: Uncomment when ready
-      // final user = await getCurrentUserUseCase.call();
+      final user = await getCurrentUserUseCase.call();
       
-      final user = User(
-        nationalId: '123456667',
-        firstNameAr: 'عادل',
-        lastNameAr: 'محمد',
-        address: 'أسيوط - مصر',
-        birthDate: '1999-05-10',
-        email: 'adel@gmail.com',
-        firstNameEn: 'Adel',
-        lastNameEn: 'Mohamed',
-        organizations: [UserOrg(orgId: '1234', role: 'admin')],
-        profileImage: null,
-      );
+      // final user = User(
+      //   nationalId: '123456667',
+      //   firstNameAr: 'عادل',
+      //   lastNameAr: 'محمد',
+      //   address: 'أسيوط - مصر',
+      //   birthDate: '1999-05-10',
+      //   email: 'adel@gmail.com',
+      //   firstNameEn: 'Adel',
+      //   lastNameEn: 'Mohamed',
+      //   organizations: [UserOrg(orgId: '1234', role: 'admin')],
+      //   profileImage: null,
+      // );
 
       emit(AdminIdle(user: user));
     } catch (e) {

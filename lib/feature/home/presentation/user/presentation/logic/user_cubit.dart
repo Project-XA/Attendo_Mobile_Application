@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_app/feature/home/domain/entities/user.dart';
-import 'package:mobile_app/feature/home/domain/entities/user_org.dart';
+// import 'package:mobile_app/feature/home/domain/entities/user.dart';
+// import 'package:mobile_app/feature/home/domain/entities/user_org.dart';
 import 'package:mobile_app/feature/home/presentation/user/domain/entities/attendency_state.dart';
 import 'package:mobile_app/feature/home/presentation/user/domain/entities/nearby_session.dart';
 import 'package:mobile_app/feature/home/presentation/user/domain/use_cases/check_in_use_case.dart';
@@ -27,7 +27,7 @@ class UserCubit extends Cubit<UserState> {
   Timer? _searchTimeoutTimer;
   Duration searchTimeout = const Duration(seconds: 30);
 
-  bool _sessionFound = false; // ✅ Track if session was found
+  bool _sessionFound = false; 
 
   void setSearchTimeout(Duration duration) {
     searchTimeout = duration;
@@ -49,19 +49,19 @@ class UserCubit extends Cubit<UserState> {
     try {
       emit(const UserLoading());
 
-      final user = User(
-        nationalId: '1234569582577',
-        firstNameAr: 'احمد',
-        lastNameAr: 'محمد',
-        address: 'أسيوط - مصر',
-        birthDate: '1399-05-10',
-        email: 'ahmed@gmail.com',
-        firstNameEn: 'Ahmed',
-        lastNameEn: 'Mohamed',
-        organizations: [UserOrg(orgId: '1234', role: 'user')],
-        profileImage: null,
-      );
-
+      // final user = User(
+      //   nationalId: '1234569582577',
+      //   firstNameAr: 'احمد',
+      //   lastNameAr: 'محمد',
+      //   address: 'أسيوط - مصر',
+      //   birthDate: '1399-05-10',
+      //   email: 'ahmed@gmail.com',
+      //   firstNameEn: 'Ahmed',
+      //   lastNameEn: 'Mohamed',
+      //   organizations: [UserOrg(orgId: '1234', role: 'user')],
+      //   profileImage: null,
+      // );
+      final user = await getCurrentUserUseCase.call();
       final stats = await getAttendanceStatsUseCase.call();
 
       emit(UserIdle(user: user, stats: stats));
@@ -77,7 +77,7 @@ class UserCubit extends Cubit<UserState> {
     if (currentState is! UserStateWithUser) return;
 
     try {
-      _sessionFound = false; // ✅ Reset flag
+      _sessionFound = false; 
 
       emit(
         SessionDiscoveryActive(
@@ -89,19 +89,17 @@ class UserCubit extends Cubit<UserState> {
 
       await startDiscoveryUseCase.call();
 
-      // ✅ Start timeout timer (only triggers if no session found)
       _searchTimeoutTimer?.cancel();
       _searchTimeoutTimer = Timer(searchTimeout, () {
         if (!_sessionFound) {
-          // ✅ Only timeout if no session found
           _handleSearchTimeout();
         }
       });
 
       _discoverySubscription?.cancel();
       _discoverySubscription = discoverSessionsUseCase.call().listen((session) {
-        _sessionFound = true; // ✅ Mark session as found
-        _searchTimeoutTimer?.cancel(); // ✅ Cancel timeout
+        _sessionFound = true; 
+        _searchTimeoutTimer?.cancel(); 
         _handleDiscoveredSession(session);
       }, onError: (error) => _handleDiscoveryError(error));
 
@@ -124,13 +122,12 @@ class UserCubit extends Cubit<UserState> {
     final currentState = state;
     if (currentState is! SessionDiscoveryActive) return;
 
-    // ✅ Check if we have sessions
     final hasSessions = currentState.discoveredSessions.isNotEmpty;
 
     emit(
       currentState.copyWith(
         isSearching: false,
-        clearActiveSession: !hasSessions, 
+        clearActiveSession: !hasSessions,
       ),
     );
   }
@@ -147,8 +144,7 @@ class UserCubit extends Cubit<UserState> {
     if (!exists) {
       final updatedSessions = [...existingSessions, session];
 
-      final activeSession =
-          currentState.activeSession ?? session; 
+      final activeSession = currentState.activeSession ?? session;
 
       emit(
         currentState.copyWith(
@@ -176,7 +172,6 @@ class UserCubit extends Cubit<UserState> {
     if (activeSessions.length != currentState.discoveredSessions.length) {
       emit(currentState.copyWith(discoveredSessions: activeSessions));
 
-      // ✅ If no active sessions remain, show "no sessions found"
       if (activeSessions.isEmpty) {
         emit(
           currentState.copyWith(clearActiveSession: true, isSearching: false),
@@ -196,7 +191,7 @@ class UserCubit extends Cubit<UserState> {
       _searchTimeoutTimer?.cancel();
       _searchTimeoutTimer = null;
 
-      _sessionFound = false; // ✅ Reset flag
+      _sessionFound = false; 
 
       await stopDiscoveryUseCase.call();
 
@@ -252,16 +247,10 @@ class UserCubit extends Cubit<UserState> {
         );
 
         await Future.delayed(const Duration(seconds: 2));
-        emit(
-          SessionDiscoveryActive(
-            user: currentState.user,
-            activeSession: session,
-            discoveredSessions: currentState is SessionDiscoveryActive
-                ? currentState.discoveredSessions
-                : [session],
-            stats: updatedStats,
-          ),
-        );
+
+        await stopSessionDiscovery();
+
+        emit(UserIdle(user: currentState.user, stats: updatedStats));
       } else {
         emit(
           CheckInState(
@@ -274,8 +263,17 @@ class UserCubit extends Cubit<UserState> {
         );
 
         await Future.delayed(const Duration(seconds: 2));
+
+        // Return to previous state
         if (currentState is SessionDiscoveryActive) {
           emit(currentState);
+        } else {
+          emit(
+            UserIdle(
+              user: currentState.user,
+              stats: _getStatsFromState(currentState),
+            ),
+          );
         }
       }
     } catch (e) {
@@ -290,8 +288,17 @@ class UserCubit extends Cubit<UserState> {
       emit(failedState);
 
       await Future.delayed(const Duration(seconds: 2));
+
+      // Return to previous state
       if (currentState is SessionDiscoveryActive) {
         emit(currentState);
+      } else {
+        emit(
+          UserIdle(
+            user: currentState.user,
+            stats: _getStatsFromState(currentState),
+          ),
+        );
       }
     }
   }
