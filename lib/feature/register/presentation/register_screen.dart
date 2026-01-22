@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/DI/get_it.dart';
@@ -16,12 +17,18 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => getIt<RegisterCubit>(),
-      child: Scaffold(
-        backgroundColor: AppColors.backGroundColorWhite,
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [_buildTopSection(context), _buildMainContent()],
+      child: WillPopScope(
+        onWillPop: () async {
+          SystemNavigator.pop();
+          return false;
+        },
+        child: Scaffold(
+          backgroundColor: AppColors.backGroundColorWhite,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [_buildTopSection(context), _buildMainContent()],
+              ),
             ),
           ),
         ),

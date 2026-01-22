@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/DI/get_it.dart';
-import 'package:mobile_app/core/DI/init_admin_home.dart';
+import 'package:mobile_app/core/curren_user/presentation/cubits/current_user_cubit.dart';
+import 'package:mobile_app/core/curren_user/presentation/cubits/current_user_state.dart';
 import 'package:mobile_app/core/services/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/utils/app_assets.dart';
@@ -23,38 +24,43 @@ class AdminHome extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final isSmallScreen = width < 360;
 
-    // initAdminHome();
-
     return BlocProvider(
-      create: (context) => getIt<AdminCubit>()..loadUser(),
+      create: (context) => getIt<AdminCubit>()..loadStats(),
       child: Scaffold(
         backgroundColor: AppColors.backGroundColorWhite,
         body: BlocBuilder<AdminCubit, AdminState>(
-          builder: (context, state) {
+          builder: (context, adminState) {
             // Loading state
-            if (state is AdminLoading || state is AdminInitial) {
+            if (adminState is AdminLoading || adminState is AdminInitial) {
               return const AdminHomeShimmer();
             }
 
             // Error state
-            if (state is AdminError) {
-              return _buildErrorView(context, state.message);
+            if (adminState is AdminError) {
+              return _buildErrorView(context, adminState.message);
             }
 
-            // Get user from state
-            final user = state is AdminStateWithUser ? state.user : null;
+            final currentUserCubit = context.read<CurrentUserCubit>();
+            final user = currentUserCubit.currentUser;
 
             if (user == null) {
-              return const Center(child: Text('No user data'));
+              return const Center(child: CircularProgressIndicator());
             }
 
             return SafeArea(
               child: Column(
                 children: [
-                  UserHeader(
-                    userName: user.fullNameEn,
-                    userRole: user.organizations?.first.role ?? 'Admin',
-                    userImage: user.profileImage ?? Assets.assetsImagesUser,
+                  BlocBuilder<CurrentUserCubit, CurrentUserState>(
+                    builder: (context, userState) {
+                      final latestUser = currentUserCubit.currentUser;
+                      return UserHeader(
+                        userName: latestUser?.fullNameEn ?? '',
+                        userRole:
+                            latestUser?.organizations?.first.role ?? 'Admin',
+                        userImage:
+                            latestUser?.profileImage ?? Assets.assetsImagesUser,
+                      );
+                    },
                   ),
 
                   verticalSpace(20),
@@ -74,12 +80,12 @@ class AdminHome extends StatelessWidget {
 
                         verticalSpace(16.h),
 
-                        _buildToggleTabs(state),
+                        _buildToggleTabs(adminState),
                       ],
                     ),
                   ),
 
-                  Expanded(child: _buildContent(state)),
+                  Expanded(child: _buildContent(adminState)),
                 ],
               ),
             );
@@ -103,7 +109,7 @@ class AdminHome extends StatelessWidget {
           ),
           verticalSpace(16.h),
           ElevatedButton(
-            onPressed: () => context.read<AdminCubit>().loadUser(),
+            onPressed: () => context.read<AdminCubit>().loadStats(),
             child: const Text('Retry'),
           ),
         ],
@@ -112,14 +118,13 @@ class AdminHome extends StatelessWidget {
   }
 
   Widget _buildToggleTabs(AdminState state) {
-    final selectedIndex = state is AdminStateWithUser
+    final selectedIndex = state is AdminStateWithTab
         ? state.selectedTabIndex
         : 0;
 
     return BlocBuilder<AdminCubit, AdminState>(
       buildWhen: (previous, current) {
-        // Only rebuild when tab index changes
-        if (previous is AdminStateWithUser && current is AdminStateWithUser) {
+        if (previous is AdminStateWithTab && current is AdminStateWithTab) {
           return previous.selectedTabIndex != current.selectedTabIndex;
         }
         return true;
@@ -135,7 +140,7 @@ class AdminHome extends StatelessWidget {
   }
 
   Widget _buildContent(AdminState state) {
-    final selectedIndex = state is AdminStateWithUser
+    final selectedIndex = state is AdminStateWithTab
         ? state.selectedTabIndex
         : 0;
 
