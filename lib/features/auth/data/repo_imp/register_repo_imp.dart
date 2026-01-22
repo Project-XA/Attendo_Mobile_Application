@@ -27,9 +27,10 @@ class RegisterRepoImp implements RegisterRepo {
     required UserModel localUserData,
   }) async {
     try {
+      // ✅ Validate orgId
       final orgIdInt = int.tryParse(orgId);
       if (orgIdInt == null) {
-        throw Exception('Invalid organization ID: $orgId');
+        return ApiResult.error(Exception('Invalid organization ID: $orgId'));
       }
 
       final request = RegisterRequestBody(
@@ -38,42 +39,62 @@ class RegisterRepoImp implements RegisterRepo {
         password: password,
       );
 
-      final apiResponse = await userRemoteDataSource.registerUser(request);
+      // ✅ Call remote data source
+      final result = await userRemoteDataSource.registerUser(request);
 
-      final nameParts = apiResponse.userResponse.fullName.split(' ');
-      final firstNameEn = nameParts.isNotEmpty ? nameParts.first : '';
-      final lastNameEn = nameParts.length > 1
-          ? nameParts.sublist(1).join(' ')
-          : '';
+      // ✅ Use when() to handle success/error
+      return result.when(
+        onSuccess: (apiResponse) async {
+          try {
+            // Parse name
+            final nameParts = apiResponse.userResponse.fullName.split(' ');
+            final firstNameEn = nameParts.isNotEmpty ? nameParts.first : '';
+            final lastNameEn = nameParts.length > 1
+                ? nameParts.sublist(1).join(' ')
+                : '';
 
-      final completeUserData = UserModel(
-        nationalId: localUserData.nationalId,
-        firstNameAr: localUserData.firstNameAr,
-        lastNameAr: localUserData.lastNameAr,
-        address: localUserData.address,
-        birthDate: localUserData.birthDate,
-        profileImage: localUserData.profileImage,
+            // Build complete user data
+            final completeUserData = UserModel(
+              nationalId: localUserData.nationalId,
+              firstNameAr: localUserData.firstNameAr,
+              lastNameAr: localUserData.lastNameAr,
+              address: localUserData.address,
+              birthDate: localUserData.birthDate,
+              profileImage: localUserData.profileImage,
+              email: apiResponse.userResponse.email,
+              firstNameEn: firstNameEn,
+              lastNameEn: lastNameEn,
+              loginToken: apiResponse.loginToken,
+              idCardImage: localUserData.idCardImage,
+              organizations: [
+                UserOrgModel(
+                  orgId: orgId,
+                  role: apiResponse.userResponse.role,
+                ),
+              ],
+            );
 
-        email: apiResponse.userResponse.email,
-        firstNameEn: firstNameEn,
-        lastNameEn: lastNameEn,
-        loginToken: apiResponse.loginToken,
-        idCardImage: localUserData.idCardImage,
+            // Save locally
+            await localDataSource.saveUserLogin(completeUserData);
+            await DioFactory.setToken(apiResponse.loginToken);
+            await onboardingService.markOnboardingComplete(
+              apiResponse.userResponse.role,
+            );
+            await onboardingService.markLoggedIn(
+              apiResponse.userResponse.role,
+            );
 
-        organizations: [
-          UserOrgModel(orgId: orgId, role: apiResponse.userResponse.role),
-        ],
+            return ApiResult.success(completeUserData);
+          } catch (e) {
+            // ✅ Handle local storage errors
+            return ApiResult.error(e);
+          }
+        },
+        onError: (error) {
+          // ✅ Pass through the error
+          return ApiResult.error(error);
+        },
       );
-
-      await localDataSource.saveUserLogin(completeUserData);
-      await DioFactory.setToken(apiResponse.loginToken);
-      await onboardingService.markOnboardingComplete(
-        apiResponse.userResponse.role,
-      );
-
-      await onboardingService.markLoggedIn(apiResponse.userResponse.role);
-
-      return ApiResult.success(completeUserData);
     } catch (e) {
       return ApiResult.error(e);
     }

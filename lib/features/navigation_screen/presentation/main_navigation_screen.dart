@@ -3,13 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/DI/get_it.dart';
-import 'package:mobile_app/core/DI/init_admin_home.dart';
+import 'package:mobile_app/core/DI/init_session_management.dart';
 import 'package:mobile_app/core/DI/init_user_home.dart';
 import 'package:mobile_app/core/curren_user/presentation/cubits/current_user_cubit.dart';
 import 'package:mobile_app/core/curren_user/presentation/cubits/current_user_state.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
-import 'package:mobile_app/features/home/presentation/admin/home/presentation/admin_home.dart';
-import 'package:mobile_app/features/home/presentation/admin/profile/presentation/profile_screen.dart';
+import 'package:mobile_app/features/session_mangement/presentation/admin_dashboard.dart';
+import 'package:mobile_app/features/profile/presentation/profile_screen.dart';
 import 'package:mobile_app/features/home/presentation/user/presentation/home_page.dart';
 
 class MainNavigationScreen extends StatelessWidget {
@@ -62,7 +62,7 @@ class MainNavigationScreen extends StatelessWidget {
           // Success - Get role and show appropriate navigation
           final cubit = context.read<CurrentUserCubit>();
           final role = cubit.role;
-
+         // print("user role=: $role");
           if (role == null) {
             return const Scaffold(
               body: Center(
@@ -83,7 +83,7 @@ class MainNavigationScreen extends StatelessWidget {
 
           // Initialize based on role
           if (role.toLowerCase() == 'admin') {
-            initAdminHome();
+            initSessionManagement();
           } else {
             initUserHome();
           }
@@ -111,7 +111,7 @@ class _MainNavigationContentState extends State<_MainNavigationContent> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> screens = <Widget>[
-      widget.isAdmin ? const AdminHome() : const HomePage(),
+      widget.isAdmin ? const AdminDashboard() : const HomePage(),
       const ProfileScreen(),
     ];
 

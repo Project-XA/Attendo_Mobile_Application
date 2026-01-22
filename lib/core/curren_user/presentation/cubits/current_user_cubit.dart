@@ -17,15 +17,23 @@ class CurrentUserCubit extends Cubit<CurrentUserState> {
     required GetCurrentUserUseCase getCurrentUserUseCase,
     required UpdateProfileImageUseCase updateProfileImageUseCase,
     required UpdateUserUseCase updateUserUseCase,
-  })  : _getCurrentUserUseCase = getCurrentUserUseCase,
-        _updateProfileImageUseCase = updateProfileImageUseCase,
-        _updateUserUseCase = updateUserUseCase,
-        super(const CurrentUserInitial());
+  }) : _getCurrentUserUseCase = getCurrentUserUseCase,
+       _updateProfileImageUseCase = updateProfileImageUseCase,
+       _updateUserUseCase = updateUserUseCase,
+       super(const CurrentUserInitial());
 
   Future<void> loadUser() async {
     try {
       emit(const CurrentUserLoading());
-     final user = await _getCurrentUserUseCase.call();
+      final user = await _getCurrentUserUseCase.call();
+      // final user = User(
+      //   nationalId: '123456667',
+      //   firstNameAr: 'عادل',
+      //   lastNameAr: 'محمد',
+      //   address: 'أسيوط - مصر',
+      //   birthDate: '1999-05-10',
+      //   profileImage: null,
+      // );
       emit(CurrentUserLoaded(user));
     } catch (e) {
       emit(CurrentUserError('Failed to load user: $e'));
@@ -90,7 +98,7 @@ class CurrentUserCubit extends Cubit<CurrentUserState> {
     }
   }
 
-User? get currentUser {
+  User? get currentUser {
     final currentState = state;
     if (currentState is CurrentUserLoaded) return currentState.user;
     if (currentState is CurrentUserUpdating) return currentState.user;
@@ -102,8 +110,8 @@ User? get currentUser {
 
   String? get role {
     final user = currentUser;
-    if (user == null || 
-        user.organizations == null || 
+    if (user == null ||
+        user.organizations == null ||
         user.organizations!.isEmpty) {
       return null;
     }
