@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:mobile_app/feature/home/domain/entities/user.dart';
+import 'package:mobile_app/features/home/domain/entities/user.dart';
 
 abstract class CurrentUserRepository {
   Future<User> getCurrentUser();

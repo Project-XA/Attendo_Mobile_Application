@@ -4,7 +4,7 @@ import 'package:mobile_app/core/DI/get_it.dart';
 import 'package:mobile_app/core/routing/app_route.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/core/services/auth/onboarding_service.dart';
-import 'package:mobile_app/feature/splash/animated_splash_screen.dart';
+import 'package:mobile_app/features/splash/animated_splash_screen.dart';
 
 class AppBootstrap extends StatefulWidget {
   const AppBootstrap({super.key});

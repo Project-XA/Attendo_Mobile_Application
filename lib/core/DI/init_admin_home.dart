@@ -1,13 +1,13 @@
 import 'package:mobile_app/core/DI/get_it.dart';
 import 'package:mobile_app/core/utils/register_lazy_if_not_registered.dart';
-import 'package:mobile_app/feature/home/presentation/admin/home/data/repo_imp/session_repository_impl.dart';
-import 'package:mobile_app/feature/home/presentation/admin/home/data/service/http_server_service.dart';
-import 'package:mobile_app/feature/home/presentation/admin/home/domain/repos/session_repository.dart';
-import 'package:mobile_app/feature/home/presentation/admin/home/domain/use_cases/create_session_use_case.dart';
-import 'package:mobile_app/feature/home/presentation/admin/home/domain/use_cases/end_session_use_case.dart';
-import 'package:mobile_app/feature/home/presentation/admin/home/domain/use_cases/listen_attendence_use_case.dart';
-import 'package:mobile_app/feature/home/presentation/admin/home/domain/use_cases/start_session_server_use_case.dart';
-import 'package:mobile_app/feature/home/presentation/admin/home/presentation/logic/admin_cubit.dart';
+import 'package:mobile_app/features/home/presentation/admin/home/data/repo_imp/session_repository_impl.dart';
+import 'package:mobile_app/features/home/presentation/admin/home/data/service/http_server_service.dart';
+import 'package:mobile_app/features/home/presentation/admin/home/domain/repos/session_repository.dart';
+import 'package:mobile_app/features/home/presentation/admin/home/domain/use_cases/create_session_use_case.dart';
+import 'package:mobile_app/features/home/presentation/admin/home/domain/use_cases/end_session_use_case.dart';
+import 'package:mobile_app/features/home/presentation/admin/home/domain/use_cases/listen_attendence_use_case.dart';
+import 'package:mobile_app/features/home/presentation/admin/home/domain/use_cases/start_session_server_use_case.dart';
+import 'package:mobile_app/features/home/presentation/admin/home/presentation/logic/admin_cubit.dart';
 
 
 

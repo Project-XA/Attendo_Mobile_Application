@@ -5,13 +5,13 @@ import 'package:mobile_app/core/DI/init_user_home.dart';
 import 'package:mobile_app/core/DI/register_get_it.dart';
 import 'package:mobile_app/core/DI/scan_ocr_di.dart';
 import 'package:mobile_app/core/routing/routes.dart';
-import 'package:mobile_app/feature/home/presentation/admin/home/presentation/admin_home.dart';
-import 'package:mobile_app/feature/home/presentation/admin/profile/presentation/profile_screen.dart';
-import 'package:mobile_app/feature/home/presentation/user/presentation/home_page.dart';
-import 'package:mobile_app/feature/navigation_screen/presentation/main_navigation_screen.dart';
-import 'package:mobile_app/feature/auth/presentation/register_screen.dart';
-import 'package:mobile_app/feature/scan_OCR/presentation/scan_id_screen.dart';
-import 'package:mobile_app/feature/onboarding/start_page.dart';
+import 'package:mobile_app/features/home/presentation/admin/home/presentation/admin_home.dart';
+import 'package:mobile_app/features/home/presentation/admin/profile/presentation/profile_screen.dart';
+import 'package:mobile_app/features/home/presentation/user/presentation/home_page.dart';
+import 'package:mobile_app/features/navigation_screen/presentation/main_navigation_screen.dart';
+import 'package:mobile_app/features/auth/presentation/register_screen.dart';
+import 'package:mobile_app/features/ocr/presentation/scan_id_screen.dart';
+import 'package:mobile_app/features/onboarding/start_page.dart';
 
 class AppRoute {
   Route generateRoute(RouteSettings settings) {
