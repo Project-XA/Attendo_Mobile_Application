@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:mobile_app/core/services/spacing.dart';
-import 'package:mobile_app/core/services/toast_service.dart';
+import 'package:mobile_app/core/services/UI/spacing.dart';
+import 'package:mobile_app/core/services/UI/toast_service.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/curren_user/presentation/cubits/current_user_cubit.dart';

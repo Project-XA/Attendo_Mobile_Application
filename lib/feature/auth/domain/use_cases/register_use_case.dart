@@ -1,6 +1,6 @@
 import 'package:mobile_app/core/networking/api_result.dart';
 import 'package:mobile_app/feature/home/data/models/user_model.dart';
-import 'package:mobile_app/feature/register/domain/repos/register_repo.dart';
+import 'package:mobile_app/feature/auth/domain/repos/register_repo.dart';
 
 class RegisterUseCase {
   final RegisterRepo repo;

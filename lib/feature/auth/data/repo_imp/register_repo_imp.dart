@@ -2,11 +2,11 @@ import 'package:mobile_app/core/curren_user/Data/local_data_soruce/user_local_da
 import 'package:mobile_app/core/curren_user/Data/remote_data_source/user_remote_data_source.dart';
 import 'package:mobile_app/core/networking/api_result.dart';
 import 'package:mobile_app/core/networking/dio_factory.dart';
-import 'package:mobile_app/core/services/onboarding_service.dart';
+import 'package:mobile_app/core/services/auth/onboarding_service.dart';
 import 'package:mobile_app/feature/home/data/models/user_model.dart';
 import 'package:mobile_app/feature/home/data/models/user_org_model.dart';
-import 'package:mobile_app/feature/register/data/models/register_request_body.dart';
-import 'package:mobile_app/feature/register/domain/repos/register_repo.dart';
+import 'package:mobile_app/feature/auth/data/models/register_request_body.dart';
+import 'package:mobile_app/feature/auth/domain/repos/register_repo.dart';
 
 class RegisterRepoImp implements RegisterRepo {
   final UserRemoteDataSource userRemoteDataSource;

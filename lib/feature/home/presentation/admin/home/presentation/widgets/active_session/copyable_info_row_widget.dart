@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:mobile_app/core/services/toast_service.dart';
+import 'package:mobile_app/core/services/UI/toast_service.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 
 class CopyableInfoRow extends StatelessWidget {

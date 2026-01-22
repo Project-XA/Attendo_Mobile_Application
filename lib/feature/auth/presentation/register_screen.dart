@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/DI/get_it.dart';
-import 'package:mobile_app/core/services/extensions.dart';
-import 'package:mobile_app/core/services/spacing.dart';
+import 'package:mobile_app/core/services/UI/extensions.dart';
+import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
-import 'package:mobile_app/feature/register/presentation/logic/register_cubit.dart';
+import 'package:mobile_app/feature/auth/presentation/logic/register_cubit.dart';
 import 'widgets/register_header.dart';
 import 'widgets/register_form.dart';
 

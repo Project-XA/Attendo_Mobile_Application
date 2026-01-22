@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:mobile_app/core/services/spacing.dart';
+import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/feature/scan_OCR/data/model/cropped_field.dart';
 
 class CroppedFieldsViewer extends StatelessWidget {

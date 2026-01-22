@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/routing/routes.dart';
-import 'package:mobile_app/core/services/extensions.dart';
-import 'package:mobile_app/core/services/spacing.dart';
+import 'package:mobile_app/core/services/UI/extensions.dart';
+import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/core/utils/app_assets.dart';
 import 'package:mobile_app/core/widgets/custom_app_button.dart';
-import 'package:mobile_app/feature/start_screen/widgets/step_item.dart';
+import 'package:mobile_app/feature/onboarding/widgets/step_item.dart';
 
 class StartPage extends StatelessWidget {
   const StartPage({super.key});

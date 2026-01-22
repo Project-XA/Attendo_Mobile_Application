@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:mobile_app/core/services/spacing.dart';
+import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/feature/home/presentation/admin/home/presentation/logic/admin_cubit.dart';
 import 'package:mobile_app/feature/home/presentation/admin/home/presentation/logic/admin_state.dart';
 import 'package:mobile_app/feature/home/presentation/admin/home/presentation/widgets/create_session_form.dart';

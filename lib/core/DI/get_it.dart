@@ -6,8 +6,8 @@ import 'package:mobile_app/core/curren_user/Data/local_data_soruce/user_local_da
 import 'package:mobile_app/core/curren_user/Data/remote_data_source/user_remote_data_source.dart';
 import 'package:mobile_app/core/networking/dio_factory.dart';
 import 'package:mobile_app/core/networking/network_service.dart';
-import 'package:mobile_app/core/services/auth_state_service.dart';
-import 'package:mobile_app/core/services/onboarding_service.dart';
+import 'package:mobile_app/core/services/auth/auth_state_service.dart';
+import 'package:mobile_app/core/services/auth/onboarding_service.dart';
 import 'package:mobile_app/feature/home/data/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

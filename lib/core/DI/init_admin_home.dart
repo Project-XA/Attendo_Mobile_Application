@@ -1,5 +1,5 @@
 import 'package:mobile_app/core/DI/get_it.dart';
-import 'package:mobile_app/core/services/register_lazy_if_not_registered.dart';
+import 'package:mobile_app/core/utils/register_lazy_if_not_registered.dart';
 import 'package:mobile_app/feature/home/presentation/admin/home/data/repo_imp/session_repository_impl.dart';
 import 'package:mobile_app/feature/home/presentation/admin/home/data/service/http_server_service.dart';
 import 'package:mobile_app/feature/home/presentation/admin/home/domain/repos/session_repository.dart';

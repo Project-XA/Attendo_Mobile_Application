@@ -4,14 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/DI/get_it.dart';
 import 'package:mobile_app/core/curren_user/Data/local_data_soruce/user_local_data_source.dart';
 import 'package:mobile_app/core/routing/routes.dart';
-import 'package:mobile_app/core/services/extensions.dart';
-import 'package:mobile_app/core/services/onboarding_service.dart';
-import 'package:mobile_app/core/services/spacing.dart';
+import 'package:mobile_app/core/services/UI/extensions.dart';
+import 'package:mobile_app/core/services/auth/onboarding_service.dart';
+import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/feature/home/data/models/user_model.dart';
-import 'package:mobile_app/feature/register/presentation/logic/register_cubit.dart';
-import 'package:mobile_app/feature/register/presentation/logic/register_state.dart';
-import 'package:mobile_app/feature/register/presentation/widgets/register_form_firld.dart';
-import 'package:mobile_app/feature/register/presentation/widgets/register_submit_button.dart';
+import 'package:mobile_app/feature/auth/presentation/logic/register_cubit.dart';
+import 'package:mobile_app/feature/auth/presentation/logic/register_state.dart';
+import 'package:mobile_app/feature/auth/presentation/widgets/register_form_firld.dart';
+import 'package:mobile_app/feature/auth/presentation/widgets/register_submit_button.dart';
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({super.key});

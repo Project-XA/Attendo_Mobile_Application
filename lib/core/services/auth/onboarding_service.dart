@@ -1,6 +1,6 @@
 import 'package:mobile_app/core/curren_user/Data/local_data_soruce/user_local_data_source.dart';
 import 'package:mobile_app/core/networking/dio_factory.dart';
-import 'package:mobile_app/core/services/auth_state_service.dart';
+import 'package:mobile_app/core/services/auth/auth_state_service.dart';
 
 class OnboardingService {
   final AuthStateService _authStateService;

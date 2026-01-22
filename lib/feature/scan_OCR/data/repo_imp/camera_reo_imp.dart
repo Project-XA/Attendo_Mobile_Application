@@ -1,5 +1,5 @@
 import 'package:camera/camera.dart';
-import 'package:mobile_app/core/services/camera_permission_service.dart';
+import 'package:mobile_app/core/services/permission/camera_permission_service.dart';
 import 'package:mobile_app/feature/scan_OCR/data/model/ml_models/card_service_model.dart';
 import 'package:mobile_app/feature/scan_OCR/data/model/ml_models/id_service_model.dart';
 import 'package:mobile_app/feature/scan_OCR/data/model/ml_models/field_service_model.dart';

@@ -5,7 +5,7 @@ import 'package:mobile_app/core/curren_user/domain/use_case/get_current_user_use
 import 'package:mobile_app/core/curren_user/domain/use_case/update_profile_image_use_case.dart';
 import 'package:mobile_app/core/curren_user/domain/use_case/update_user_use_case.dart';
 import 'package:mobile_app/core/curren_user/presentation/cubits/current_user_cubit.dart';
-import 'package:mobile_app/core/services/register_lazy_if_not_registered.dart';
+import 'package:mobile_app/core/utils/register_lazy_if_not_registered.dart';
 
 void initCurrentUserDi() {
   // Repository

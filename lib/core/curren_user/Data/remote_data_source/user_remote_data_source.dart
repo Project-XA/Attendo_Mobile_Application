@@ -1,7 +1,7 @@
 import 'package:mobile_app/core/networking/api_const.dart';
 import 'package:mobile_app/core/networking/network_service.dart';
-import 'package:mobile_app/feature/register/data/models/register_request_body.dart';
-import 'package:mobile_app/feature/register/data/models/register_response_body.dart';
+import 'package:mobile_app/feature/auth/data/models/register_request_body.dart';
+import 'package:mobile_app/feature/auth/data/models/register_response_body.dart';
 
 abstract class UserRemoteDataSource {
   Future<RegisterResponseBody> registerUser(RegisterRequestBody request);
