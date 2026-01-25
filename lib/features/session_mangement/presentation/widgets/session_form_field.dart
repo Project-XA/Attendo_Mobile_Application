@@ -10,6 +10,7 @@ class SessionFormFields extends StatefulWidget {
   final TextEditingController sessionNameController;
   final TextEditingController locationController;
   final TextEditingController durationController;
+  final TextEditingController allowedRadiusController; 
   final TimeOfDay? initialTime;
   final String? initialWifiOption;
   final Function(TimeOfDay) onTimeSelected;
@@ -20,6 +21,7 @@ class SessionFormFields extends StatefulWidget {
     required this.sessionNameController,
     required this.locationController,
     required this.durationController,
+    required this.allowedRadiusController, 
     this.initialTime,
     this.initialWifiOption,
     required this.onTimeSelected,
@@ -90,6 +92,9 @@ class _SessionFormFieldsState extends State<SessionFormFields> {
         verticalSpace(15.h),
 
         _buildDurationField(),
+        verticalSpace(15.h),
+
+        _buildAllowedRadiusField(), 
       ],
     );
   }
@@ -247,6 +252,42 @@ class _SessionFormFieldsState extends State<SessionFormFields> {
             final duration = int.tryParse(value);
             if (duration == null || duration <= 0) {
               return 'Please enter a valid duration';
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAllowedRadiusField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'ALLOWED RADIUS (METERS)',
+          style: AppTextStyle.font14MediamGrey.copyWith(
+            fontWeight: FontWeightHelper.semiBold,
+            fontSize: 12.sp,
+          ),
+        ),
+        verticalSpace(8.h),
+        AppTextFormField(
+          borderRadius: 20.r,
+          contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
+          focusedBorderColor: AppColors.mainTextColorBlack,
+          enabledBorderColor: Colors.grey,
+          controller: widget.allowedRadiusController,
+          hintText: "50",
+          keyboardType: TextInputType.number,
+          labelStyle: AppTextStyle.font14MediamGrey,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Allowed radius is required';
+            }
+            final radius = double.tryParse(value);
+            if (radius == null || radius <= 0) {
+              return 'Please enter a valid radius';
             }
             return null;
           },

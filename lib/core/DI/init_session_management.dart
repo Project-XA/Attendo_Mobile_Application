@@ -1,7 +1,10 @@
 import 'package:mobile_app/core/DI/get_it.dart';
+import 'package:mobile_app/core/curren_user/Data/local_data_soruce/user_local_data_source.dart';
+import 'package:mobile_app/core/curren_user/Data/remote_data_source/user_remote_data_source.dart';
 import 'package:mobile_app/core/utils/register_lazy_if_not_registered.dart';
 import 'package:mobile_app/features/session_mangement/data/repo_imp/session_repository_impl.dart';
 import 'package:mobile_app/features/session_mangement/data/service/http_server_service.dart';
+import 'package:mobile_app/features/session_mangement/data/service/network_info_service.dart';
 import 'package:mobile_app/features/session_mangement/domain/repos/session_repository.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/create_session_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/end_session_use_case.dart';
@@ -14,30 +17,41 @@ import 'package:mobile_app/features/session_mangement/presentation/logic/session
 void initSessionManagement() {
   if (getIt.isRegistered<SessionMangementCubit>()) return;
 
-  registerLazyIfNotRegistered<HttpServerService>(() => HttpServerService());
-
-  registerLazyIfNotRegistered<SessionRepository>(
-    () => SessionRepositoryImpl(serverService: getIt<HttpServerService>()),
+  /// Services
+  registerLazyIfNotRegistered<HttpServerService>(
+    () => HttpServerService(),
+  );
+registerLazyIfNotRegistered<NetworkInfoService>(
+    () => NetworkInfoService(),
   );
 
-  
+  /// Repository
+  registerLazyIfNotRegistered<SessionRepository>(
+    () => SessionRepositoryImpl(
+      serverService: getIt<HttpServerService>(),
+      remoteDataSource: getIt<UserRemoteDataSource>(),
+      localDataSource: getIt<UserLocalDataSource>(),
+    ),
+  );
 
+  /// Use Cases
   registerLazyIfNotRegistered<CreateSessionUseCase>(
-    () => CreateSessionUseCase(getIt<SessionRepository>()),
+    () => CreateSessionUseCase(getIt(),getIt()) ,
   );
 
   registerLazyIfNotRegistered<StartSessionServerUseCase>(
-    () => StartSessionServerUseCase(getIt<SessionRepository>()),
+    () => StartSessionServerUseCase(getIt()),
   );
 
   registerLazyIfNotRegistered<EndSessionUseCase>(
-    () => EndSessionUseCase(getIt<SessionRepository>()),
+    () => EndSessionUseCase(getIt()),
   );
 
   registerLazyIfNotRegistered<ListenAttendanceUseCase>(
-    () => ListenAttendanceUseCase(getIt<SessionRepository>()),
+    () => ListenAttendanceUseCase(getIt()),
   );
 
+  /// Cubit
   getIt.registerFactory<SessionMangementCubit>(
     () => SessionMangementCubit(
       createSessionUseCase: getIt(),

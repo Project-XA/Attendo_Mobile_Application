@@ -7,22 +7,22 @@ part 'organization_model.g.dart';
 @HiveType(typeId: 2)
 class OrganizationModel extends HiveObject {
   @HiveField(0)
-  String orgId;
+  int organizationId;
   @HiveField(1)
-  String orgName;
+  String organizationName;
 
-  OrganizationModel({required this.orgId, required this.orgName});
+  OrganizationModel({required this.organizationId, required this.organizationName});
   factory OrganizationModel.fromJson(Map<String, dynamic> json) =>
       _$OrganizationModelFromJson(json);
   Map<String, dynamic> toJson() => _$OrganizationModelToJson(this);
 
   factory OrganizationModel.fromEntity(Organization organization) {
     return OrganizationModel(
-      orgId: organization.orgId,
-      orgName: organization.orgName,
+      organizationId: organization.organizationId,
+      organizationName: organization.organizationName,
     );
   }
   Organization toEntity() {
-    return Organization(orgId: orgId, orgName: orgName);
+    return Organization(organizationId: organizationId, organizationName: organizationName);
   }
 }

@@ -1,7 +1,7 @@
 class ApiConst {
   static const String baseurl =
-      'https://backend-production-9a44e.up.railway.app/api/user/';
-  static const String register = 'get-user';
-  static const String createSession = 'create-Session';
+      'https://backend-production-9a44e.up.railway.app/api/';
+  static const String register = 'user/get-user';
+  static const String createSession = 'Session/Create-Session';
   static const String refreshToken = "null";
 }

@@ -1,3 +1,6 @@
+import 'package:mobile_app/core/curren_user/Data/local_data_soruce/user_local_data_source.dart';
+import 'package:mobile_app/core/curren_user/Data/remote_data_source/user_remote_data_source.dart';
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/create_session_request_model.dart';
 import 'package:mobile_app/features/session_mangement/data/models/server_info.dart';
 import 'package:mobile_app/features/session_mangement/data/service/http_server_service.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/attendency_record.dart';
@@ -7,34 +10,72 @@ import 'package:uuid/uuid.dart';
 
 class SessionRepositoryImpl implements SessionRepository {
   final HttpServerService _serverService;
+  final UserRemoteDataSource _remoteDataSource;
+  final UserLocalDataSource _localDataSource;
   Session? _currentSession;
 
-  SessionRepositoryImpl({required HttpServerService serverService})
-    : _serverService = serverService;
+  SessionRepositoryImpl({
+    required HttpServerService serverService,
+    required UserRemoteDataSource remoteDataSource,
+    required UserLocalDataSource localDataSource,
+  }) : _serverService = serverService,
+       _remoteDataSource = remoteDataSource,
+       _localDataSource = localDataSource;
 
   @override
   Future<Session> createSession({
     required String name,
     required String location,
     required String connectionMethod,
-    required DateTime startTime,
-    required int durationMinutes,
+    required DateTime startAt,
+    required DateTime endAt,
+    required double allowedRadius,
+    required String networkSSID,
+    required String networkBSSID,
+    required double latitude,
+    required double longitude,
   }) async {
     try {
-      // Generate unique session ID
       final sessionId = const Uuid().v4();
+      final userData = await _localDataSource.getCurrentUser();
 
-      // Create session entity
+      final organizationId = userData.organizations!.isNotEmpty
+          ? userData.organizations!.first.organizationId
+          : null;
+
+      if (organizationId == null) {
+        throw Exception('Invalid organization ID');
+      }
+
+      final requestModel = CreateSessionRequestModel(
+        organizationId: organizationId,
+        sessionName: name,
+        createdBy: userData.id!,
+        hallName: location,
+        connectionType: connectionMethod,
+        longitude: longitude,
+        latitude: latitude,
+        allowedRadius: allowedRadius,
+        networkSSID: networkSSID,
+        networkBSSID: networkBSSID,
+        startAt: startAt.toIso8601String(),
+        endAt: endAt.toIso8601String(),
+        hallId: 1,
+      );
+
+      await _remoteDataSource.createSession(requestModel);
+
       _currentSession = Session(
         id: sessionId,
         name: name,
         location: location,
         connectionMethod: connectionMethod,
-        startTime: startTime,
-        durationMinutes: durationMinutes,
+        startTime: startAt,
+        durationMinutes: endAt.difference(startAt).inMinutes, 
         status: SessionStatus.inactive,
+        connectedClients: 0,
+        attendanceList: [],
       );
-      
 
       return _currentSession!;
     } catch (e) {
@@ -49,14 +90,13 @@ class SessionRepositoryImpl implements SessionRepository {
         throw Exception('Session not found');
       }
 
-      // ✅ Pass session data to server
       final serverInfo = await _serverService.startServer(
         sessionId,
         _currentSession!,
       );
 
-      // Update session status
       _currentSession = _currentSession!.copyWith(status: SessionStatus.active);
+
       return serverInfo;
     } catch (e) {
       throw Exception('Failed to start server: $e');
@@ -71,9 +111,7 @@ class SessionRepositoryImpl implements SessionRepository {
       }
 
       await _serverService.stopServer();
-
       _currentSession = _currentSession!.copyWith(status: SessionStatus.ended);
-
       _currentSession = null;
     } catch (e) {
       throw Exception('Failed to end session: $e');
@@ -85,7 +123,6 @@ class SessionRepositoryImpl implements SessionRepository {
     return _serverService.attendanceStream.map((request) {
       final record = request.toAttendanceRecord();
 
-      // ✅ Update session data in server when new attendance arrives
       if (_currentSession != null) {
         final updatedAttendance = List<AttendanceRecord>.from(
           _currentSession!.attendanceList,

@@ -7,12 +7,21 @@ abstract class SessionRepository {
     required String name,
     required String location,
     required String connectionMethod,
-    required DateTime startTime,
-    required int durationMinutes,
+    required DateTime startAt,
+required DateTime endAt,
+
+    required double allowedRadius, 
+    required String networkSSID, 
+    required String networkBSSID, 
+    required double latitude, 
+    required double longitude, 
   });
 
   Future<ServerInfo> startSessionServer(String sessionId);
+
   Future<void> endSession(String sessionId);
+
   Stream<AttendanceRecord> getAttendanceStream();
+
   Future<Session?> getCurrentActiveSession();
 }

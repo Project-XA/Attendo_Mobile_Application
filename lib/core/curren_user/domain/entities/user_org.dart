@@ -1,9 +1,10 @@
 class UserOrg {
-  final String orgId;
+  final int organizationId;
   final String role;
+  final String ? organizationName;
 
   UserOrg({
-    required this.orgId,
-    required this.role,
+    required this.organizationId,
+    required this.role, this.organizationName,
   });
 }

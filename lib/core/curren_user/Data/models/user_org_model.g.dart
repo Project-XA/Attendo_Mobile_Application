@@ -17,19 +17,22 @@ class UserOrgModelAdapter extends TypeAdapter<UserOrgModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return UserOrgModel(
-      orgId: fields[0] as String,
+      organizationId: fields[0] as int,
       role: fields[1] as String,
+      organizationName: fields[2] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserOrgModel obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
-      ..write(obj.orgId)
+      ..write(obj.organizationId)
       ..writeByte(1)
-      ..write(obj.role);
+      ..write(obj.role)
+      ..writeByte(2)
+      ..write(obj.organizationName);
   }
 
   @override
@@ -48,12 +51,14 @@ class UserOrgModelAdapter extends TypeAdapter<UserOrgModel> {
 // **************************************************************************
 
 UserOrgModel _$UserOrgModelFromJson(Map<String, dynamic> json) => UserOrgModel(
-      orgId: json['orgId'] as String,
+      organizationId: (json['organizationId'] as num).toInt(),
       role: json['role'] as String,
+      organizationName: json['organizationName'] as String?,
     );
 
 Map<String, dynamic> _$UserOrgModelToJson(UserOrgModel instance) =>
     <String, dynamic>{
-      'orgId': instance.orgId,
+      'organizationId': instance.organizationId,
       'role': instance.role,
+      'organizationName': instance.organizationName,
     };

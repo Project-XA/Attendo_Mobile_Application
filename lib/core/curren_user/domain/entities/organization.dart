@@ -1,6 +1,6 @@
 class Organization {
-  final String orgId;
-  final String orgName;
+  final int organizationId;
+  final String organizationName;
 
-  Organization({required this.orgId, required this.orgName});
+  Organization({required this.organizationId, required this.organizationName});
 }

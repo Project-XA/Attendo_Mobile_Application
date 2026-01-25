@@ -17,8 +17,8 @@ class OrganizationModelAdapter extends TypeAdapter<OrganizationModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return OrganizationModel(
-      orgId: fields[0] as String,
-      orgName: fields[1] as String,
+      organizationId: fields[0] as int,
+      organizationName: fields[1] as String,
     );
   }
 
@@ -27,9 +27,9 @@ class OrganizationModelAdapter extends TypeAdapter<OrganizationModel> {
     writer
       ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.orgId)
+      ..write(obj.organizationId)
       ..writeByte(1)
-      ..write(obj.orgName);
+      ..write(obj.organizationName);
   }
 
   @override
@@ -49,12 +49,12 @@ class OrganizationModelAdapter extends TypeAdapter<OrganizationModel> {
 
 OrganizationModel _$OrganizationModelFromJson(Map<String, dynamic> json) =>
     OrganizationModel(
-      orgId: json['orgId'] as String,
-      orgName: json['orgName'] as String,
+      organizationId: (json['organizationId'] as num).toInt(),
+      organizationName: json['organizationName'] as String,
     );
 
 Map<String, dynamic> _$OrganizationModelToJson(OrganizationModel instance) =>
     <String, dynamic>{
-      'orgId': instance.orgId,
-      'orgName': instance.orgName,
+      'organizationId': instance.organizationId,
+      'organizationName': instance.organizationName,
     };

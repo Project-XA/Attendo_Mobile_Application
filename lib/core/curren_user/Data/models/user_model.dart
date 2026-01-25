@@ -45,11 +45,15 @@ class UserModel extends HiveObject {
 
   @HiveField(11)
   String? loginToken;
+  @HiveField(12)
+  String? id;
 
   UserModel({
     required this.nationalId,
     required this.firstNameAr,
     required this.lastNameAr,
+    this.id,
+
     this.address,
     this.birthDate,
     this.email,
@@ -68,6 +72,7 @@ class UserModel extends HiveObject {
 
   factory UserModel.fromEntity(User user) {
     return UserModel(
+      id: user.id,
       nationalId: user.nationalId,
       firstNameAr: user.firstNameAr,
       lastNameAr: user.lastNameAr,
@@ -87,6 +92,7 @@ class UserModel extends HiveObject {
 
   User toEntity() {
     return User(
+      id: id,
       nationalId: nationalId,
       firstNameAr: firstNameAr,
       lastNameAr: lastNameAr,
@@ -96,10 +102,9 @@ class UserModel extends HiveObject {
       firstNameEn: firstNameEn,
       lastNameEn: lastNameEn,
       organizations: organizations
-          ?.map((orgModel) => UserOrg(
-                orgId: orgModel.orgId,
-                role: orgModel.role,
-              ))
+          ?.map(
+            (orgModel) => UserOrg(organizationId: orgModel.organizationId, role: orgModel.role, organizationName: orgModel.organizationName),
+          )
           .toList(),
       profileImage: profileImage,
       idCardImage: idCardImage,
@@ -107,9 +112,9 @@ class UserModel extends HiveObject {
     );
   }
 
-  // ⭐ Helper method to clear only auth data
   UserModel copyWithClearedAuth() {
     return UserModel(
+      id: id,
       nationalId: nationalId,
       firstNameAr: firstNameAr,
       lastNameAr: lastNameAr,

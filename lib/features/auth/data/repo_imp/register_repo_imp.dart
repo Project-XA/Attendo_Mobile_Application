@@ -27,10 +27,9 @@ class RegisterRepoImp implements RegisterRepo {
     required UserModel localUserData,
   }) async {
     try {
-      // ✅ Validate orgId
       final orgIdInt = int.tryParse(orgId);
       if (orgIdInt == null) {
-        return ApiResult.error(Exception('Invalid organization ID: $orgId'));
+        throw Exception('Invalid organization ID: $orgId');
       }
 
       final request = RegisterRequestBody(
@@ -39,62 +38,47 @@ class RegisterRepoImp implements RegisterRepo {
         password: password,
       );
 
-      // ✅ Call remote data source
-      final result = await userRemoteDataSource.registerUser(request);
+      final apiResponse = await userRemoteDataSource.registerUser(request);
 
-      // ✅ Use when() to handle success/error
-      return result.when(
-        onSuccess: (apiResponse) async {
-          try {
-            // Parse name
-            final nameParts = apiResponse.userResponse.fullName.split(' ');
-            final firstNameEn = nameParts.isNotEmpty ? nameParts.first : '';
-            final lastNameEn = nameParts.length > 1
-                ? nameParts.sublist(1).join(' ')
-                : '';
+      final nameParts = apiResponse.userResponse.fullName.split(' ');
+      final firstNameEn = nameParts.isNotEmpty ? nameParts.first : '';
+      final lastNameEn = nameParts.length > 1
+          ? nameParts.sublist(1).join(' ')
+          : '';
 
-            // Build complete user data
-            final completeUserData = UserModel(
-              nationalId: localUserData.nationalId,
-              firstNameAr: localUserData.firstNameAr,
-              lastNameAr: localUserData.lastNameAr,
-              address: localUserData.address,
-              birthDate: localUserData.birthDate,
-              profileImage: localUserData.profileImage,
-              email: apiResponse.userResponse.email,
-              firstNameEn: firstNameEn,
-              lastNameEn: lastNameEn,
-              loginToken: apiResponse.loginToken,
-              idCardImage: localUserData.idCardImage,
-              organizations: [
-                UserOrgModel(
-                  orgId: orgId,
-                  role: apiResponse.userResponse.role,
-                ),
-              ],
-            );
+      final completeUserData = UserModel(
+        id: apiResponse.userResponse.id,
+        nationalId: localUserData.nationalId,
+        firstNameAr: localUserData.firstNameAr,
+        lastNameAr: localUserData.lastNameAr,
+        address: localUserData.address,
+        birthDate: localUserData.birthDate,
+        profileImage: localUserData.profileImage,
 
-            // Save locally
-            await localDataSource.saveUserLogin(completeUserData);
-            await DioFactory.setToken(apiResponse.loginToken);
-            await onboardingService.markOnboardingComplete(
-              apiResponse.userResponse.role,
-            );
-            await onboardingService.markLoggedIn(
-              apiResponse.userResponse.role,
-            );
+        email: apiResponse.userResponse.email,
+        firstNameEn: firstNameEn,
+        lastNameEn: lastNameEn,
+        loginToken: apiResponse.loginToken,
+        idCardImage: localUserData.idCardImage,
 
-            return ApiResult.success(completeUserData);
-          } catch (e) {
-            // ✅ Handle local storage errors
-            return ApiResult.error(e);
-          }
-        },
-        onError: (error) {
-          // ✅ Pass through the error
-          return ApiResult.error(error);
-        },
+        organizations: [
+          UserOrgModel(
+            organizationId: apiResponse.userResponse.organizationId!,
+            role: apiResponse.userResponse.role,
+            organizationName: apiResponse.userResponse.organizationName,
+          ),
+        ],
       );
+
+      await localDataSource.saveUserLogin(completeUserData);
+      await DioFactory.setToken(apiResponse.loginToken);
+      await onboardingService.markOnboardingComplete(
+        apiResponse.userResponse.role,
+      );
+
+      await onboardingService.markLoggedIn(apiResponse.userResponse.role);
+
+      return ApiResult.success(completeUserData);
     } catch (e) {
       return ApiResult.error(e);
     }

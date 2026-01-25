@@ -35,8 +35,6 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
     }
   }
 
-  // ===================== Tab Navigation =====================
-
   void changeTab(int index) {
     final currentState = state;
 
@@ -47,45 +45,51 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
     }
   }
 
-  // ===================== Session Management =====================
-
   Future<void> createAndStartSession({
-    required String name,
-    required String location,
-    required String connectionMethod,
-    required TimeOfDay startTime,
-    required int durationMinutes,
-  }) async {
-    final currentState = state;
-    if (currentState is! SessionManagementStateWithTab) return;
+  required String name,
+  required String location,
+  required String connectionMethod,
+  required TimeOfDay startTime,
+  required int durationMinutes,
+  required double allowedRadius,
+}) async {
+  final currentState = state;
+  if (currentState is! SessionManagementStateWithTab) return;
 
-    try {
-      // Step 1: Create session
-      await _createSession(
-        name: name,
-        location: location,
-        connectionMethod: connectionMethod,
-        startTime: startTime,
-        durationMinutes: durationMinutes,
-        selectedTabIndex: currentState.selectedTabIndex,
-      );
+  try {
+    // ✅ Create session
+    await _createSession(
+      name: name,
+      location: location,
+      connectionMethod: connectionMethod,
+      startTime: startTime,
+      durationMinutes: durationMinutes,
+      allowedRadius: allowedRadius,
+      selectedTabIndex: currentState.selectedTabIndex,
+    );
 
-      // Step 2: Start server and activate session
-      await _startServer(currentState.selectedTabIndex);
-    } catch (e) {
-      _handleSessionError(
-        'Failed to start session: $e',
-        currentState.selectedTabIndex,
-      );
-    }
+    // ✅ Start server
+    await _startServer(currentState.selectedTabIndex);
+    
+  } catch (e) {
+    // ✅ Print للـ debugging
+    print('❌ Session creation failed: $e');
+    
+    _handleSessionError(
+      'Failed to start session: $e',
+      currentState.selectedTabIndex,
+    );
   }
+}
 
+  // ✅ UPDATED: Added allowedRadius parameter
   Future<void> _createSession({
     required String name,
     required String location,
     required String connectionMethod,
     required TimeOfDay startTime,
     required int durationMinutes,
+    required double allowedRadius, // ✅ NEW
     required int selectedTabIndex,
   }) async {
     final now = DateTime.now();
@@ -117,12 +121,14 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
       ),
     );
 
+    // ✅ Pass allowedRadius to use case
     final session = await createSessionUseCase(
       name: name,
       location: location,
       connectionMethod: connectionMethod,
       startTime: sessionStartTime,
       durationMinutes: durationMinutes,
+      allowedRadius: allowedRadius, // ✅ NEW
     );
 
     await Future.delayed(const Duration(milliseconds: 500));
@@ -162,7 +168,8 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
     );
   }
 
-  // ===================== Attendance Listening =====================
+
+  
 
   void _listenToAttendance(
     Session session,
@@ -200,8 +207,6 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
       },
     );
   }
-
-  // ===================== End Session =====================
 
   Future<void> endSession() async {
     final currentState = state;
@@ -241,9 +246,8 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
     }
   }
 
-  // ===================== Error Handling =====================
-
   void _handleSessionError(String message, int selectedTabIndex) {
+    print('❌ Error: $message');
     emit(
       SessionError(
         message: message,
@@ -251,14 +255,12 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
       ),
     );
 
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 3), () {
       if (state is SessionError) {
         emit(SessionManagementIdle(selectedTabIndex: selectedTabIndex));
       }
     });
   }
-
-  // ===================== Cleanup =====================
 
   @override
   Future<void> close() {

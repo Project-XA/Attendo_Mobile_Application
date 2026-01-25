@@ -8,15 +8,18 @@ part 'user_org_model.g.dart';
 @HiveType(typeId: 1)
 class UserOrgModel extends HiveObject {
   @HiveField(0)
-  String orgId;
+  @JsonKey(name: 'organizationId')
+  int organizationId;
   @HiveField(1)
   String role;
-  UserOrgModel({required this.orgId, required this.role});
+  @HiveField(2)
+  String? organizationName;
+  UserOrgModel({required this.organizationId, required this.role, this.organizationName});
   factory UserOrgModel.fromJson(Map<String, dynamic> json) =>
       _$UserOrgModelFromJson(json);
   Map<String, dynamic> toJson() => _$UserOrgModelToJson(this);
 
   factory UserOrgModel.fromEntity(UserOrg userOrg) {
-    return UserOrgModel(orgId: userOrg.orgId, role: userOrg.role);
+    return UserOrgModel(organizationId: userOrg.organizationId, role: userOrg.role, organizationName: userOrg.organizationName);
   }
 }

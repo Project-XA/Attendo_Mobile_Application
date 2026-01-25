@@ -2,6 +2,7 @@
 import 'package:mobile_app/core/curren_user/domain/entities/user_org.dart';
 
 class User {
+  final String? id;
   final String nationalId;
   final String firstNameAr;
   final String lastNameAr;
@@ -23,6 +24,7 @@ class User {
     required this.firstNameAr,
     required this.lastNameAr,
     this.address,
+    this.id,
     this.birthDate,
     this.email,
     this.firstNameEn,
@@ -45,9 +47,11 @@ class User {
     List<UserOrg>? organizations,
     String? profileImage,
     String? idCardImage,
+    String? id,
     String? loginToken,
   }) {
     return User(
+      id: id ?? this.id,
       nationalId: nationalId ?? this.nationalId,
       firstNameAr: firstNameAr ?? this.firstNameAr,
       lastNameAr: lastNameAr ?? this.lastNameAr,
@@ -65,13 +69,13 @@ class User {
 
   // Getters
   String get fullNameAr => '$firstNameAr $lastNameAr';
-  
+
   String get fullNameEn => firstNameEn != null && lastNameEn != null
       ? '$firstNameEn $lastNameEn'
       : fullNameAr;
 
   bool get isRegistered => email != null && organizations != null;
-  
+
   // ⭐ Check if user is logged in (has valid token)
   bool get isLoggedIn => loginToken != null && loginToken!.isNotEmpty;
 }

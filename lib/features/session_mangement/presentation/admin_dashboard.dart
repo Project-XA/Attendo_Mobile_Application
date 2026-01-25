@@ -31,7 +31,8 @@ class AdminDashboard extends StatelessWidget {
         body: BlocBuilder<SessionMangementCubit, SessionManagementState>(
           builder: (context, adminState) {
             // Loading state
-            if (adminState is SessionManagementLoading || adminState is SessionManagementInitial) {
+            if (adminState is SessionManagementLoading ||
+                adminState is SessionManagementInitial) {
               return const AdminHomeShimmer();
             }
 
@@ -42,7 +43,7 @@ class AdminDashboard extends StatelessWidget {
 
             final currentUserCubit = context.read<CurrentUserCubit>();
             final user = currentUserCubit.currentUser;
-
+            print(  '✅ Current user data in AdminDashboard: ${user?.organizations?.first.organizationName}');
             if (user == null) {
               return const Center(child: CircularProgressIndicator());
             }
@@ -72,9 +73,11 @@ class AdminDashboard extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        const InfoCard(
+                        InfoCard(
                           title: 'Admin Control Panel',
-                          subtitle: 'Assuit University',
+                          subtitle:
+                              user.organizations?.first.organizationName ??
+                              'Organization',
                           description: 'Unique sessions and attendance',
                         ),
 
@@ -124,7 +127,8 @@ class AdminDashboard extends StatelessWidget {
 
     return BlocBuilder<SessionMangementCubit, SessionManagementState>(
       buildWhen: (previous, current) {
-        if (previous is SessionManagementStateWithTab && current is SessionManagementStateWithTab) {
+        if (previous is SessionManagementStateWithTab &&
+            current is SessionManagementStateWithTab) {
           return previous.selectedTabIndex != current.selectedTabIndex;
         }
         return true;
@@ -133,7 +137,8 @@ class AdminDashboard extends StatelessWidget {
         return ToggleTabs(
           tabs: const ["Manage Sessions", "User Attendance"],
           selectedIndex: selectedIndex,
-          onTabSelected: (index) => context.read<SessionMangementCubit>().changeTab(index),
+          onTabSelected: (index) =>
+              context.read<SessionMangementCubit>().changeTab(index),
         );
       },
     );
