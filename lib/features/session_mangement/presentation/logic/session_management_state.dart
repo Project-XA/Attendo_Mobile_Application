@@ -21,13 +21,11 @@ final class SessionManagementError extends SessionManagementState {
 
 sealed class SessionManagementStateWithTab extends SessionManagementState {
   final int selectedTabIndex;
-  
   const SessionManagementStateWithTab({
     this.selectedTabIndex = 0,
   });
 }
 
-// ✅ Idle state
 final class SessionManagementIdle extends SessionManagementStateWithTab {
   const SessionManagementIdle({
     super.selectedTabIndex,
@@ -42,7 +40,6 @@ final class SessionManagementIdle extends SessionManagementStateWithTab {
   }
 }
 
-// Session operation states
 enum SessionOperation { creating, starting, active, ending, ended }
 
 extension SessionOperationX on SessionOperation {
@@ -62,18 +59,19 @@ extension SessionOperationX on SessionOperation {
   }
 }
 
-// ✅ Active session state
 final class SessionState extends SessionManagementStateWithTab {
   final Session session;
   final SessionOperation operation;
   final ServerInfo? serverInfo;
   final AttendanceRecord? latestRecord;
+  final bool showWarning; 
 
   const SessionState({
     required this.session,
     required this.operation,
     this.serverInfo,
     this.latestRecord,
+    this.showWarning = false, 
     super.selectedTabIndex,
   });
 
@@ -91,6 +89,7 @@ final class SessionState extends SessionManagementStateWithTab {
     AttendanceRecord? latestRecord,
     int? selectedTabIndex,
     bool clearLatestRecord = false,
+    bool? showWarning, 
   }) {
     return SessionState(
       session: session ?? this.session,
@@ -98,11 +97,11 @@ final class SessionState extends SessionManagementStateWithTab {
       serverInfo: serverInfo ?? this.serverInfo,
       latestRecord: clearLatestRecord ? null : (latestRecord ?? this.latestRecord),
       selectedTabIndex: selectedTabIndex ?? this.selectedTabIndex,
+      showWarning: showWarning ?? this.showWarning, 
     );
   }
 }
 
-// ✅ Session error state
 final class SessionError extends SessionManagementStateWithTab {
   final String message;
   final Session? session;

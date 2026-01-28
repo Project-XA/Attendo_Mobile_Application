@@ -17,6 +17,8 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
   final ListenAttendanceUseCase listenAttendanceUseCase;
 
   StreamSubscription<AttendanceRecord>? _attendanceSubscription;
+  Timer? _sessionTimer; 
+  Timer? _warningTimer; 
 
   SessionMangementCubit({
     required this.createSessionUseCase,
@@ -46,37 +48,35 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
   }
 
   Future<void> createAndStartSession({
-  required String name,
-  required String location,
-  required String connectionMethod,
-  required TimeOfDay startTime,
-  required int durationMinutes,
-  required double allowedRadius,
-}) async {
-  final currentState = state;
-  if (currentState is! SessionManagementStateWithTab) return;
+    required String name,
+    required String location,
+    required String connectionMethod,
+    required TimeOfDay startTime,
+    required int durationMinutes,
+    required double allowedRadius,
+  }) async {
+    final currentState = state;
+    if (currentState is! SessionManagementStateWithTab) return;
 
-  try {
-    await _createSession(
-      name: name,
-      location: location,
-      connectionMethod: connectionMethod,
-      startTime: startTime,
-      durationMinutes: durationMinutes,
-      allowedRadius: allowedRadius,
-      selectedTabIndex: currentState.selectedTabIndex,
-    );
+    try {
+      await _createSession(
+        name: name,
+        location: location,
+        connectionMethod: connectionMethod,
+        startTime: startTime,
+        durationMinutes: durationMinutes,
+        allowedRadius: allowedRadius,
+        selectedTabIndex: currentState.selectedTabIndex,
+      );
 
-    await _startServer(currentState.selectedTabIndex);
-    
-  } catch (e) {
-    
-    _handleSessionError(
-      'Failed to start session: $e',
-      currentState.selectedTabIndex,
-    );
+      await _startServer(currentState.selectedTabIndex);
+    } catch (e) {
+      _handleSessionError(
+        'Failed to start session: $e',
+        currentState.selectedTabIndex,
+      );
+    }
   }
-}
 
   Future<void> _createSession({
     required String name,
@@ -84,7 +84,7 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
     required String connectionMethod,
     required TimeOfDay startTime,
     required int durationMinutes,
-    required double allowedRadius, 
+    required double allowedRadius,
     required int selectedTabIndex,
   }) async {
     final now = DateTime.now();
@@ -122,7 +122,7 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
       connectionMethod: connectionMethod,
       startTime: sessionStartTime,
       durationMinutes: durationMinutes,
-      allowedRadius: allowedRadius, 
+      allowedRadius: allowedRadius,
     );
 
     await Future.delayed(const Duration(milliseconds: 500));
@@ -160,10 +160,66 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
         selectedTabIndex: selectedTabIndex,
       ),
     );
+
+    _startSessionTimer(activeSession);
   }
 
+  void _startSessionTimer(Session session) {
+    _sessionTimer?.cancel();
+    _warningTimer?.cancel();
 
-  
+    final endTime = session.startTime.add(
+      Duration(minutes: session.durationMinutes),
+    );
+    final timeUntilEnd = endTime.difference(DateTime.now());
+
+    if (timeUntilEnd.isNegative) {
+      _autoEndSession();
+      return;
+    }
+
+    _sessionTimer = Timer(timeUntilEnd, () {
+      debugPrint('⏰ Session time expired - Auto ending session');
+      _autoEndSession();
+    });
+
+    final warningTime = timeUntilEnd - const Duration(minutes: 5);
+    if (warningTime.isNegative) {
+      _showWarning();
+    } else {
+      _warningTimer = Timer(warningTime, () {
+        debugPrint('⚠️ 5 minutes remaining - Showing warning');
+        _showWarning();
+      });
+    }
+  }
+
+  void _showWarning() {
+    final currentState = state;
+    if (currentState is! SessionState) return;
+
+    emit(currentState.copyWith(showWarning: true));
+
+    Future.delayed(const Duration(seconds: 5), () {
+      final state = this.state;
+      if (state is SessionState && state.showWarning) {
+        emit(state.copyWith(showWarning: false));
+      }
+    });
+  }
+
+  Future<void> _autoEndSession() async {
+    final currentState = state;
+    if (currentState is! SessionState) return;
+
+    debugPrint('🔴 Auto-ending session: ${currentState.session.name}');
+    
+    try {
+      await endSession();
+    } catch (e) {
+      debugPrint('❌ Error auto-ending session: $e');
+    }
+  }
 
   void _listenToAttendance(
     Session session,
@@ -208,6 +264,11 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
 
     try {
       emit(currentState.copyWith(operation: SessionOperation.ending));
+
+      _sessionTimer?.cancel();
+      _sessionTimer = null;
+      _warningTimer?.cancel();
+      _warningTimer = null;
 
       await _attendanceSubscription?.cancel();
       _attendanceSubscription = null;
@@ -258,6 +319,8 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
   @override
   Future<void> close() {
     _attendanceSubscription?.cancel();
+    _sessionTimer?.cancel(); 
+    _warningTimer?.cancel(); 
     return super.close();
   }
 }
