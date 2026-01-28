@@ -12,6 +12,7 @@ import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/core/utils/app_assets.dart';
+import 'package:mobile_app/features/attendance/domain/entities/attendency_state.dart';
 import 'package:mobile_app/features/attendance/presentation/logic/user_cubit.dart';
 import 'package:mobile_app/features/attendance/presentation/logic/user_state.dart';
 import 'package:mobile_app/features/attendance/presentation/widgets/active_session_card.dart';
@@ -19,6 +20,7 @@ import 'package:mobile_app/features/attendance/presentation/widgets/attendence_s
 import 'package:mobile_app/features/attendance/presentation/widgets/check_in_view.dart';
 import 'package:mobile_app/features/attendance/presentation/widgets/no_session_card.dart';
 import 'package:mobile_app/features/attendance/presentation/widgets/searching_session_card.dart';
+import 'package:mobile_app/features/attendance/presentation/widgets/user_dashboard_shimmer.dart';
 import 'package:mobile_app/core/widgets/info_card.dart';
 import 'package:mobile_app/core/widgets/user_header.dart';
 
@@ -68,7 +70,7 @@ class _UserDashboardState extends State<UserDashboardScreen> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isSmallScreen = width < 360;
-    
+
     return BlocProvider(
       create: (context) => getIt<UserCubit>()..loadStats(),
       child: Scaffold(
@@ -86,10 +88,10 @@ class _UserDashboardState extends State<UserDashboardScreen> {
               final currentUserCubit = context.read<CurrentUserCubit>();
               final user = currentUserCubit.currentUser;
 
-              if (attendanceState is UserLoading || 
+              if (attendanceState is UserLoading ||
                   attendanceState is UserInitial ||
                   user == null) {
-                return const Center(child: CircularProgressIndicator());
+                return const UserDashboardShimmer();
               }
 
               if (attendanceState is UserError) {
@@ -104,8 +106,12 @@ class _UserDashboardState extends State<UserDashboardScreen> {
                         final latestUser = currentUserCubit.currentUser;
                         return UserHeader(
                           userName: latestUser?.fullNameEn ?? '',
-                          userRole: latestUser?.organizations?.first.role ?? 'Student',
-                          userImage: latestUser?.profileImage ?? Assets.assetsImagesUser,
+                          userRole:
+                              latestUser?.organizations?.first.role ??
+                              'Student',
+                          userImage:
+                              latestUser?.profileImage ??
+                              Assets.assetsImagesUser,
                         );
                       },
                     ),
@@ -115,16 +121,15 @@ class _UserDashboardState extends State<UserDashboardScreen> {
                         horizontal: isSmallScreen ? 12.w : 20.w,
                         vertical: 8.h,
                       ),
-                      child:  InfoCard(
+                      child: InfoCard(
                         title: 'Welcome Back!',
-                        subtitle: user.organizations?.first.organizationName ?? '',
+                        subtitle:
+                            user.organizations?.first.organizationName ?? '',
                         description: 'Check attendance and active sessions',
                       ),
                     ),
                     verticalSpace(20.h),
-                    Expanded(
-                      child: _buildContent(context, attendanceState),
-                    ),
+                    Expanded(child: _buildContent(context, attendanceState)),
                   ],
                 ),
               );
@@ -180,13 +185,13 @@ class _UserDashboardState extends State<UserDashboardScreen> {
   }
 
   Widget _buildActiveSessionCard(BuildContext context, UserState state) {
-    final hasActiveSession = state is SessionDiscoveryActive &&
+    final hasActiveSession =
+        state is SessionDiscoveryActive &&
         (state.activeSession != null || state.discoveredSessions.isNotEmpty) &&
         !state.isSearching;
 
     final isSearching = state is SessionDiscoveryActive && state.isSearching;
 
-    // Show searching card
     if (isSearching) {
       return SearchingSessionsCard(
         searchSecondsRemaining: _searchSecondsRemaining,
@@ -196,7 +201,8 @@ class _UserDashboardState extends State<UserDashboardScreen> {
 
     if (hasActiveSession) {
       final sessionState = state;
-      final session = sessionState.activeSession ?? sessionState.discoveredSessions.first;
+      final session =
+          sessionState.activeSession ?? sessionState.discoveredSessions.first;
       return ActiveSessionCard(session: session);
     }
 
@@ -207,13 +213,8 @@ class _UserDashboardState extends State<UserDashboardScreen> {
   }
 
   Widget _buildMyAttendanceSection(BuildContext context, UserState state) {
-    final stats = state is UserStateWithStats
-        ? (state is SessionDiscoveryActive
-              ? state.stats
-              : state is UserIdle
-                  ? state.stats
-                  : null)
-        : null;
+    final stats = _getStatsFromState(state);
+    final hasError = _getErrorStateFromState(state);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,8 +242,28 @@ class _UserDashboardState extends State<UserDashboardScreen> {
           ],
         ),
         verticalSpace(12.h),
-        if (stats != null) AttendanceStatsCard(stats: stats),
+        AttendanceStatsCard(
+          stats: stats,
+          hasError: hasError,
+          onRetry: () {
+            context.read<UserCubit>().loadStats();
+          },
+        ),
       ],
     );
+  }
+
+  AttendanceStats? _getStatsFromState(UserState state) {
+    if (state is UserIdle) return state.stats;
+    if (state is SessionDiscoveryActive) return state.stats;
+    if (state is CheckInState) return state.stats;
+    if (state is AttendanceHistoryState) return state.stats;
+    return null;
+  }
+
+  bool _getErrorStateFromState(UserState state) {
+    if (state is UserIdle) return state.hasStatsError;
+    if (state is SessionDiscoveryActive) return state.hasStatsError;
+    return false;
   }
 }

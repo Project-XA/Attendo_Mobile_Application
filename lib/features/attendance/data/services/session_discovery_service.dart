@@ -10,19 +10,16 @@ class SessionDiscoveryService {
   nsd.Discovery? _discovery;
   Timer? _discoveryTimer;
 
-  // ✅ Track discovered sessions to avoid duplicates
   final Set<String> _discoveredSessionIds = {};
 
   Stream<DiscoveredSession> get sessionStream =>
       _sessionController?.stream ?? const Stream.empty();
 
-  // Start discovering nearby sessions via mDNS
   Future<void> startDiscovery() async {
     try {
-      _discoveredSessionIds.clear(); // ✅ Clear previous sessions
+      _discoveredSessionIds.clear();
       _sessionController = StreamController<DiscoveredSession>.broadcast();
 
-      // ✅ Try mDNS first
       try {
         _discovery = await nsd.startDiscovery('_http._tcp');
 
@@ -35,19 +32,15 @@ class SessionDiscoveryService {
         // mDNS not available
       }
 
-      // ✅ Start network scan immediately (don't wait for mDNS)
       _startNetworkScan();
     } catch (e) {
-      // Continue with network scan even if mDNS fails
       _startNetworkScan();
     }
   }
 
-  // Handle discovered mDNS service
   Future<void> _handleDiscoveredService(nsd.Service service) async {
     try {
       if (service.name == 'attendance') {
-        // Resolve service to get IP and port
         final resolved = await nsd.resolve(service);
 
         if (resolved.host != null && resolved.port != null) {
@@ -59,12 +52,9 @@ class SessionDiscoveryService {
     }
   }
 
-  // Scan local network for sessions (backup method)
   void _startNetworkScan() {
-    // ✅ Scan immediately
     _scanLocalNetwork();
 
-    // ✅ Then scan periodically
     _discoveryTimer?.cancel();
     _discoveryTimer = Timer.periodic(const Duration(seconds: 10), (_) {
       _scanLocalNetwork();
@@ -84,10 +74,10 @@ class SessionDiscoveryService {
 
       final networkPrefix = '${parts[0]}.${parts[1]}.${parts[2]}';
 
-      // ✅ Scan in parallel with better error handling
+      // Scan in parallel with better error handling
       final futures = <Future>[];
 
-      // ✅ Scan common IPs first (1-20, then 100-254)
+      // Scan common IPs first (1-20, then 100-254)
       final priorityIPs = [
         ...List.generate(20, (i) => i + 1),
         ...List.generate(155, (i) => i + 100),
@@ -97,12 +87,10 @@ class SessionDiscoveryService {
         final ip = '$networkPrefix.$i';
         futures.add(
           _checkSessionAt(ip, 8080).catchError((e) {
-            // Silent fail - expected for non-session IPs
             return;
           }),
         );
 
-        // Process in batches of 30 for faster scanning
         if (futures.length >= 30) {
           await Future.wait(futures, eagerError: false);
           futures.clear();
@@ -117,12 +105,11 @@ class SessionDiscoveryService {
     }
   }
 
-  // Check if session exists at IP:port
   Future<void> _checkSessionAt(String ip, int port) async {
     try {
       final response = await http
           .get(Uri.parse('http://$ip:$port/health'))
-          .timeout(const Duration(seconds: 1)); // ✅ Reduced timeout
+          .timeout(const Duration(seconds: 1)); // 
 
       if (response.statusCode == 200) {
         await _verifyAndAddSession(ip, port);
@@ -132,13 +119,11 @@ class SessionDiscoveryService {
     }
   }
 
-  // ✅ Verify and add session - fetch full details from /session-info
   Future<void> _verifyAndAddSession(String host, int port) async {
     try {
-      // ✅ Check if already discovered
       final sessionKey = '$host:$port';
       if (_discoveredSessionIds.contains(sessionKey)) {
-        return; // Already discovered
+        return; 
       }
 
       // First check health
@@ -160,7 +145,7 @@ class SessionDiscoveryService {
             if (infoResponse.statusCode == 200) {
               final sessionData = jsonDecode(infoResponse.body);
 
-              // ✅ Mark as discovered
+              // Mark as discovered
               _discoveredSessionIds.add(sessionKey);
 
               // Create discovered session with full details
@@ -180,7 +165,7 @@ class SessionDiscoveryService {
             // Could not fetch session-info
           }
 
-          // ✅ Fallback: create basic session if /session-info fails
+          // Fallback: create basic session if /session-info fails
           _discoveredSessionIds.add(sessionKey);
 
           final session = DiscoveredSession(
@@ -207,10 +192,11 @@ class SessionDiscoveryService {
 
       for (var interface in interfaces) {
         for (var addr in interface.addresses) {
-          // ✅ Check for both 192.168.x.x and 10.x.x.x networks
+          //  Check for both 192.168.x.x or 10.x.x.x  or 172.networks
           if (!addr.isLoopback &&
               (addr.address.startsWith('192.168') ||
-                  addr.address.startsWith('10.'))) {
+                  addr.address.startsWith('10.') ||
+                  addr.address.startsWith('172.'))) {
             return addr.address;
           }
         }

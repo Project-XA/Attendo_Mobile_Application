@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:mobile_app/core/curren_user/Data/remote_data_source/user_remote_data_source.dart';
 import 'package:mobile_app/features/attendance/data/models/attendence_history_model.dart';
 import 'package:mobile_app/features/attendance/data/services/attendence_service.dart';
 import 'package:mobile_app/features/attendance/domain/entities/attendance_history.dart';
@@ -12,11 +13,14 @@ import 'package:mobile_app/features/attendance/domain/entities/attendence_repons
 class UserAttendanceRepositoryImpl implements UserAttendanceRepository {
   final AttendanceService _attendanceService;
   final DeviceInfoPlugin _deviceInfo;
+  final UserRemoteDataSource userRemoteDataSource;
   final List<AttendanceHistoryModel> _historyCache = [];
 
   UserAttendanceRepositoryImpl({
+  
     required AttendanceService attendanceService,
     required DeviceInfoPlugin deviceInfo,
+    required this.userRemoteDataSource,
   })  : _attendanceService = attendanceService,
         _deviceInfo = deviceInfo;
 
@@ -65,19 +69,20 @@ class UserAttendanceRepositoryImpl implements UserAttendanceRepository {
 
   @override
   Future<AttendanceStats> getAttendanceStats() async {
-    const totalSessions = 24;
-    final attendedSessions = _historyCache.length;
-    const lateCount = 0;
-    final percentage = totalSessions > 0
-        ? (attendedSessions / totalSessions) * 100
-        : 0.0;
-
-    return AttendanceStats(
-      totalSessions: totalSessions,
-      attendedSessions: attendedSessions,
-      lateCount: lateCount,
-      attendancePercentage: percentage,
-    );
+    try {
+      final statsResponse = await userRemoteDataSource.getUserStatistics();
+      return AttendanceStats(
+        totalSessions: statsResponse.totalSessions,
+        attendedSessions: statsResponse.attendedSessions,
+        attendancePercentage: statsResponse.attendancePercentage,
+      );
+    } catch (e) {
+      return AttendanceStats(
+        totalSessions: 0,
+        attendedSessions: 0,
+        attendancePercentage: 0.0,
+      );
+    }
   }
 
   Future<String> _getDeviceHash() async {

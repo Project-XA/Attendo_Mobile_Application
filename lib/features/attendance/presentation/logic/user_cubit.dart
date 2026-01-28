@@ -24,6 +24,7 @@ class UserCubit extends Cubit<UserState> {
   Duration searchTimeout = const Duration(seconds: 30);
 
   bool _sessionFound = false;
+  AttendanceStats? _cachedStats; 
 
   void setSearchTimeout(Duration duration) {
     searchTimeout = duration;
@@ -41,14 +42,32 @@ class UserCubit extends Cubit<UserState> {
   Future<void> loadStats() async {
     try {
       emit(const UserLoading());
+
+      if (_cachedStats != null) {
+        emit(UserIdle(stats: _cachedStats, hasStatsError: false));
+      }
+
       final stats = await getAttendanceStatsUseCase.call();
-      emit(UserIdle(stats: stats));
+      _cachedStats = stats;
+      emit(UserIdle(stats: stats, hasStatsError: false)); // ✅
     } catch (e) {
-      emit(UserError('Failed to load stats: $e'));
+      if (_cachedStats != null) {
+        emit(UserIdle(stats: _cachedStats, hasStatsError: true)); // ✅
+      } else {
+        emit(
+          UserIdle(
+            stats: AttendanceStats(
+              totalSessions: 0,
+              attendedSessions: 0,
+              attendancePercentage: 0.0,
+            ),
+            hasStatsError: true,
+          ),
+        );
+      }
     }
   }
 
-  // ===================== Session Discovery =====================
 
   Future<void> startSessionDiscovery() async {
     final currentState = state;
@@ -59,6 +78,7 @@ class UserCubit extends Cubit<UserState> {
         SessionDiscoveryActive(
           isSearching: true,
           stats: _getStatsFromState(currentState),
+          hasStatsError: _getErrorStateFromState(currentState), // ✅
         ),
       );
 
@@ -84,7 +104,12 @@ class UserCubit extends Cubit<UserState> {
         (_) => _refreshSessions(),
       );
     } catch (e) {
-      emit(UserIdle(stats: _getStatsFromState(currentState)));
+      emit(
+        UserIdle(
+          stats: _getStatsFromState(currentState),
+          hasStatsError: _getErrorStateFromState(currentState), // ✅
+        ),
+      );
     }
   }
 
@@ -165,57 +190,76 @@ class UserCubit extends Cubit<UserState> {
       await stopDiscoveryUseCase.call();
 
       final currentState = state;
-      emit(UserIdle(stats: _getStatsFromState(currentState)));
+      emit(
+        UserIdle(
+          stats: _getStatsFromState(currentState),
+          hasStatsError: _getErrorStateFromState(currentState), 
+        ),
+      );
     } catch (e) {
       // Stop discovery error handled silently
     }
   }
 
   Future<void> checkIn(
-  NearbySession session, {
-  required String userId,
-  required String userName,
-}) async {
-  final currentState = state;
+    NearbySession session, {
+    required String userId,
+    required String userName,
+  }) async {
+    final currentState = state;
 
-  try {
-    emit(
-      CheckInState(
-        session: session,
-        operation: CheckInOperation.checkingIn,
-        stats: _getStatsFromState(currentState),
-      ),
-    );
-
-    final response = await checkInUseCase.call(
-      sessionId: session.sessionId,
-      baseUrl: session.baseUrl,
-      userId: userId,
-      userName: userName,
-      location: session.location,
-    );
-
-    if (response.success) {
-      final updatedStats = await getAttendanceStatsUseCase.call();
-
+    try {
       emit(
         CheckInState(
           session: session,
-          operation: CheckInOperation.success,
-          checkInTime: DateTime.now(),
-          stats: updatedStats,
+          operation: CheckInOperation.checkingIn,
+          stats: _getStatsFromState(currentState),
         ),
       );
 
-      await Future.delayed(const Duration(seconds: 2));
-      await stopSessionDiscovery();
-      emit(UserIdle(stats: updatedStats));
-    } else {
+      final response = await checkInUseCase.call(
+        sessionId: session.sessionId,
+        baseUrl: session.baseUrl,
+        userId: userId,
+        userName: userName,
+        location: session.location,
+      );
+
+      if (response.success) {
+        final updatedStats = await getAttendanceStatsUseCase.call();
+        _cachedStats = updatedStats;
+
+        emit(
+          CheckInState(
+            session: session,
+            operation: CheckInOperation.success,
+            checkInTime: DateTime.now(),
+            stats: updatedStats,
+          ),
+        );
+
+        await Future.delayed(const Duration(seconds: 2));
+        await stopSessionDiscovery();
+        emit(UserIdle(stats: updatedStats, hasStatsError: false)); 
+      } else {
+        emit(
+          CheckInState(
+            session: session,
+            operation: CheckInOperation.failed,
+            errorMessage: response.message,
+            stats: _getStatsFromState(currentState),
+          ),
+        );
+
+        await Future.delayed(const Duration(seconds: 2));
+        await stopSessionDiscovery();
+      }
+    } catch (e) {
       emit(
         CheckInState(
           session: session,
           operation: CheckInOperation.failed,
-          errorMessage: response.message, 
+          errorMessage: e.toString(),
           stats: _getStatsFromState(currentState),
         ),
       );
@@ -223,20 +267,7 @@ class UserCubit extends Cubit<UserState> {
       await Future.delayed(const Duration(seconds: 2));
       await stopSessionDiscovery();
     }
-  } catch (e) {
-    emit(
-      CheckInState(
-        session: session,
-        operation: CheckInOperation.failed,
-        errorMessage: e.toString(),
-        stats: _getStatsFromState(currentState),
-      ),
-    );
-
-    await Future.delayed(const Duration(seconds: 2));
-    await stopSessionDiscovery();
   }
-}
 
   Future<void> loadAttendanceHistory() async {
     final currentState = state;
@@ -250,7 +281,6 @@ class UserCubit extends Cubit<UserState> {
               AttendanceStats(
                 totalSessions: 0,
                 attendedSessions: 0,
-                lateCount: 0,
                 attendancePercentage: 0,
               ),
           isLoading: true,
@@ -259,6 +289,7 @@ class UserCubit extends Cubit<UserState> {
 
       final history = await getAttendanceHistoryUseCase.call();
       final stats = await getAttendanceStatsUseCase.call();
+      _cachedStats = stats;
 
       emit(
         AttendanceHistoryState(
@@ -295,7 +326,13 @@ class UserCubit extends Cubit<UserState> {
     if (state is SessionDiscoveryActive) return state.stats;
     if (state is CheckInState) return state.stats;
     if (state is AttendanceHistoryState) return state.stats;
-    return null;
+    return _cachedStats;
+  }
+
+  bool _getErrorStateFromState(UserState state) {
+    if (state is UserIdle) return state.hasStatsError;
+    if (state is SessionDiscoveryActive) return state.hasStatsError;
+    return false;
   }
 
   @override

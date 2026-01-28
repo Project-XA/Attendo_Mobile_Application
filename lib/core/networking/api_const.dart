@@ -4,4 +4,5 @@ class ApiConst {
   static const String register = 'user/get-user';
   static const String createSession = 'Session/Create-Session';
   static const String refreshToken = "null";
+  static const String userStatistics = "user/statistics";
 }

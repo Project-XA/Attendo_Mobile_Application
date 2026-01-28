@@ -1,5 +1,6 @@
 import 'package:mobile_app/core/networking/api_const.dart';
 import 'package:mobile_app/core/networking/network_service.dart';
+import 'package:mobile_app/features/attendance/data/models/get-user-statistics/get_user_statisticts_response_model.dart';
 import 'package:mobile_app/features/auth/data/models/register_request_body.dart';
 import 'package:mobile_app/features/auth/data/models/register_response_body.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/create_session_request_model.dart';
@@ -8,6 +9,7 @@ abstract class UserRemoteDataSource {
   Future<RegisterResponseBody> registerUser(RegisterRequestBody request);
 
   Future<void> createSession(CreateSessionRequestModel createSessionRequest);
+  Future<GetUserStatistictsResponseModel> getUserStatistics();
 }
 
 class UserRemoteDataSourceImp implements UserRemoteDataSource {
@@ -53,6 +55,19 @@ class UserRemoteDataSourceImp implements UserRemoteDataSource {
 
     if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception('Failed to create session: ${response.statusCode}');
+    }
+  }
+
+  @override
+  Future<GetUserStatistictsResponseModel> getUserStatistics() async {
+    final response = await networkService.get(ApiConst.userStatistics);
+    if (response.statusCode == 200) {
+      final data = response.data['data'] as Map<String, dynamic>;
+      return GetUserStatistictsResponseModel.fromJson(data);
+    } else {
+      throw Exception(
+        'Failed to fetch user statistics: ${response.statusCode}',
+      );
     }
   }
 }

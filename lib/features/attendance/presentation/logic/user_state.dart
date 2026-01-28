@@ -25,16 +25,20 @@ sealed class UserStateWithStats extends UserState {
 
 final class UserIdle extends UserStateWithStats {
   final AttendanceStats? stats;
+  final bool hasStatsError;
   
   const UserIdle({
     this.stats,
+    this.hasStatsError = false,
   });
 
   UserIdle copyWith({
     AttendanceStats? stats,
+    bool? hasStatsError,  
   }) {
     return UserIdle(
       stats: stats ?? this.stats,
+      hasStatsError: hasStatsError?? this.hasStatsError,
     );
   }
 }
@@ -44,12 +48,15 @@ final class SessionDiscoveryActive extends UserStateWithStats {
   final List<NearbySession> discoveredSessions;
   final bool isSearching;
   final AttendanceStats? stats;
+  final bool hasStatsError;
 
   const SessionDiscoveryActive({
+    
     this.activeSession,
     this.discoveredSessions = const [],
     this.isSearching = false,
     this.stats,
+    this.hasStatsError = false,
   });
 
   SessionDiscoveryActive copyWith({
@@ -58,12 +65,14 @@ final class SessionDiscoveryActive extends UserStateWithStats {
     bool? isSearching,
     AttendanceStats? stats,
     bool clearActiveSession = false,
+    bool? hasStatsError,
   }) {
     return SessionDiscoveryActive(
       activeSession: clearActiveSession ? null : (activeSession ?? this.activeSession),
       discoveredSessions: discoveredSessions ?? this.discoveredSessions,
       isSearching: isSearching ?? this.isSearching,
       stats: stats ?? this.stats,
+      hasStatsError: hasStatsError ?? this.hasStatsError,
     );
   }
 }
