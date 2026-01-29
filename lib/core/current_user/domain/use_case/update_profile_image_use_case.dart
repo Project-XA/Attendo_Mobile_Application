@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:mobile_app/core/curren_user/domain/repo/current_user_repo.dart';
+import 'package:mobile_app/core/current_user/domain/repo/current_user_repo.dart';
 
 
 class UpdateProfileImageUseCase {

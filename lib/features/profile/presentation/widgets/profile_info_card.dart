@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_app/core/curren_user/presentation/cubits/current_user_cubit.dart';
+import 'package:mobile_app/core/current_user/presentation/cubits/current_user_cubit.dart';
 import 'package:mobile_app/features/profile/data/service/dialog_service.dart';
 import 'package:mobile_app/features/profile/presentation/widgets/info_card.dart';
 

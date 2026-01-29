@@ -1,6 +1,6 @@
 import 'package:mobile_app/core/DI/get_it.dart';
-import 'package:mobile_app/core/curren_user/Data/local_data_soruce/user_local_data_source.dart';
-import 'package:mobile_app/core/curren_user/Data/remote_data_source/user_remote_data_source.dart';
+import 'package:mobile_app/core/current_user/data/local_data_soruce/user_local_data_source.dart';
+import 'package:mobile_app/core/current_user/data/remote_data_source/user_remote_data_source.dart';
 import 'package:mobile_app/core/utils/register_lazy_if_not_registered.dart';
 import 'package:mobile_app/features/session_mangement/data/repo_imp/session_repository_impl.dart';
 import 'package:mobile_app/features/session_mangement/data/service/http_server_service.dart';

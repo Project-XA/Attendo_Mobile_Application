@@ -40,9 +40,9 @@ class _AppBootstrapState extends State<AppBootstrap> {
     if (!hasCompletedOCR) {
       initialRoute = Routes.startPage;
     } else if (!hasRegistered) {
-      initialRoute = Routes.registeScreen;
+      initialRoute = Routes.registerScreen;
     } else if (!isLoggedIn) {
-      initialRoute = Routes.registeScreen;
+      initialRoute = Routes.registerScreen;
     } else {
       final userRole = await onboardingService.getUserRole();
       initialRoute = Routes.mainNavigation;

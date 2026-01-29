@@ -57,8 +57,7 @@ class ValidateRequiredFieldsUseCase {
           .toList();
 
       if (missingLabels.isNotEmpty) {
-        print('❌ Missing required labels: $missingLabels');
-        print('📋 Detected labels: $detectedLabels');
+     
         
         return ValidationResult(
           isValid: false,
@@ -83,7 +82,6 @@ class ValidateRequiredFieldsUseCase {
       }
 
       if (lowConfidenceFields.isNotEmpty) {
-        print('⚠️ Low confidence fields: $lowConfidenceFields');
         
         return ValidationResult(
           isValid: false,
@@ -92,8 +90,7 @@ class ValidateRequiredFieldsUseCase {
         );
       }
 
-      print('✅ All required fields detected successfully');
-      print('📋 Detected fields: $detectedLabels');
+
       
       return ValidationResult(
         isValid: true,
@@ -102,7 +99,6 @@ class ValidateRequiredFieldsUseCase {
       );
 
     } catch (e) {
-      print('❌ Error validating fields: $e');
       return ValidationResult(
         isValid: false,
         reason: 'Validation error: $e',

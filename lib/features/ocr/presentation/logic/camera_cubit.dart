@@ -115,7 +115,6 @@ class CameraCubit extends Cubit<CameraState> {
       final isCard = await _validateUseCase.execute(photo);
 
       if (!isCard) {
-        print('❌ Not a valid ID card');
         
         emit(
           state.copyWith(
@@ -141,17 +140,13 @@ class CameraCubit extends Cubit<CameraState> {
         return;
       }
 
-      print('✅ Valid ID card detected');
 
       final detections = await _repository.detectFields(photo);
       
-      print('📋 Total detections: ${detections.length}');
-      print('📋 Detected labels: ${detections.map((d) => d.className).toSet()}');
 
       final validationResult = await _validateFieldsUseCase.execute(detections);
 
       if (!validationResult.isValid) {
-        print('❌ Required fields validation failed: ${validationResult.reason}');
         
         emit(
           state.copyWith(
@@ -177,7 +172,6 @@ class CameraCubit extends Cubit<CameraState> {
         return;
       }
 
-      print('✅ All required fields validated successfully');
 
       final result = await _processUseCase.execute(photo);
 
@@ -187,9 +181,7 @@ class CameraCubit extends Cubit<CameraState> {
                           result.finalData['lastName']!.isNotEmpty;
 
       if (!hasFirstName || !hasLastName) {
-        print('❌ Missing firstName or lastName in final data');
-        print('📋 Final data: ${result.finalData}');
-        
+    
         emit(
           state.copyWith(
             isProcessing: false,
@@ -214,8 +206,6 @@ class CameraCubit extends Cubit<CameraState> {
         return;
       }
 
-      print('✅ Processing completed successfully');
-      print('📋 Final data: ${result.finalData}');
 
       emit(
         state.copyWith(
@@ -227,7 +217,6 @@ class CameraCubit extends Cubit<CameraState> {
         ),
       );
     } catch (e) {
-      print('❌ Error during capture/processing: $e');
       emit(
         state.copyWith(
           isProcessing: false,

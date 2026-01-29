@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:mobile_app/core/curren_user/Data/local_data_soruce/user_local_data_source.dart';
-import 'package:mobile_app/core/curren_user/domain/repo/current_user_repo.dart';
-import 'package:mobile_app/core/curren_user/Data/models/user_model.dart';
-import 'package:mobile_app/core/curren_user/domain/entities/user.dart';
+import 'package:mobile_app/core/current_user/data/local_data_soruce/user_local_data_source.dart';
+import 'package:mobile_app/core/current_user/domain/repo/current_user_repo.dart';
+import 'package:mobile_app/core/current_user/data/models/user_model.dart';
+import 'package:mobile_app/core/current_user/domain/entities/user.dart';
 
 class CurrentUserRepositoryImpl implements CurrentUserRepository {
   final UserLocalDataSource _localDataSource;
@@ -26,6 +26,6 @@ class CurrentUserRepositoryImpl implements CurrentUserRepository {
   @override
   Future<void> updateUser(User user) async {
     final userModel = UserModel.fromEntity(user);
-    await _localDataSource.updataUser(userModel);
+    await _localDataSource.updateUser(userModel);
   }
 }

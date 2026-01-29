@@ -4,8 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
-import 'package:mobile_app/core/curren_user/presentation/cubits/current_user_cubit.dart';
-import 'package:mobile_app/core/curren_user/presentation/cubits/current_user_state.dart';
+import 'package:mobile_app/core/current_user/presentation/cubits/current_user_cubit.dart';
+import 'package:mobile_app/core/current_user/presentation/cubits/current_user_state.dart';
 import 'package:mobile_app/features/profile/presentation/widgets/profile_info_card.dart';
 
 class ProfileBody extends StatelessWidget {

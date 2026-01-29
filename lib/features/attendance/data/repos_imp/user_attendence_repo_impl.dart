@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:mobile_app/core/curren_user/Data/remote_data_source/user_remote_data_source.dart';
+import 'package:mobile_app/core/current_user/data/remote_data_source/user_remote_data_source.dart';
 import 'package:mobile_app/features/attendance/data/models/attendence_history_model.dart';
 import 'package:mobile_app/features/attendance/data/services/attendence_service.dart';
 import 'package:mobile_app/features/attendance/domain/entities/attendance_history.dart';

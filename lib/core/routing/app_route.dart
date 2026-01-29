@@ -27,7 +27,7 @@ class AppRoute {
         page = const ScanIdScreen();
         break;
 
-      case Routes.registeScreen:
+      case Routes.registerScreen:
         initRegister();
         page = const RegisterScreen();
         break;
@@ -42,7 +42,7 @@ class AppRoute {
         page = const UserDashboardScreen();
         break;
 
-      case Routes.adminHome:
+      case Routes.adminDashboard:
         page = const AdminDashboard();
         break;
 

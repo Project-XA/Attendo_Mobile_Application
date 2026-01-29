@@ -1,4 +1,4 @@
-import 'package:mobile_app/core/curren_user/Data/models/user_model.dart';
+import 'package:mobile_app/core/current_user/data/models/user_model.dart';
 import 'package:mobile_app/core/networking/api_error_model.dart';
 
 sealed class RegisterState {}

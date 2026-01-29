@@ -5,8 +5,8 @@ import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/services/UI/toast_service.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
-import 'package:mobile_app/core/curren_user/presentation/cubits/current_user_cubit.dart';
-import 'package:mobile_app/core/curren_user/presentation/cubits/current_user_state.dart';
+import 'package:mobile_app/core/current_user/presentation/cubits/current_user_cubit.dart';
+import 'package:mobile_app/core/current_user/presentation/cubits/current_user_state.dart';
 import 'package:mobile_app/features/profile/presentation/widgets/top_section.dart';
 import 'package:mobile_app/features/profile/presentation/widgets/profile_body.dart';
 

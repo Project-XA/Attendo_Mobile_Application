@@ -1,14 +1,14 @@
 import 'dart:io';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:mobile_app/core/curren_user/Data/local_data_soruce/cache_exception.dart';
-import 'package:mobile_app/core/curren_user/Data/models/user_model.dart';
+import 'package:mobile_app/core/current_user/data/local_data_soruce/cache_exception.dart';
+import 'package:mobile_app/core/current_user/data/models/user_model.dart';
 import 'package:path_provider/path_provider.dart';
 
 abstract class UserLocalDataSource {
   Future<UserModel> getCurrentUser();
   Future<void> saveLocalUserData(UserModel user);
   Future<void> saveUserLogin(UserModel user);
-  Future<void> updataUser(UserModel user);
+  Future<void> updateUser(UserModel user);
   Future<void> updateProfileImage(String imagePath);
   Future<String> saveImageLocally(File imageFile);
   Future<void> deleteOldProfileImage(String imagePath);
@@ -142,7 +142,7 @@ class UserLocalDataSourceImp extends UserLocalDataSource {
   }
 
   @override
-  Future<void> updataUser(UserModel user) async {
+  Future<void> updateUser(UserModel user) async {
     try {
       await userBox.put(_currentUserKey, user);
       await userBox.flush();
