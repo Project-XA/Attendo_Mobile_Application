@@ -49,6 +49,8 @@ class UserModel extends HiveObject {
   String? id;
   @HiveField(13)
   String? username;
+  @HiveField(14)
+  String? pinCode;
 
   UserModel({
     required this.nationalId,
@@ -65,6 +67,7 @@ class UserModel extends HiveObject {
     this.profileImage,
     this.idCardImage,
     this.loginToken,
+    this.pinCode,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -90,6 +93,7 @@ class UserModel extends HiveObject {
       idCardImage: user.idCardImage,
       loginToken: user.loginToken,
       username: user.username,
+      pinCode: user.pinCode,
     );
   }
 
@@ -117,6 +121,7 @@ class UserModel extends HiveObject {
       idCardImage: idCardImage,
       loginToken: loginToken,
       username: username,
+      pinCode: pinCode,
     );
   }
 
@@ -136,6 +141,7 @@ class UserModel extends HiveObject {
       idCardImage: idCardImage,
       loginToken: null, 
       username: username,
+      pinCode: null,
       // Clear token only
     );
   }

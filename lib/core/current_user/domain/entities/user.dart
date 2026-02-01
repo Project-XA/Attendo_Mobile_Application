@@ -19,6 +19,7 @@ class User {
 
   final String? loginToken;
   final String? username;
+  final String? pinCode;
 
   User({
     required this.nationalId,
@@ -27,6 +28,7 @@ class User {
     this.address,
     this.username,
     this.id,
+    this.pinCode,
     this.birthDate,
     this.email,
     this.firstNameEn,
@@ -52,6 +54,7 @@ class User {
     String? id,
     String? loginToken,
     String? username,
+    String? pinCode,
   }) {
     return User(
       id: id ?? this.id,
@@ -68,6 +71,7 @@ class User {
       idCardImage: idCardImage ?? this.idCardImage,
       loginToken: loginToken ?? this.loginToken,
       username: username ?? this.username,
+      pinCode: pinCode ?? this.pinCode,
     );
   }
 
