@@ -7,6 +7,7 @@ import 'package:mobile_app/core/DI/init_session_management.dart';
 import 'package:mobile_app/core/DI/init_user_attendace.dart';
 import 'package:mobile_app/core/current_user/presentation/cubits/current_user_cubit.dart';
 import 'package:mobile_app/core/current_user/presentation/cubits/current_user_state.dart';
+import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/features/session_mangement/presentation/admin_dashboard.dart';
 import 'package:mobile_app/features/profile/presentation/profile_screen.dart';
@@ -40,14 +41,14 @@ class MainNavigationScreen extends StatelessWidget {
                       size: 60,
                       color: Colors.red,
                     ),
-                    const SizedBox(height: 16),
+                    verticalSpace(16),
                     Text(
                       'Error Occurred',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    const SizedBox(height: 8),
+                    verticalSpace(8),
                     Text(state.message),
-                    const SizedBox(height: 16),
+                    verticalSpace(16),
                     ElevatedButton(
                       onPressed: () =>
                           context.read<CurrentUserCubit>().loadUser(),
@@ -62,17 +63,17 @@ class MainNavigationScreen extends StatelessWidget {
           final cubit = context.read<CurrentUserCubit>();
           final role = cubit.role;
           if (role == null) {
-            return const Scaffold(
+            return Scaffold(
               body: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.warning_amber_rounded,
                       size: 60,
                       color: Colors.orange,
                     ),
-                    SizedBox(height: 16),
+                    verticalSpace(16),
                   ],
                 ),
               ),

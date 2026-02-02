@@ -121,11 +121,11 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     return Column(
       children: [
         _buildNumberRow(['1', '2', '3']),
-        SizedBox(height: 20.h),
+        verticalSpace(20),
         _buildNumberRow(['4', '5', '6']),
-        SizedBox(height: 20.h),
+        verticalSpace(20),
         _buildNumberRow(['7', '8', '9']),
-        SizedBox(height: 20.h),
+        verticalSpace(20),
         _buildLastRow(),
       ],
     );

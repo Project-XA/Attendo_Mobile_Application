@@ -123,7 +123,7 @@ class ActionButtons extends StatelessWidget {
                   Icons.refresh,
                   color: AppColors.backGroundColorWhite,
                 ),
-                SizedBox(width: 8.w),
+                horizontalSpace(8),
                 Text(
                   "Retake",
                   style: AppTextStyle.font15SemiBoldWhite.copyWith(
@@ -152,7 +152,7 @@ class ActionButtons extends StatelessWidget {
           child: Row(
             children: [
               Icon(Icons.error_outline, color: Colors.red.shade700, size: 24),
-              SizedBox(width: 12.w),
+              horizontalSpace( 12),
               Expanded(
                 child: Text(
                   "Invalid photo! Please capture a valid ID card.",
@@ -179,7 +179,7 @@ class ActionButtons extends StatelessWidget {
                   Icons.refresh,
                   color: AppColors.backGroundColorWhite,
                 ),
-                SizedBox(width: 8.w),
+                horizontalSpace(8),
                 Text(
                   "Retake Photo",
                   style: AppTextStyle.font15SemiBoldWhite.copyWith(

@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/features/ocr/presentation/logic/camera_cubit.dart';
 import 'package:mobile_app/features/ocr/presentation/logic/camera_state.dart';
@@ -19,14 +20,11 @@ class CameraBox extends StatelessWidget {
       builder: (context, state) {
         return Container(
           width: double.infinity,
-          height: 280.h, 
+          height: 280.h,
           decoration: BoxDecoration(
             color: Colors.black,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: _getBorderColor(state),
-              width: 3,
-            ),
+            border: Border.all(color: _getBorderColor(state), width: 3),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(14),
@@ -77,7 +75,7 @@ class CameraBox extends StatelessWidget {
                 scale: 0.8 + (value * 0.2),
                 child: Icon(
                   Icons.credit_card,
-                  size: 60, 
+                  size: 60,
                   // ignore: deprecated_member_use
                   color: Colors.white.withOpacity(0.5 + (value * 0.5)),
                 ),
@@ -85,12 +83,9 @@ class CameraBox extends StatelessWidget {
             },
             onEnd: () {},
           ),
-          SizedBox(height: 16.h),
-          const CircularProgressIndicator(
-            color: Colors.white,
-            strokeWidth: 2,
-          ),
-          SizedBox(height: 12.h),
+          verticalSpace(16),
+          const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+          verticalSpace(12),
           Text(
             'Processing ID Card...',
             style: TextStyle(
@@ -99,13 +94,10 @@ class CameraBox extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(height: 4.h),
+          verticalSpace(4),
           Text(
             'Please wait',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 12.sp,
-            ),
+            style: TextStyle(color: Colors.white70, fontSize: 12.sp),
           ),
         ],
       ),
@@ -117,9 +109,7 @@ class CameraBox extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         CameraPreview(controller),
-        CustomPaint(
-          painter: IdCardFramePainter(),
-        ),
+        CustomPaint(painter: IdCardFramePainter()),
         Positioned(
           bottom: 12,
           left: 0,
@@ -133,12 +123,7 @@ class CameraBox extends StatelessWidget {
                 color: Colors.white,
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w500,
-                shadows: const [
-                  Shadow(
-                    blurRadius: 4,
-                    color: Colors.black,
-                  ),
-                ],
+                shadows: const [Shadow(blurRadius: 4, color: Colors.black)],
               ),
             ),
           ),
@@ -153,7 +138,7 @@ class CameraBox extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const CircularProgressIndicator(color: Colors.white),
-          SizedBox(height: 12.h),
+          verticalSpace(12),
           Text(
             message,
             style: TextStyle(color: Colors.white, fontSize: 14.sp),
@@ -169,7 +154,7 @@ class CameraBox extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.error_outline, color: Colors.red, size: 48.sp),
-          SizedBox(height: 12.h),
+          verticalSpace(12),
           Text(
             'Camera Error',
             style: TextStyle(color: Colors.white, fontSize: 16.sp),
