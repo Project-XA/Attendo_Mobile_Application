@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_app/core/themes/app_colors.dart';
 
 class AppTextFormField extends StatelessWidget {
   final String? hintText;
@@ -46,7 +47,7 @@ class AppTextFormField extends StatelessWidget {
       keyboardType: keyboardType ?? TextInputType.text,
       decoration: InputDecoration(
         filled: true,
-        fillColor: backgroundColor ?? Colors.white,
+        fillColor: backgroundColor ?? AppColors.backGroundColorWhite,
         isDense: true,
         contentPadding:
             contentPadding ??

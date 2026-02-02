@@ -21,7 +21,7 @@ class TopSection extends StatelessWidget {
     return BlocBuilder<CurrentUserCubit, CurrentUserState>(
       builder: (context, state) {
         final user = context.read<CurrentUserCubit>().currentUser;
-        
+
         if (user == null) return const SizedBox.shrink();
 
         return Container(
@@ -56,7 +56,7 @@ class TopSection extends StatelessWidget {
                         onPressed: () => _showLogoutDialog(context),
                         icon: Icon(
                           Icons.logout,
-                          color: Colors.white,
+                          color: AppColors.backGroundColorWhite,
                           size: 22.sp,
                         ),
                       ),
@@ -130,9 +130,9 @@ class TopSection extends StatelessWidget {
                 );
               } catch (e) {
                 debugPrint('Logout error: $e');
-                
+
                 if (!context.mounted) return;
-                
+
                 // Show error message
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -148,7 +148,10 @@ class TopSection extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.r),
               ),
             ),
-            child: const Text('Logout', style: TextStyle(color: Colors.white)),
+            child: const Text(
+              'Logout',
+              style: TextStyle(color: AppColors.backGroundColorWhite),
+            ),
           ),
         ],
       ),

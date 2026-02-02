@@ -20,7 +20,7 @@ class UserDashboardShimmer extends StatelessWidget {
             // Header
             _buildHeader(isSmallScreen),
             verticalSpace(20),
-            
+
             // Info Card
             Padding(
               padding: EdgeInsets.symmetric(
@@ -29,9 +29,9 @@ class UserDashboardShimmer extends StatelessWidget {
               ),
               child: _buildInfoCard(isSmallScreen),
             ),
-            
+
             verticalSpace(20.h),
-            
+
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -41,7 +41,7 @@ class UserDashboardShimmer extends StatelessWidget {
                     // Active Session Card
                     _buildSessionCard(isSmallScreen),
                     verticalSpace(20.h),
-                    
+
                     // My Attendance Section
                     _buildMyAttendanceHeader(isSmallScreen),
                     verticalSpace(12.h),
@@ -307,26 +307,20 @@ class UserDashboardShimmer extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.backGroundColorWhite,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(color: Colors.grey[200]!),
         ),
         child: Row(
           children: [
             // Total
-            Expanded(
-              child: _buildStatItemShimmer(isSmallScreen),
-            ),
+            Expanded(child: _buildStatItemShimmer(isSmallScreen)),
             Container(width: 1, height: 50.h, color: Colors.grey[200]),
             // Attended
-            Expanded(
-              child: _buildStatItemShimmer(isSmallScreen),
-            ),
+            Expanded(child: _buildStatItemShimmer(isSmallScreen)),
             Container(width: 1, height: 50.h, color: Colors.grey[200]),
             // Rate
-            Expanded(
-              child: _buildStatItemShimmer(isSmallScreen),
-            ),
+            Expanded(child: _buildStatItemShimmer(isSmallScreen)),
           ],
         ),
       ),

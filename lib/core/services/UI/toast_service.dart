@@ -9,13 +9,13 @@ void showToast( {ToastType type = ToastType.info, required String message}) {
 
   switch (type) {
     case ToastType.success:
-      backgroundColor = AppColors.mainTextColorBlack; // Black for success
+      backgroundColor = AppColors.mainTextColorBlack; 
       break;
     case ToastType.error:
-      backgroundColor = Colors.red; // Red for error
+      backgroundColor = Colors.red; 
       break;
     case ToastType.info:
-      backgroundColor = AppColors.buttonColorGreen; // Green for info
+      backgroundColor = AppColors.buttonColorGreen; 
       break;
   }
 
@@ -24,7 +24,7 @@ void showToast( {ToastType type = ToastType.info, required String message}) {
     toastLength: Toast.LENGTH_LONG,
     gravity: ToastGravity.BOTTOM,
     backgroundColor: backgroundColor,
-    textColor: Colors.white,
+    textColor: AppColors.backGroundColorWhite,
     fontSize: 16.0,
   );
 }

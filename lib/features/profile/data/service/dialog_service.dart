@@ -14,9 +14,7 @@ void showEditDialog(
   showDialog(
     context: context,
     builder: (ctx) => AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.r),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.r)),
       title: Text(
         'Edit $title',
         style: AppTextStyle.font14MediamGrey.copyWith(
@@ -29,9 +27,7 @@ void showEditDialog(
         controller: controller,
         decoration: InputDecoration(
           labelText: title,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.r),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.r)),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.r),
             borderSide: const BorderSide(
@@ -58,7 +54,10 @@ void showEditDialog(
               borderRadius: BorderRadius.circular(8.r),
             ),
           ),
-          child: const Text('Save', style: TextStyle(color: Colors.white)),
+          child: const Text(
+            'Save',
+            style: TextStyle(color: AppColors.backGroundColorWhite),
+          ),
         ),
       ],
     ),

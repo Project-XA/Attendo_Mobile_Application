@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_app/features/verification/data/exceptions/face_recognition_exception.dart';
 import 'package:mobile_app/features/verification/data/exceptions/no_face_detected_exception.dart';
 import 'package:mobile_app/features/verification/domain/repo/verify_repo.dart';
 import 'package:mobile_app/features/verification/domain/use_case/face_verify_use_case.dart';
@@ -125,21 +126,9 @@ class VerificationCubit extends Cubit<VerificationState> {
             hasError: false,
             isVerificationComplete: true,
             isnotVerified: false,
+            isFaceNotMatched: false,
             errorMessage: null,
-            clearController: true,
-            isOpened: false,
-          ),
-        );
-      } else {
-        await _verifyRepo.closeCamera();
 
-        emit(
-          state.copyWith(
-            isprocessing: false,
-            hasError: true,
-            isnotVerified: true,
-            errorMessage: 'Verification failed for unknown reason',
-            hascaptured: false,
             clearController: true,
             isOpened: false,
           ),
@@ -147,68 +136,41 @@ class VerificationCubit extends Cubit<VerificationState> {
       }
     } on NoFaceDetectedException catch (e) {
       await _verifyRepo.closeCamera();
-
-      if (!isClosed) {
-        emit(
-          state.copyWith(
-            isprocessing: false,
-            hasError: true,
-            isnotVerified: false,
-            errorMessage: e.toString(),
-            hascaptured: false,
-            clearController: true,
-            isOpened: false,
-          ),
-        );
-      }
+      _handleError(e.toString());
     } on MultipleFacesDetectedException catch (e) {
       await _verifyRepo.closeCamera();
-
-      if (!isClosed) {
-        emit(
-          state.copyWith(
-            isprocessing: false,
-            hasError: true,
-            isnotVerified: false,
-            errorMessage: e.toString(),
-            hascaptured: false,
-            clearController: true,
-            isOpened: false,
-          ),
-        );
-      }
+      _handleError(e.toString());
     } on LowConfidenceException catch (e) {
       await _verifyRepo.closeCamera();
-
-      if (!isClosed) {
-        emit(
-          state.copyWith(
-            isprocessing: false,
-            hasError: true,
-            isnotVerified: false,
-            errorMessage: e.toString(),
-            hascaptured: false,
-            clearController: true,
-            isOpened: false,
-          ),
-        );
-      }
+      _handleError(e.toString());
+    } on FaceNotMatchedException catch (e) {
+      await _verifyRepo.closeCamera();
+      _handleError(
+        "Face in the selfie does not match the ID card.${e.toString()}",
+        isNotVerified: true,
+        isFaceNotMatched: true,
+      );
     } catch (e) {
       await _verifyRepo.closeCamera();
+      _handleError(e.toString());
+    }
+  }
 
-      if (!isClosed) {
-        emit(
-          state.copyWith(
-            isprocessing: false,
-            hasError: true,
-            isnotVerified: false,
-            errorMessage: e.toString(),
-            hascaptured: false,
-            clearController: true,
-            isOpened: false,
-          ),
-        );
-      }
+  void _handleError(String errorMessage, {bool isNotVerified = false , bool isFaceNotMatched = false}) {
+    if (!isClosed) {
+      emit(
+        state.copyWith(
+          isprocessing: false,
+          hasError: true,
+          isnotVerified: isNotVerified,
+          isFaceNotMatched: isFaceNotMatched,
+          errorMessage: errorMessage,
+          
+          hascaptured: false,
+          clearController: true,
+          isOpened: false,
+        ),
+      );
     }
   }
 
@@ -222,6 +184,7 @@ class VerificationCubit extends Cubit<VerificationState> {
         isnotVerified: false,
         isVerificationComplete: false,
         isprocessing: false,
+        isFaceNotMatched: false, 
       ),
     );
 

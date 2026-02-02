@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
+import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
 
 class RegisterHeader extends StatelessWidget {
@@ -18,13 +19,13 @@ class RegisterHeader extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(20.w),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
+              color: AppColors.backGroundColorWhite.withOpacity(0.15),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.person_add_rounded,
               size: 50.sp,
-              color: Colors.white,
+              color: AppColors.backGroundColorWhite,
             ),
           ),
 
@@ -35,7 +36,7 @@ class RegisterHeader extends StatelessWidget {
             style: TextStyle(
               fontSize: 32.sp,
               fontWeight: FontWeightHelper.bold,
-              color: Colors.white,
+              color: AppColors.backGroundColorWhite,
               letterSpacing: -0.5,
             ),
           ),
@@ -48,7 +49,7 @@ class RegisterHeader extends StatelessWidget {
             style: TextStyle(
               fontSize: 15.sp,
               fontWeight: FontWeightHelper.regular,
-              color: Colors.white.withOpacity(0.85),
+              color: AppColors.backGroundColorWhite.withOpacity(0.85),
               letterSpacing: 0.2,
             ),
           ),

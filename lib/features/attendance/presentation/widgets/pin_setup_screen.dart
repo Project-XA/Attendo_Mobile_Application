@@ -82,7 +82,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
             Text(
               _isConfirming ? 'Confirm your PIN' : 'Enter your PIN to log in',
               style: TextStyle(
-                color: Colors.white,
+                color: AppColors.backGroundColorWhite,
                 fontSize: 20.sp,
                 fontWeight: FontWeightHelper.medium,
               ),
@@ -142,7 +142,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        SizedBox(width: 80.w), 
+        SizedBox(width: 80.w),
         _buildNumberButton('0'),
         _buildDeleteButton(),
       ],
@@ -175,7 +175,11 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         width: 80.w,
         height: 80.w,
         alignment: Alignment.center,
-        child: Icon(Icons.backspace_outlined, color: Colors.white, size: 28.sp),
+        child: Icon(
+          Icons.backspace_outlined,
+          color: AppColors.backGroundColorWhite,
+          size: 28.sp,
+        ),
       ),
     );
   }

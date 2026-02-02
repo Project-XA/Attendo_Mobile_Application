@@ -12,6 +12,7 @@ class VerificationState {
   final bool isVerificationComplete;
   final String? capturePhotoPath;
   final bool isnotVerified;
+  final bool isFaceNotMatched; 
   final String? errorMessage;
 
   const VerificationState({
@@ -27,6 +28,7 @@ class VerificationState {
     this.isVerificationComplete = false,
     this.capturePhotoPath,
     this.isnotVerified = false,
+    this.isFaceNotMatched = false,
   });
 
   bool get isCameraReady =>
@@ -42,11 +44,12 @@ class VerificationState {
     bool? isOpened,
     bool? hasPermissionDenied,
     bool? isInitializing,
-    bool? isVerificationComplete, // ✅ إضافة
+    bool? isVerificationComplete,
     bool clearController = false,
     bool clearError = false,
     String? capturePhotoPath,
     bool? isnotVerified,
+    bool? isFaceNotMatched,
   }) {
     return VerificationState(
       controller: clearController ? null : (controller ?? this.controller),
@@ -62,6 +65,7 @@ class VerificationState {
           isVerificationComplete ?? this.isVerificationComplete,
       capturePhotoPath: capturePhotoPath ?? this.capturePhotoPath,
       isnotVerified: isnotVerified ?? this.isnotVerified,
+      isFaceNotMatched: isFaceNotMatched ?? this.isFaceNotMatched, 
     );
   }
 
@@ -80,7 +84,8 @@ class VerificationState {
         other.isInitializing == isInitializing &&
         other.isVerificationComplete == isVerificationComplete &&
         other.capturePhotoPath == capturePhotoPath &&
-        other.isnotVerified == isnotVerified;
+        other.isnotVerified == isnotVerified &&
+        other.isFaceNotMatched == isFaceNotMatched; 
   }
 
   @override
@@ -96,7 +101,8 @@ class VerificationState {
         isInitializing.hashCode ^
         isVerificationComplete.hashCode ^
         capturePhotoPath.hashCode ^
-        isnotVerified.hashCode;
+        isnotVerified.hashCode ^
+        isFaceNotMatched.hashCode; 
   }
 
   @override
@@ -110,7 +116,8 @@ class VerificationState {
         'isOpened: $isOpened, '
         'hasPermissionDenied: $hasPermissionDenied, '
         'isInitializing: $isInitializing, '
-        'isVerificationComplete: $isVerificationComplete'
+        'isVerificationComplete: $isVerificationComplete, '
+        'isFaceNotMatched: $isFaceNotMatched' 
         ')';
   }
 }

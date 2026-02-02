@@ -24,7 +24,7 @@ class AttendanceCardWidget extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
       margin: EdgeInsets.only(bottom: 12.h),
       decoration: BoxDecoration(
-        color: isLatest ? Colors.green.shade50 : Colors.white,
+        color: isLatest ? Colors.green.shade50 : AppColors.backGroundColorWhite,
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
           color: isLatest ? Colors.green.shade300 : Colors.grey.shade200,
@@ -73,7 +73,7 @@ class AttendanceCardWidget extends StatelessWidget {
           style: AppTextStyle.font14MediamGrey.copyWith(
             fontSize: 14.sp,
             fontWeight: FontWeightHelper.bold,
-            color: Colors.white,
+            color: AppColors.backGroundColorWhite,
           ),
         ),
       ),
@@ -100,10 +100,7 @@ class AttendanceCardWidget extends StatelessWidget {
             ),
             if (isLatest)
               Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 8.w,
-                  vertical: 2.h,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
                 decoration: BoxDecoration(
                   color: Colors.green,
                   borderRadius: BorderRadius.circular(4.r),
@@ -113,7 +110,7 @@ class AttendanceCardWidget extends StatelessWidget {
                   style: AppTextStyle.font14MediamGrey.copyWith(
                     fontSize: 10.sp,
                     fontWeight: FontWeightHelper.bold,
-                    color: Colors.white,
+                    color: AppColors.backGroundColorWhite,
                   ),
                 ),
               ),
@@ -122,11 +119,7 @@ class AttendanceCardWidget extends StatelessWidget {
         verticalSpace(4.h),
         Row(
           children: [
-            Icon(
-              Icons.badge,
-              size: 12.sp,
-              color: Colors.grey.shade600,
-            ),
+            Icon(Icons.badge, size: 12.sp, color: Colors.grey.shade600),
             horizontalSpace(4.w),
             Text(
               'ID: ${record.userId}',
@@ -141,11 +134,7 @@ class AttendanceCardWidget extends StatelessWidget {
           verticalSpace(4.h),
           Row(
             children: [
-              Icon(
-                Icons.location_on,
-                size: 12.sp,
-                color: Colors.grey.shade600,
-              ),
+              Icon(Icons.location_on, size: 12.sp, color: Colors.grey.shade600),
               horizontalSpace(4.w),
               Expanded(
                 child: Text(
@@ -169,11 +158,7 @@ class AttendanceCardWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Icon(
-          Icons.access_time,
-          size: 16.sp,
-          color: Colors.grey.shade600,
-        ),
+        Icon(Icons.access_time, size: 16.sp, color: Colors.grey.shade600),
         verticalSpace(4.h),
         Text(
           DateFormat('HH:mm').format(record.checkInTime),

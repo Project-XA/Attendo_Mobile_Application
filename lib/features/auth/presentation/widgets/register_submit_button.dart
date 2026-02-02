@@ -40,7 +40,7 @@ class RegisterSubmitButton extends StatelessWidget {
                 Text(
                   'Add Account',
                   style: AppTextStyle.font14MediamGrey.copyWith(
-                    color: Colors.white,
+                    color: AppColors.backGroundColorWhite,
                     fontWeight: FontWeightHelper.semiBold,
                     fontSize: 16.sp,
                     letterSpacing: 0.3,
@@ -49,7 +49,7 @@ class RegisterSubmitButton extends StatelessWidget {
                 horizontalSpace(8.w),
                 Icon(
                   Icons.arrow_forward_rounded,
-                  color: Colors.white,
+                  color: AppColors.backGroundColorWhite,
                   size: 20.sp,
                 ),
               ],

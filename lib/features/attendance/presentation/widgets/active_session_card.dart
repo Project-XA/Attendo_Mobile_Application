@@ -58,10 +58,14 @@ class ActiveSessionCard extends StatelessWidget {
         Container(
           padding: EdgeInsets.all(8.w),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
+            color: AppColors.backGroundColorWhite.withOpacity(0.2),
             borderRadius: BorderRadius.circular(12.r),
           ),
-          child: Icon(Icons.wifi, color: Colors.white, size: 24.sp),
+          child: Icon(
+            Icons.wifi,
+            color: AppColors.backGroundColorWhite,
+            size: 24.sp,
+          ),
         ),
         horizontalSpace(12.w),
         Expanded(
@@ -73,7 +77,7 @@ class ActiveSessionCard extends StatelessWidget {
                 style: AppTextStyle.font14MediamGrey.copyWith(
                   fontSize: 18.sp,
                   fontWeight: FontWeightHelper.bold,
-                  color: Colors.white,
+                  color: AppColors.backGroundColorWhite,
                 ),
               ),
               verticalSpace(4.h),
@@ -85,7 +89,7 @@ class ActiveSessionCard extends StatelessWidget {
                     'Live Now',
                     style: AppTextStyle.font14MediamGrey.copyWith(
                       fontSize: 12.sp,
-                      color: Colors.white.withOpacity(0.8),
+                      color: AppColors.backGroundColorWhite.withOpacity(0.8),
                     ),
                   ),
                 ],
@@ -101,7 +105,7 @@ class ActiveSessionCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: AppColors.backGroundColorWhite.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Column(
@@ -129,13 +133,17 @@ class ActiveSessionCard extends StatelessWidget {
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, color: Colors.white.withOpacity(0.7), size: 16.sp),
+        Icon(
+          icon,
+          color: AppColors.backGroundColorWhite.withOpacity(0.7),
+          size: 16.sp,
+        ),
         horizontalSpace(8.w),
         Text(
           label,
           style: AppTextStyle.font14MediamGrey.copyWith(
             fontSize: 12.sp,
-            color: Colors.white.withOpacity(0.7),
+            color: AppColors.backGroundColorWhite.withOpacity(0.7),
           ),
         ),
         horizontalSpace(8.w),
@@ -145,7 +153,7 @@ class ActiveSessionCard extends StatelessWidget {
             style: AppTextStyle.font14MediamGrey.copyWith(
               fontSize: 13.sp,
               fontWeight: FontWeightHelper.medium,
-              color: Colors.white,
+              color: AppColors.backGroundColorWhite,
             ),
             textAlign: TextAlign.end,
             maxLines: 2,
@@ -159,7 +167,7 @@ class ActiveSessionCard extends StatelessWidget {
   Widget _buildCheckInButton(BuildContext context) {
     return CustomAppButton(
       onPressed: () => _handleCheckIn(context),
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.backGroundColorWhite,
       borderRadius: 20.r,
       width: double.infinity,
       height: 50.h,
@@ -205,10 +213,10 @@ class ActiveSessionCard extends StatelessWidget {
     if (user != null) {
       // ignore: use_build_context_synchronously
       context.read<UserCubit>().checkIn(
-            session,
-            userId: user.nationalId,
-            userName: user.fullNameEn,
-          );
+        session,
+        userId: user.nationalId,
+        userName: user.fullNameEn,
+      );
     }
   }
 

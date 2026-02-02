@@ -39,14 +39,12 @@ class ActiveSessionView extends StatelessWidget {
             BlocBuilder<SessionMangementCubit, SessionManagementState>(
               builder: (context, state) {
                 if (state is SessionState && state.showWarning) {
-                  return SliverToBoxAdapter(
-                    child: _buildWarningBanner(),
-                  );
+                  return SliverToBoxAdapter(child: _buildWarningBanner());
                 }
                 return const SliverToBoxAdapter(child: SizedBox.shrink());
               },
             ),
-            
+
             SliverToBoxAdapter(child: SessionInfoCard(session: session)),
             SliverToBoxAdapter(child: verticalSpace(10)),
             SliverToBoxAdapter(child: ServerInfoCard(serverInfo: serverInfo)),
@@ -69,11 +67,7 @@ class ActiveSessionView extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.warning_amber_rounded,
-            color: Colors.orange,
-            size: 28.sp,
-          ),
+          Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 28.sp),
           horizontalSpace(12.w),
           Expanded(
             child: Column(
@@ -108,15 +102,15 @@ class ActiveSessionView extends StatelessWidget {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.warning_amber_rounded, color: Colors.white),
+            const Icon(
+              Icons.warning_amber_rounded,
+              color: AppColors.backGroundColorWhite,
+            ),
             horizontalSpace(12.w),
             Expanded(
               child: Text(
                 '⏰ Session will end in 5 minutes!',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -126,7 +120,7 @@ class ActiveSessionView extends StatelessWidget {
         behavior: SnackBarBehavior.floating,
         action: SnackBarAction(
           label: 'OK',
-          textColor: Colors.white,
+          textColor: AppColors.backGroundColorWhite,
           onPressed: () {},
         ),
       ),
@@ -143,7 +137,7 @@ class ActiveSessionView extends StatelessWidget {
       child: Text(
         'End Session',
         style: AppTextStyle.font14MediamGrey.copyWith(
-          color: Colors.white,
+          color: AppColors.backGroundColorWhite,
           fontWeight: FontWeightHelper.medium,
           fontSize: 16.sp,
         ),

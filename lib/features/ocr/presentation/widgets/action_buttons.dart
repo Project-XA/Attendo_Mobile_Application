@@ -97,7 +97,7 @@ class ActionButtons extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.check, color: Colors.white),
+                const Icon(Icons.check, color: AppColors.backGroundColorWhite),
                 horizontalSpace(8.w),
                 Text(
                   "Verify",
@@ -119,7 +119,10 @@ class ActionButtons extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.refresh, color: Colors.white),
+                const Icon(
+                  Icons.refresh,
+                  color: AppColors.backGroundColorWhite,
+                ),
                 SizedBox(width: 8.w),
                 Text(
                   "Retake",
@@ -172,7 +175,10 @@ class ActionButtons extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.refresh, color: Colors.white),
+                const Icon(
+                  Icons.refresh,
+                  color: AppColors.backGroundColorWhite,
+                ),
                 SizedBox(width: 8.w),
                 Text(
                   "Retake Photo",

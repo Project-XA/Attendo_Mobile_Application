@@ -141,7 +141,7 @@ class _MainNavigationContentState extends State<_MainNavigationContent> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.backGroundColorWhite,
         selectedItemColor: AppColors.mainTextColorBlack,
         unselectedItemColor: Colors.grey,
         selectedLabelStyle: TextStyle(

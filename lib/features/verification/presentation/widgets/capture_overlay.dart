@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
+import 'package:mobile_app/core/themes/app_colors.dart';
 
 class CapturedOverlay extends StatelessWidget {
   const CapturedOverlay({super.key});
@@ -22,7 +23,7 @@ class CapturedOverlay extends StatelessWidget {
             style: TextStyle(
               fontSize: 64.sp,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: AppColors.backGroundColorWhite,
               shadows: const [
                 Shadow(
                   color: Colors.black45,
@@ -37,7 +38,7 @@ class CapturedOverlay extends StatelessWidget {
             'Processing...',
             style: TextStyle(
               fontSize: 16.sp,
-              color: Colors.white,
+              color: AppColors.backGroundColorWhite,
               fontWeight: FontWeight.w500,
               shadows: const [
                 Shadow(

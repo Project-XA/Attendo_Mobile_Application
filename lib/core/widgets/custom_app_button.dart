@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_app/core/themes/app_colors.dart';
 
 class CustomAppButton extends StatelessWidget {
   final Widget child;
@@ -41,7 +42,7 @@ class CustomAppButton extends StatelessWidget {
             ),
           ),
           backgroundColor: WidgetStatePropertyAll(
-            backgroundColor ?? Colors.white,
+            backgroundColor ?? AppColors.backGroundColorWhite,
           ),
           padding: WidgetStatePropertyAll(
             EdgeInsets.symmetric(

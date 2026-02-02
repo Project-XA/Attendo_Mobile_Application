@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 
 class UserNameSection extends StatelessWidget {
@@ -12,7 +13,7 @@ class UserNameSection extends StatelessWidget {
     return Text(
       fullNameEn,
       style: AppTextStyle.font14MediamGrey.copyWith(
-        color: Colors.white,
+        color: AppColors.backGroundColorWhite,
         fontSize: 22.sp,
         fontWeight: FontWeight.bold,
       ),
@@ -31,7 +32,7 @@ class UserEmailSection extends StatelessWidget {
       email,
       style: AppTextStyle.font14MediamGrey.copyWith(
         // ignore: deprecated_member_use
-        color: Colors.white.withOpacity(0.9),
+        color: AppColors.backGroundColorWhite.withOpacity(0.9),
         fontSize: 14.sp,
       ),
     );
@@ -49,13 +50,13 @@ class UserRoleSection extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       decoration: BoxDecoration(
         // ignore: deprecated_member_use
-        color: Colors.white.withOpacity(0.2),
+        color: AppColors.backGroundColorWhite.withOpacity(0.2),
         borderRadius: BorderRadius.circular(20.r),
       ),
       child: Text(
         role,
         style: AppTextStyle.font14MediamGrey.copyWith(
-          color: Colors.white,
+          color: AppColors.backGroundColorWhite,
           fontSize: 12.sp,
         ),
       ),

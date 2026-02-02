@@ -18,7 +18,7 @@ class InfoCard extends StatelessWidget {
     required this.subtitle,
     required this.description,
     this.backgroundColor = AppColors.mainTextColorBlack,
-    this.textColor = Colors.white,
+    this.textColor = AppColors.backGroundColorWhite,
   });
 
   @override

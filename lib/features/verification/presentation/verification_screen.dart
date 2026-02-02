@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/core/services/UI/extensions.dart';
+import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/features/verification/presentation/logic/verification_cubit.dart';
 import 'package:mobile_app/features/verification/presentation/logic/verification_state.dart';
 import 'package:mobile_app/features/verification/presentation/widgets/verfication_body.dart';
@@ -24,7 +25,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.backGroundColorWhite,
       body: BlocListener<VerificationCubit, VerificationState>(
         listener: (context, state) {
           if (state.isVerificationComplete && !state.hasError) {

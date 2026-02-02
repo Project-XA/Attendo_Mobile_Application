@@ -12,7 +12,7 @@ class PermissionDeniedWidget extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(32.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.backGroundColorWhite,
         borderRadius: BorderRadius.circular(16.r),
       ),
       child: Column(
@@ -39,9 +39,9 @@ class PermissionDeniedWidget extends StatelessWidget {
               );
             },
           ),
-          
+
           verticalSpace(24.h),
-          
+
           Text(
             'Camera Permission Required',
             textAlign: TextAlign.center,
@@ -51,9 +51,9 @@ class PermissionDeniedWidget extends StatelessWidget {
               color: AppColors.mainTextColorBlack,
             ),
           ),
-          
+
           verticalSpace(12.h),
-          
+
           Text(
             'To scan your ID card, we need access to your camera.',
             textAlign: TextAlign.center,
@@ -63,18 +63,15 @@ class PermissionDeniedWidget extends StatelessWidget {
               height: 1.5,
             ),
           ),
-          
+
           verticalSpace(24.h),
-          
+
           Container(
             padding: EdgeInsets.all(16.w),
             decoration: BoxDecoration(
               color: Colors.orange.shade50,
               borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(
-                color: Colors.orange.shade200,
-                width: 1,
-              ),
+              border: Border.all(color: Colors.orange.shade200, width: 1),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,9 +95,9 @@ class PermissionDeniedWidget extends StatelessWidget {
               ],
             ),
           ),
-          
+
           verticalSpace(24.h),
-          
+
           Text(
             'Redirecting to home screen...',
             textAlign: TextAlign.center,
@@ -132,7 +129,7 @@ class PermissionDeniedWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: AppColors.backGroundColorWhite,
               ),
             ),
           ),

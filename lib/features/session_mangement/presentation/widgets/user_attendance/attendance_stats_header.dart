@@ -20,7 +20,7 @@ class AttendanceStatsHeader extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.backGroundColorWhite,
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
@@ -65,7 +65,7 @@ class AttendanceStatsHeader extends StatelessWidget {
               ),
             ],
           ),
-          
+
           if (isActive)
             Container(
               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),

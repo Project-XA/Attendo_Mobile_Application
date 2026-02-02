@@ -1,13 +1,12 @@
 
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
+import 'package:mobile_app/core/themes/app_colors.dart';
 
 class IdCardFramePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.6)
+      ..color = AppColors.backGroundColorWhite.withOpacity(0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.5;
 
@@ -25,7 +24,7 @@ class IdCardFramePainter extends CustomPainter {
       paint,
     );
     final cornerPaint = Paint()
-      ..color = Colors.white
+      ..color = AppColors.backGroundColorWhite
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.5;
 
@@ -78,7 +77,7 @@ class IdCardFramePainter extends CustomPainter {
     );
 
     final centerLinePaint = Paint()
-      ..color = Colors.white.withOpacity(0.3)
+      ..color = AppColors.backGroundColorWhite.withOpacity(0.3)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
 

@@ -8,7 +8,7 @@ class VerificationHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 30.h, horizontal: 20.w),
+      padding: EdgeInsets.symmetric(vertical: 22.h, horizontal: 20.w),
       child: Column(
         children: [
           Text(
@@ -21,7 +21,7 @@ class VerificationHeader extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          verticalSpace(12),
+          verticalSpace(5),
           Text(
             'Please align your face within the frame to verify your identity.',
             style: TextStyle(

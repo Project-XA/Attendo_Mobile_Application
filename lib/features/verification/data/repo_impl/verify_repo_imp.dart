@@ -4,15 +4,20 @@ import 'package:image/image.dart' as img;
 import 'package:mobile_app/core/current_user/data/local_data_soruce/user_local_data_source.dart';
 import 'package:mobile_app/core/services/permission/camera_permission_service.dart';
 import 'package:mobile_app/features/ocr/data/repo_imp/camera_reo_imp.dart';
+import 'package:mobile_app/features/verification/data/exceptions/face_recognition_exception.dart';
 import 'package:mobile_app/features/verification/data/exceptions/no_face_detected_exception.dart';
 import 'package:mobile_app/features/verification/data/models/face_detection_model.dart';
+import 'package:mobile_app/features/verification/data/models/face_recognition_model.dart';
 import 'package:mobile_app/features/verification/data/service/face_detection_service.dart';
+import 'package:mobile_app/features/verification/data/service/face_recognition_service.dart';
+import 'package:mobile_app/features/verification/domain/entities/face_detection_result.dart';
 import 'package:mobile_app/features/verification/domain/repo/verify_repo.dart';
 
 class VerifyRepoImp extends VerifyRepo {
   final CameraPermissionService _permissionService;
   final UserLocalDataSource userLocalDataSource;
   final FaceDetectionModel _faceDetectionModel;
+  final FaceRecognitionModel _faceRecognitionModel;
 
   CameraController? _controller;
   bool _isCameraInitialized = false;
@@ -21,8 +26,10 @@ class VerifyRepoImp extends VerifyRepo {
     CameraPermissionService? permissionService,
     required this.userLocalDataSource,
     required FaceDetectionModel faceDetectionModel,
+    required FaceRecognitionModel faceReconitionModel,
   }) : _permissionService = permissionService ?? CameraPermissionService(),
-       _faceDetectionModel = faceDetectionModel;
+       _faceDetectionModel = faceDetectionModel,
+       _faceRecognitionModel = faceReconitionModel;
 
   @override
   CameraController? get controller => _controller;
@@ -65,6 +72,7 @@ class VerifyRepoImp extends VerifyRepo {
     _isCameraInitialized = true;
 
     await _faceDetectionModel.loadModel();
+    await _faceRecognitionModel.loadModel();
   }
 
   @override
@@ -150,15 +158,37 @@ class VerifyRepoImp extends VerifyRepo {
   }) async {
     try {
       await faceDetection(imagePath: idCardImagePath, isIdCardImage: true);
+      final idCardDetection = await _getDetectionResult(
+        idCardImagePath,
+        isIdCardImage: true,
+      );
 
       await faceDetection(imagePath: selfieImagePath, isIdCardImage: false);
+      final selfieDetection = await _getDetectionResult(
+        selfieImagePath,
+        isIdCardImage: false,
+      );
 
-      return true;
+      if (!_faceRecognitionModel.isLoaded) {
+        await _faceRecognitionModel.loadModel();
+      }
+
+      final isMatch = await FaceRecognitionService.verifyFaces(
+        image1Path: idCardImagePath,
+        image2Path: selfieImagePath,
+        interpreterAddress: _faceRecognitionModel.interpreterAddress,
+        face1Detection: idCardDetection,
+        face2Detection: selfieDetection,
+      );
+
+      return isMatch;
     } on NoFaceDetectedException {
       rethrow;
     } on MultipleFacesDetectedException {
       rethrow;
     } on LowConfidenceException {
+      rethrow;
+    } on FaceNotMatchedException {
       rethrow;
     } catch (e) {
       rethrow;
@@ -206,5 +236,24 @@ class VerifyRepoImp extends VerifyRepo {
     } catch (e) {
       rethrow;
     }
+  }
+
+  Future<FaceDetectionResult> _getDetectionResult(
+    String imagePath, {
+    required bool isIdCardImage,
+  }) async {
+    final imageFile = File(imagePath);
+    final imageBytes = await imageFile.readAsBytes();
+    final image = img.decodeImage(imageBytes);
+
+    if (image == null) {
+      throw Exception('Failed to decode image');
+    }
+
+    return await FaceDetectionService.detectFace(
+      imagePath: imagePath,
+      interpreterAddress: _faceDetectionModel.interpreterAddress,
+      isIdCardImage: isIdCardImage,
+    );
   }
 }

@@ -9,7 +9,6 @@ import 'package:mobile_app/features/verification/presentation/widgets/retry_butt
 
 class ErrorStateWidget extends StatelessWidget {
   final String? errorMessage;
-
   const ErrorStateWidget({super.key, this.errorMessage});
 
   @override
@@ -110,7 +109,6 @@ class ErrorStateWidget extends StatelessWidget {
   }
 }
 
-/// Error information data class
 class _ErrorInfo {
   final IconData icon;
   final Color color;

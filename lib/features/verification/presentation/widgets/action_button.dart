@@ -32,14 +32,18 @@ class ActionButtons extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.camera_alt, color: Colors.white, size: 24.sp),
+            Icon(
+              Icons.camera_alt,
+              color: AppColors.backGroundColorWhite,
+              size: 24.sp,
+            ),
             horizontalSpace(12),
             Text(
               'Capture Photo',
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
-                color: Colors.white,
+                color: AppColors.backGroundColorWhite,
               ),
             ),
           ],

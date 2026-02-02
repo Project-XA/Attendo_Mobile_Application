@@ -238,14 +238,14 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
                           height: 20.h,
                           width: 20.w,
                           child: const CircularProgressIndicator(
-                            color: Colors.white,
+                            color: AppColors.backGroundColorWhite,
                             strokeWidth: 2,
                           ),
                         )
                       : Text(
                           'Start Session',
                           style: AppTextStyle.font14MediamGrey.copyWith(
-                            color: Colors.white,
+                            color: AppColors.backGroundColorWhite,
                             fontWeight: FontWeightHelper.medium,
                             fontSize: 16.sp,
                           ),

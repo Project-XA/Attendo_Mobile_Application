@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
+import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/features/attendance/domain/entities/attendency_state.dart';
 
 class AttendanceStatsCard extends StatelessWidget {
   final AttendanceStats? stats;
-  final bool hasError; 
-  final VoidCallback? onRetry; 
+  final bool hasError;
+  final VoidCallback? onRetry;
 
   const AttendanceStatsCard({
     super.key,
     required this.stats,
     this.hasError = false,
-    this.onRetry, 
+    this.onRetry,
   });
 
   @override
@@ -40,11 +41,7 @@ class AttendanceStatsCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(
-            Icons.error_outline,
-            color: Colors.red,
-            size: 40.sp,
-          ),
+          Icon(Icons.error_outline, color: Colors.red, size: 40.sp),
           verticalSpace(8.h),
           Text(
             'Failed to load stats',
@@ -63,7 +60,7 @@ class AttendanceStatsCard extends StatelessWidget {
               label: const Text('Retry'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.backGroundColorWhite,
                 padding: EdgeInsets.symmetric(vertical: 12.h),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.r),
@@ -84,9 +81,7 @@ class AttendanceStatsCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      child: const Center(
-        child: CircularProgressIndicator(),
-      ),
+      child: const Center(child: CircularProgressIndicator()),
     );
   }
 
@@ -94,7 +89,7 @@ class AttendanceStatsCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.backGroundColorWhite,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [

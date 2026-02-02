@@ -1,5 +1,6 @@
 // feature/splash/presentation/animated_splash_screen.dart
 import 'package:flutter/material.dart';
+import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/utils/app_assets.dart';
 
 class AnimatedSplashScreen extends StatefulWidget {
@@ -62,7 +63,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
     final logoSize = size.width * 1.1;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.backGroundColorWhite,
       body: Center(
         child: AnimatedBuilder(
           animation: _controller,

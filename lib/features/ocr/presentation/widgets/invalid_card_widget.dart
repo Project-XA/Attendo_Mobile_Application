@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
+import 'package:mobile_app/core/themes/app_colors.dart';
 
 class InvalidCardWidget extends StatelessWidget {
   const InvalidCardWidget({super.key});
@@ -13,10 +14,7 @@ class InvalidCardWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.red.shade50,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(
-          color: Colors.red.shade300,
-          width: 2,
-        ),
+        border: Border.all(color: Colors.red.shade300, width: 2),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -63,7 +61,7 @@ class InvalidCardWidget extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.backGroundColorWhite,
               borderRadius: BorderRadius.circular(8.r),
               border: Border.all(color: Colors.red.shade200),
             ),

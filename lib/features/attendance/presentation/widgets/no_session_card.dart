@@ -26,7 +26,7 @@ class NoSessionsCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Colors.grey.shade100, Colors.white],
+          colors: [Colors.grey.shade100, AppColors.backGroundColorWhite],
         ),
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: Colors.grey.shade300, width: 1.2),
@@ -47,10 +47,7 @@ class NoSessionsCard extends StatelessWidget {
           _buildDescription(),
           verticalSpace(18.h),
           _buildActionButton(context),
-          if (isDiscoveryActive) ...[
-            verticalSpace(16.h),
-            _buildInfoBanner(),
-          ],
+          if (isDiscoveryActive) ...[verticalSpace(16.h), _buildInfoBanner()],
         ],
       ),
     );
@@ -117,14 +114,14 @@ class NoSessionsCard extends StatelessWidget {
         children: [
           Icon(
             isIdle ? Icons.search : Icons.refresh,
-            color: Colors.white,
+            color: AppColors.backGroundColorWhite,
             size: 20.sp,
           ),
           horizontalSpace(10.w),
           Text(
             isIdle ? 'Start Search' : 'Search Again',
             style: AppTextStyle.font14MediamGrey.copyWith(
-              color: Colors.white,
+              color: AppColors.backGroundColorWhite,
               fontSize: 15.sp,
               fontWeight: FontWeightHelper.semiBold,
             ),
@@ -145,11 +142,7 @@ class NoSessionsCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.info_outline,
-            size: 16.sp,
-            color: Colors.orange.shade700,
-          ),
+          Icon(Icons.info_outline, size: 16.sp, color: Colors.orange.shade700),
           horizontalSpace(8.w),
           Text(
             'Make sure you\'re close to the venue',

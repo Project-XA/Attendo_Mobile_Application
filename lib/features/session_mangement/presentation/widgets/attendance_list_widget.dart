@@ -60,7 +60,7 @@ class AttendanceListWidget extends StatelessWidget {
             width: 1,
             height: 40.h,
             // ignore: deprecated_member_use
-            color: Colors.white.withOpacity(0.3),
+            color: AppColors.backGroundColorWhite.withOpacity(0.3),
           ),
           _buildStatItem(
             'Unique Users',
@@ -75,14 +75,14 @@ class AttendanceListWidget extends StatelessWidget {
   Widget _buildStatItem(String label, String value, IconData icon) {
     return Column(
       children: [
-        Icon(icon, color: Colors.white, size: 28.sp),
+        Icon(icon, color: AppColors.backGroundColorWhite, size: 28.sp),
         verticalSpace(8.h),
         Text(
           value,
           style: AppTextStyle.font14MediamGrey.copyWith(
             fontSize: 24.sp,
             fontWeight: FontWeightHelper.bold,
-            color: Colors.white,
+            color: AppColors.backGroundColorWhite,
           ),
         ),
         verticalSpace(4.h),
@@ -91,7 +91,7 @@ class AttendanceListWidget extends StatelessWidget {
           style: AppTextStyle.font14MediamGrey.copyWith(
             fontSize: 12.sp,
             // ignore: deprecated_member_use
-            color: Colors.white.withOpacity(0.8),
+            color: AppColors.backGroundColorWhite.withOpacity(0.8),
           ),
         ),
       ],
@@ -128,19 +128,16 @@ class AttendanceListWidget extends StatelessWidget {
     return SliverPadding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            final record = attendanceList[index];
-            return Column(
-              children: [
-                _buildAttendanceItem(record, index + 1),
-                if (index < attendanceList.length - 1)
-                  Divider(height: 1.h, color: Colors.grey.shade300),
-              ],
-            );
-          },
-          childCount: attendanceList.length,
-        ),
+        delegate: SliverChildBuilderDelegate((context, index) {
+          final record = attendanceList[index];
+          return Column(
+            children: [
+              _buildAttendanceItem(record, index + 1),
+              if (index < attendanceList.length - 1)
+                Divider(height: 1.h, color: Colors.grey.shade300),
+            ],
+          );
+        }, childCount: attendanceList.length),
       ),
     );
   }
@@ -149,7 +146,7 @@ class AttendanceListWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.backGroundColorWhite,
         borderRadius: BorderRadius.circular(8.r),
       ),
       child: Row(
@@ -166,7 +163,7 @@ class AttendanceListWidget extends StatelessWidget {
               child: Text(
                 '$number',
                 style: AppTextStyle.font14MediamGrey.copyWith(
-                  color: Colors.white,
+                  color: AppColors.backGroundColorWhite,
                   fontWeight: FontWeightHelper.bold,
                   fontSize: 12.sp,
                 ),

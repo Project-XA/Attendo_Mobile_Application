@@ -27,7 +27,10 @@ class ProfileImageSection extends StatelessWidget {
               height: 100.w,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 3),
+                border: Border.all(
+                  color: AppColors.backGroundColorWhite,
+                  width: 3,
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.mainTextColorBlack.withOpacity(0.2),
@@ -49,10 +52,7 @@ class ProfileImageSection extends StatelessWidget {
                           );
                         },
                       )
-                    : Image.asset(
-                        "assets/images/user.png",
-                        fit: BoxFit.cover,
-                      ),
+                    : Image.asset("assets/images/user.png", fit: BoxFit.cover),
               ),
             ),
             Positioned(
@@ -63,7 +63,7 @@ class ProfileImageSection extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.all(8.w),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.backGroundColorWhite,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
@@ -122,8 +122,8 @@ class ProfileImageSection extends StatelessWidget {
                     );
                     if (image != null && context.mounted) {
                       context.read<CurrentUserCubit>().updateProfileImage(
-                            File(image.path),
-                          );
+                        File(image.path),
+                      );
                     }
                   },
                 ),
@@ -138,8 +138,8 @@ class ProfileImageSection extends StatelessWidget {
                     );
                     if (image != null && context.mounted) {
                       context.read<CurrentUserCubit>().updateProfileImage(
-                            File(image.path),
-                          );
+                        File(image.path),
+                      );
                     }
                   },
                 ),

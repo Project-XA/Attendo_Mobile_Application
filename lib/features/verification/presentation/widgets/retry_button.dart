@@ -25,14 +25,18 @@ class RetryButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.refresh, color: Colors.white, size: 24.sp),
+            Icon(
+              Icons.refresh,
+              color: AppColors.backGroundColorWhite,
+              size: 24.sp,
+            ),
             horizontalSpace(12),
             Text(
               'Try Again',
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
-                color: Colors.white,
+                color: AppColors.backGroundColorWhite,
               ),
             ),
           ],
