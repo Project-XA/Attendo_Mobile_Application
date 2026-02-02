@@ -6,10 +6,7 @@ class OnboardingService {
   final AuthStateService _authStateService;
   final UserLocalDataSource _userLocalDataSource;
 
-  OnboardingService(
-    this._authStateService,
-    this._userLocalDataSource,
-  );
+  OnboardingService(this._authStateService, this._userLocalDataSource);
 
   // ========== OCR Related ==========
   Future<bool> hasCompletedOCR() async {
@@ -29,15 +26,22 @@ class OnboardingService {
     await _authStateService.markRegistrationComplete(userRole);
   }
 
+  Future<bool> hasCompletedVerification() async {
+    return await _authStateService.hasCompletedVerification();
+  }
+
+  Future<void> markVerificationComplete() async {
+    await _authStateService.markVerificationComplete();
+  }
   // ========== Login/Logout Related (Token-based) ==========
-  
+
   /// Check if user is logged in (has valid token in Hive)
   Future<bool> isLoggedIn() async {
     // Check both: AuthState flag AND actual token in UserModel
     final authStateLoggedIn = await _authStateService.isLoggedIn();
-    
+
     if (!authStateLoggedIn) return false;
-    
+
     // Double-check token exists in user data
     try {
       final hasToken = await _userLocalDataSource.hasValidToken();
@@ -51,10 +55,10 @@ class OnboardingService {
   Future<void> logout() async {
     // 1. Clear token from Dio interceptor
     await DioFactory.clearTokens();
-    
+
     // 2. Clear token from user data in Hive
     await _userLocalDataSource.logout();
-    
+
     // 3. Update auth state
     await _authStateService.clearAuthState();
   }

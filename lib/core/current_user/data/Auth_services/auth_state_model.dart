@@ -15,11 +15,14 @@ class AuthStateModel extends HiveObject {
 
   @HiveField(3)
   String? userRole;
+  @HiveField(4)
+  bool hasCompletedVerification;
 
   AuthStateModel({
     this.hasCompletedOCR = false,
     this.hasRegistered = false,
     this.isLoggedIn = false,
+    this.hasCompletedVerification = false,
     this.userRole,
   });
 
@@ -27,6 +30,7 @@ class AuthStateModel extends HiveObject {
     hasCompletedOCR = false;
     hasRegistered = false;
     isLoggedIn = false;
+    hasCompletedVerification = false;
     userRole = null;
   }
 

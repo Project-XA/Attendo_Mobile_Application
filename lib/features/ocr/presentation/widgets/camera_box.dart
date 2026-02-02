@@ -1,5 +1,3 @@
-// feature/scan_OCR/presentation/widgets/camera_box.dart
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

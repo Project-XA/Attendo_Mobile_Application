@@ -22,9 +22,12 @@ class AuthStateService {
     await _box.put(_stateKey, state);
   }
 
-  // ========== OCR State ==========
   Future<bool> hasCompletedOCR() async {
     return _getState().hasCompletedOCR;
+  }
+
+  Future<bool>hasCompletedVerification() async {
+    return _getState().hasCompletedVerification;
   }
 
   Future<void> markOCRComplete() async {
@@ -33,7 +36,13 @@ class AuthStateService {
     await _saveState(state);
   }
 
-  // ========== Registration State ==========
+  Future<void> markVerificationComplete() async {
+    final state = _getState();
+    state.hasCompletedVerification = true;
+    await _saveState(state);
+  }
+
+
   Future<bool> hasRegistered() async {
     return _getState().hasRegistered;
   }
@@ -46,7 +55,6 @@ class AuthStateService {
     await _saveState(state);
   }
 
-  // ========== Login State (Token-based) ==========
   Future<bool> isLoggedIn() async {
     return _getState().isLoggedIn;
   }
@@ -62,7 +70,6 @@ class AuthStateService {
     await _saveState(state);
   }
 
-  // ========== Clear Methods ==========
   Future<void> clearAuthState() async {
     final state = _getState();
     state.clearAuthOnly();
