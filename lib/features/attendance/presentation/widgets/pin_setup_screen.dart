@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_app/core/services/UI/spacing.dart';
+import 'package:mobile_app/core/themes/app_colors.dart';
+import 'package:mobile_app/core/themes/font_weight_helper.dart';
 
 class PinSetupScreen extends StatefulWidget {
   const PinSetupScreen({super.key});
@@ -69,7 +72,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
   @override
   Widget build(BuildContext context) {
     final currentPin = _isConfirming ? _confirmPin : _pin;
-    
+
     return Scaffold(
       backgroundColor: const Color(0xFF2C2C2E),
       body: SafeArea(
@@ -81,14 +84,14 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20.sp,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeightHelper.medium,
               ),
             ),
-            SizedBox(height: 40.h),
+            verticalSpace(40),
             _buildPinDots(currentPin),
             const Spacer(),
             _buildNumberPad(),
-            SizedBox(height: 40.h),
+            verticalSpace(40),
           ],
         ),
       ),
@@ -105,9 +108,9 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
           height: 16.w,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: index < pin.length 
-                ? Colors.white 
-                : Colors.white.withOpacity(0.3),
+            color: index < pin.length
+                ? AppColors.backGroundColorWhite
+                : AppColors.backGroundColorWhite.withOpacity(0.3),
           ),
         );
       }),
@@ -139,7 +142,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        SizedBox(width: 80.w), // Empty space
+        SizedBox(width: 80.w), 
         _buildNumberButton('0'),
         _buildDeleteButton(),
       ],
@@ -156,9 +159,9 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         child: Text(
           number,
           style: TextStyle(
-            color: Colors.white,
+            color: AppColors.backGroundColorWhite,
             fontSize: 32.sp,
-            fontWeight: FontWeight.w300,
+            fontWeight: FontWeightHelper.light,
           ),
         ),
       ),
@@ -172,11 +175,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         width: 80.w,
         height: 80.w,
         alignment: Alignment.center,
-        child: Icon(
-          Icons.backspace_outlined,
-          color: Colors.white,
-          size: 28.sp,
-        ),
+        child: Icon(Icons.backspace_outlined, color: Colors.white, size: 28.sp),
       ),
     );
   }

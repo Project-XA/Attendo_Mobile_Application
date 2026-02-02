@@ -1,7 +1,10 @@
 // core/routing/app_route.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_app/core/DI/get_it.dart';
 import 'package:mobile_app/core/DI/init_current_user_di.dart';
 import 'package:mobile_app/core/DI/init_user_attendace.dart';
+import 'package:mobile_app/core/DI/init_verify_get_it.dart';
 import 'package:mobile_app/core/DI/register_get_it.dart';
 import 'package:mobile_app/core/DI/scan_ocr_di.dart';
 import 'package:mobile_app/core/routing/routes.dart';
@@ -12,6 +15,8 @@ import 'package:mobile_app/features/navigation_screen/presentation/main_navigati
 import 'package:mobile_app/features/auth/presentation/register_screen.dart';
 import 'package:mobile_app/features/ocr/presentation/scan_id_screen.dart';
 import 'package:mobile_app/features/onboarding/start_page.dart';
+import 'package:mobile_app/features/verification/presentation/logic/verification_cubit.dart';
+import 'package:mobile_app/features/verification/presentation/verification_screen.dart';
 
 class AppRoute {
   Route generateRoute(RouteSettings settings) {
@@ -37,6 +42,14 @@ class AppRoute {
         page = const MainNavigationScreen();
         break;
 
+      case Routes.verficationScreen:
+        initVerifyScreen();
+        page = BlocProvider(
+          create: (context) => VerificationCubit(getIt(), getIt(), getIt()),
+          child: const VerificationScreen(),
+        );
+
+        break;
       case Routes.homePage:
         initUserAttendace();
         page = const UserDashboardScreen();

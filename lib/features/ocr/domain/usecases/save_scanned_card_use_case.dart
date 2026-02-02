@@ -65,7 +65,6 @@ class SaveScannedCardUseCase {
       profileImage: null,
     );
 
-    print("+++++++++++++++++++++++++++++++++++++++++++++++++++${userModel.idCardImage}");
 
     await _dataSource.saveLocalUserData(userModel);
   }
