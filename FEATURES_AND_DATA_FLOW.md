@@ -660,13 +660,4 @@ UserCubit → UseCase → Repository → Service → HTTP POST /check-in
 
 ---
 
-## Notes
-
-- **Naming**: Some folders have typos (`curren_user`, `session_mangement`) - these are legacy and noted in analysis report.
-- **Feature DI**: Each feature initializes its own dependencies when routes are accessed.
-- **Local-first**: User data stored in Hive; API used for sync/validation.
-- **Offline capability**: Limited - requires network for registration, session creation, check-in.
-
----
-
 **Last Updated**: January 2025
