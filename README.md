@@ -168,7 +168,6 @@ API configuration:
 - Authentication state (`AuthStateModel`)
 - Organization data (`OrganizationModel`, `UserOrgModel`)
 
-**SharedPreferences** is registered but currently unused (Hive is preferred).
 
 ## 📱 Permissions Required
 
@@ -195,17 +194,9 @@ After modifying models, regenerate:
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-## 🗂️ Project Structure Notes
-
-- **Naming inconsistencies**: Some folders use typos (`curren_user`, `session_mangement`, `repo_imp` vs `repos_imp`). These are noted in the project analysis report.
-- **Feature DI**: Each feature has its own DI setup function (e.g., `setupScanOcrFeature()`, `initCurrentUserDi()`).
-- **Route-based initialization**: Features are initialized when routes are accessed (see `app_route.dart`).
-
 ## 📚 Documentation
 
 - **[Features & Data Flow](./docs/FEATURES_AND_DATA_FLOW.md)**: Detailed feature documentation with data flow diagrams
-- **[Project Analysis Report](./PROJECT_ANALYSIS_REPORT.md)**: Analysis of unused files and structural issues
-- **[OCR Refactoring Plan](./docs/OCR_FEATURE_READABILITY_REUSABILITY_PLAN.md)**: Plan for improving OCR feature
 
 ## 🤝 Contributing
 
@@ -225,4 +216,3 @@ flutter pub run build_runner build --delete-conflicting-outputs
 
 ---
 
-**Note**: This is an active project. Some naming inconsistencies and unused files exist (see analysis report). The architecture is solid and follows Clean Architecture principles.
