@@ -2,6 +2,7 @@ import 'package:mobile_app/core/current_user/data/local_data_soruce/user_local_d
 import 'package:mobile_app/core/current_user/data/remote_data_source/user_remote_data_source.dart';
 import 'package:mobile_app/core/networking/api_error_model.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/create_session/create_session_request_model.dart';
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/save_attendance/save_attendance_request.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/save_attendance/save_attendance_response.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/server_info.dart';
@@ -40,6 +41,7 @@ class SessionRepositoryImpl implements SessionRepository {
     required String networkBSSID,
     required double latitude,
     required double longitude,
+    required int? hallId,
   }) async {
     final userData = await _localDataSource.getCurrentUser();
 
@@ -68,7 +70,7 @@ class SessionRepositoryImpl implements SessionRepository {
       networkBSSID: networkBSSID,
       startAt: startAt.toIso8601String(),
       endAt: endAt.toIso8601String(),
-      hallId: 1,
+      hallId: hallId!,
     );
 
     sessionId = await _remoteDataSource.createSession(requestModel);
@@ -133,8 +135,10 @@ class SessionRepositoryImpl implements SessionRepository {
     _allowedRadius = null;
   }
 
-@override
-  Future<SaveAttendanceResponse> saveAttendance(SaveAttendanceRequest request) async {
+  @override
+  Future<SaveAttendanceResponse> saveAttendance(
+    SaveAttendanceRequest request,
+  ) async {
     return await _remoteDataSource.saveAttendance(request);
   }
 
@@ -163,5 +167,24 @@ class SessionRepositoryImpl implements SessionRepository {
   @override
   Future<Session?> getCurrentActiveSession() async {
     return _currentSession;
+  }
+
+  @override
+  Future<GetAllHallsResponse> getAllHalls() async {
+    final userData = await _localDataSource.getCurrentUser();
+
+    final organizationId = userData.organizations?.isNotEmpty == true
+        ? userData.organizations!.first.organizationId
+        : null;
+
+    if (organizationId == null) {
+      throw const ApiErrorModel(
+        message: 'Invalid organization ID',
+        type: ApiErrorType.defaultError,
+        statusCode: 400,
+      );
+    }
+
+    return await _remoteDataSource.getAllHalls(organizationId);
   }
 }

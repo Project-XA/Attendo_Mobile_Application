@@ -7,6 +7,7 @@ import 'package:mobile_app/features/session_mangement/data/models/attendency_rec
 import 'package:mobile_app/features/session_mangement/domain/entities/session.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/create_session_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/end_session_use_case.dart';
+import 'package:mobile_app/features/session_mangement/domain/use_cases/get_all_halls_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/listen_attendence_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/start_session_server_use_case.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_state.dart';
@@ -16,6 +17,7 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
   final StartSessionServerUseCase startSessionServerUseCase;
   final EndSessionUseCase endSessionUseCase;
   final ListenAttendanceUseCase listenAttendanceUseCase;
+  final GetAllHallsUseCase getAllHallsUseCase;
 
   StreamSubscription<AttendanceRecord>? _attendanceSubscription;
   Timer? _sessionTimer;
@@ -26,15 +28,70 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
     required this.startSessionServerUseCase,
     required this.endSessionUseCase,
     required this.listenAttendanceUseCase,
+    required this.getAllHallsUseCase,
   }) : super(const SessionManagementInitial());
 
   Future<void> loadStats() async {
     try {
       emit(const SessionManagementLoading());
-      await Future.delayed(const Duration(milliseconds: 500));
-      emit(const SessionManagementIdle());
+      await loadHalls();
+    } on ApiErrorModel catch (error) {
+      final selectedTab = state is SessionManagementStateWithTab
+          ? (state as SessionManagementStateWithTab).selectedTabIndex
+          : 0;
+      emit(SessionError(error: error, selectedTabIndex: selectedTab));
     } catch (e) {
-      emit(SessionManagementError('Failed to load: $e'));
+      final selectedTab = state is SessionManagementStateWithTab
+          ? (state as SessionManagementStateWithTab).selectedTabIndex
+          : 0;
+      emit(
+        SessionError(
+          error: const ApiErrorModel(
+            message: 'Failed to load halls',
+            type: ApiErrorType.connectionError,
+            statusCode: 0,
+          ),
+          selectedTabIndex: selectedTab,
+        ),
+      );
+    }
+  }
+
+  Future<void> loadHalls() async {
+    final currentSelectedTab = state is SessionManagementStateWithTab
+        ? (state as SessionManagementStateWithTab).selectedTabIndex
+        : 0;
+
+    emit(
+      SessionManagementIdle(
+        selectedTabIndex: currentSelectedTab,
+        isLoadingHalls: true,
+      ),
+    );
+
+    try {
+      final halls = await getAllHallsUseCase();
+
+      emit(
+        SessionManagementIdle(
+          selectedTabIndex: currentSelectedTab,
+          halls: halls.halls,
+          isLoadingHalls: false,
+        ),
+      );
+    } on ApiErrorModel catch (error) {
+      emit(SessionError(error: error, selectedTabIndex: currentSelectedTab));
+    } catch (e) {
+      emit(
+        SessionError(
+          error: const ApiErrorModel(
+            message: 'Failed to load halls',
+            type: ApiErrorType.connectionError,
+            statusCode: 0,
+          ),
+          selectedTabIndex: currentSelectedTab,
+        ),
+      );
     }
   }
 
@@ -55,6 +112,7 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
     required TimeOfDay startTime,
     required int durationMinutes,
     required double allowedRadius,
+    required int? hallId,
   }) async {
     final currentState = state;
     if (currentState is! SessionManagementStateWithTab) return;
@@ -68,14 +126,15 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
         durationMinutes: durationMinutes,
         allowedRadius: allowedRadius,
         selectedTabIndex: currentState.selectedTabIndex,
+        hallId: hallId,
       );
 
       await _startServer(currentState.selectedTabIndex);
     } on ApiErrorModel catch (error) {
-      _handleSessionError(error, currentState.selectedTabIndex); 
+      _handleSessionError(error, currentState.selectedTabIndex);
     } catch (e) {
       _handleSessionError(
-        const ApiErrorModel( 
+        const ApiErrorModel(
           message: 'An unexpected error occurred',
           type: ApiErrorType.unknown,
           statusCode: 500,
@@ -85,7 +144,6 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
     }
   }
 
-
   Future<void> _createSession({
     required String name,
     required String location,
@@ -94,6 +152,7 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
     required int durationMinutes,
     required double allowedRadius,
     required int selectedTabIndex,
+    required int? hallId,
   }) async {
     final now = DateTime.now();
     final sessionStartTime = DateTime(
@@ -131,6 +190,7 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
       startTime: sessionStartTime,
       durationMinutes: durationMinutes,
       allowedRadius: allowedRadius,
+      hallId: hallId,
     );
 
     await Future.delayed(const Duration(milliseconds: 500));
@@ -183,7 +243,6 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
     }
 
     _sessionTimer = Timer(timeUntilEnd, () {
-      debugPrint('⏰ Session time expired - Auto ending session');
       _autoEndSession();
     });
 
@@ -192,7 +251,6 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
       _showWarning();
     } else {
       _warningTimer = Timer(warningTime, () {
-        debugPrint('⚠️ 5 minutes remaining - Showing warning');
         _showWarning();
       });
     }
@@ -216,13 +274,10 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
     final currentState = state;
     if (currentState is! SessionState) return;
 
-    debugPrint('🔴 Auto-ending session: ${currentState.session.name}');
-
     try {
       await endSession();
-    } catch (e) {
-      debugPrint('❌ Error auto-ending session: $e');
-    }
+      // ignore: empty_catches
+    } catch (e) {}
   }
 
   void _listenToAttendance(
@@ -257,7 +312,6 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
         });
       },
       onError: (error) {
-        debugPrint('❌ Attendance stream error: $error');
       },
     );
   }
@@ -296,7 +350,7 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
         SessionManagementIdle(selectedTabIndex: currentState.selectedTabIndex),
       );
     } on ApiErrorModel catch (error) {
-      _handleSessionError(error, currentState.selectedTabIndex); 
+      _handleSessionError(error, currentState.selectedTabIndex);
     } catch (e) {
       _handleSessionError(
         const ApiErrorModel(
@@ -309,16 +363,8 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
     }
   }
 
-  void _handleSessionError(
-    ApiErrorModel error, 
-    int selectedTabIndex,
-  ) {
-    emit(
-      SessionError(
-        error: error, 
-        selectedTabIndex: selectedTabIndex,
-      ),
-    );
+  void _handleSessionError(ApiErrorModel error, int selectedTabIndex) {
+    emit(SessionError(error: error, selectedTabIndex: selectedTabIndex));
 
     Future.delayed(const Duration(seconds: 3), () {
       if (state is SessionError) {
