@@ -8,6 +8,7 @@ import 'package:mobile_app/features/session_mangement/data/service/network_info_
 import 'package:mobile_app/features/session_mangement/domain/repos/session_repository.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/create_session_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/end_session_use_case.dart';
+import 'package:mobile_app/features/session_mangement/domain/use_cases/get_all_halls_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/listen_attendence_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/start_session_server_use_case.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_cubit.dart';
@@ -17,7 +18,6 @@ import 'package:mobile_app/features/session_mangement/presentation/logic/session
 void initSessionManagement() {
   if (getIt.isRegistered<SessionMangementCubit>()) return;
 
-  /// Services
   registerLazyIfNotRegistered<HttpServerService>(
     () => HttpServerService(),
   );
@@ -51,6 +51,10 @@ registerLazyIfNotRegistered<NetworkInfoService>(
     () => ListenAttendanceUseCase(getIt()),
   );
 
+  registerLazyIfNotRegistered<GetAllHallsUseCase>(
+    () => GetAllHallsUseCase(getIt()),
+  );
+
   /// Cubit
   getIt.registerFactory<SessionMangementCubit>(
     () => SessionMangementCubit(
@@ -58,6 +62,7 @@ registerLazyIfNotRegistered<NetworkInfoService>(
       startSessionServerUseCase: getIt(),
       endSessionUseCase: getIt(),
       listenAttendanceUseCase: getIt(),
+      getAllHallsUseCase: getIt(),
     ),
   );
 }

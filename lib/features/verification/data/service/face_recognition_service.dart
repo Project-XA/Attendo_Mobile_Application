@@ -1,3 +1,4 @@
+// face_recognition_service.dart
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:math' as math;
@@ -10,8 +11,9 @@ class FaceRecognitionService {
   static const int inputWidth = 112;
   static const int inputHeight = 112;
   static const int embeddingSize = 192;
-
-  static const double matchThreshold = 0.6;
+  static const double matchThreshold = 0.55;
+  static const double minFaceConfidence = 0.6;
+  static const double minFaceAreaRatio = 0.02;
 
   static Future<List<double>> extractEmbedding({
     required String imagePath,
@@ -82,11 +84,10 @@ class FaceRecognitionService {
 
       if (similarity < threshold) {
         throw FaceNotMatchedException(
-          'Two Faces are not equal: ${(similarity * 100).toStringAsFixed(1)}%',
+          'الوجهان غير متطابقين. نسبة التطابق: ${(similarity * 100).toStringAsFixed(1)}%',
           similarity,
         );
       }
-
       return true;
     } on FaceNotMatchedException {
       rethrow;
@@ -103,15 +104,19 @@ class FaceRecognitionService {
     try {
       final imageFile = File(imagePath);
       final imageBytes = await imageFile.readAsBytes();
-      final image = img.decodeImage(imageBytes);
+      var image = img.decodeImage(imageBytes);
 
       if (image == null) {
         throw Exception('Failed to decode image');
       }
 
-      final faceImage = _cropFace(image, faceDetection);
+      image = _alignFaceIfNeeded(image, faceDetection);
 
-      final input = _preprocessImage(faceImage);
+      final faceImage = _cropFaceImproved(image, faceDetection);
+
+      final enhancedImage = _enhanceImageLight(faceImage);
+
+      final input = _preprocessImage(enhancedImage);
 
       final interpreter = Interpreter.fromAddress(interpreterAddress);
 
@@ -136,30 +141,57 @@ class FaceRecognitionService {
     }
   }
 
-  static img.Image _cropFace(
+  static img.Image _alignFaceIfNeeded(
+    img.Image image,
+    FaceDetectionResult faceDetection,
+  ) {
+    final landmarks = faceDetection.landmarks;
+
+    final leftEye = landmarks.leftEye;
+    final rightEye = landmarks.rightEye;
+
+    final dY = rightEye.y - leftEye.y;
+    final dX = rightEye.x - leftEye.x;
+    final angle = math.atan2(dY, dX) * 180 / math.pi;
+
+    if (angle.abs() > 10) {
+      image = img.copyRotate(image, angle: -angle);
+    }
+    return image;
+  }
+
+  static img.Image _cropFaceImproved(
     img.Image image,
     FaceDetectionResult faceDetection,
   ) {
     final box = faceDetection.boundingBox;
 
-    const padding = 0.2;
+    const padding = 0.25;
+
     final expandedWidth = box.width * (1 + padding);
     final expandedHeight = box.height * (1 + padding);
+
+    final size = math.max(expandedWidth, expandedHeight);
 
     final centerX = box.centerX;
     final centerY = box.centerY;
 
-    var x = (centerX - expandedWidth / 2).round();
-    var y = (centerY - expandedHeight / 2).round();
-    var width = expandedWidth.round();
-    var height = expandedHeight.round();
-
+    var x = (centerX - size / 2).round();
+    var y = (centerY - size / 2).round();
+    var width = size.round();
+    var height = size.round();
     x = math.max(0, x);
     y = math.max(0, y);
     width = math.min(width, image.width - x);
     height = math.min(height, image.height - y);
 
     return img.copyCrop(image, x: x, y: y, width: width, height: height);
+  }
+
+  static img.Image _enhanceImageLight(img.Image image) {
+    image = img.contrast(image, contrast: 102);
+
+    return image;
   }
 
   static List<List<List<List<double>>>> _preprocessImage(img.Image image) {
@@ -202,7 +234,6 @@ class FaceRecognitionService {
 
       return normalized;
     }
-
     return embedList;
   }
 

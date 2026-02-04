@@ -37,16 +37,16 @@ class _RegisterFormState extends State<RegisterForm> {
   Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
       try {
-        //  final localDataSource = getIt<UserLocalDataSource>();
+        // final localDataSource = getIt<UserLocalDataSource>();
         // final localUserData = await localDataSource.getCurrentUser();
-        final user = UserModel(
-          nationalId: '123456667',
+         final user = UserModel(
+           nationalId: '123456667',
           firstNameAr: 'عادل',
-          lastNameAr: 'محمد',
-          address: 'أسيوط - مصر',
-          birthDate: '1999-05-10',
-          profileImage: null,
-        );
+         lastNameAr: 'محمد',
+         address: 'أسيوط - مصر',
+         birthDate: '1999-05-10',
+            profileImage: null,
+            );
 
         if (!mounted) return;
 

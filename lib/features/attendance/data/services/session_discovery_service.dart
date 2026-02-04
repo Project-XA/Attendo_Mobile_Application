@@ -56,7 +56,8 @@ class SessionDiscoveryService {
     _scanLocalNetwork();
 
     _discoveryTimer?.cancel();
-    _discoveryTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+    // ✅ تقليل المدة من 10 لـ 5 ثواني لاكتشاف أسرع
+    _discoveryTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       _scanLocalNetwork();
     });
   }
@@ -105,18 +106,26 @@ class SessionDiscoveryService {
     }
   }
 
-  Future<void> _checkSessionAt(String ip, int port) async {
-    try {
-      final response = await http
-          .get(Uri.parse('http://$ip:$port/health'))
-          .timeout(const Duration(seconds: 1)); // 
+  // ✅ زيادة الـ timeout وإضافة retry logic
+  Future<void> _checkSessionAt(String ip, int port, {int retries = 2}) async {
+    for (int attempt = 0; attempt <= retries; attempt++) {
+      try {
+        final response = await http
+            .get(Uri.parse('http://$ip:$port/health'))
+            .timeout(const Duration(seconds: 3)); // ✅ زيادة من 1 لـ 3 ثواني
 
-      if (response.statusCode == 200) {
-        await _verifyAndAddSession(ip, port);
+        if (response.statusCode == 200) {
+          await _verifyAndAddSession(ip, port);
+          return; 
+        }
+      } catch (_) {
+        if (attempt < retries) {
+          await Future.delayed(Duration(milliseconds: 500 * (attempt + 1)));
+          continue;
+        }
       }
-    } catch (_) {
-      // Silent fail - expected for non-session IPs
     }
+    // Silent fail after all retries
   }
 
   Future<void> _verifyAndAddSession(String host, int port) async {
@@ -150,7 +159,7 @@ class SessionDiscoveryService {
 
               // Create discovered session with full details
               final session = DiscoveredSession(
-                sessionId: sessionData['sessionId'],
+                sessionId: sessionData['sessionId'].toString(), // ✅ Ensure String
                 ipAddress: host,
                 port: port,
                 timestamp: DateTime.parse(sessionData['timestamp']),
@@ -169,10 +178,12 @@ class SessionDiscoveryService {
           _discoveredSessionIds.add(sessionKey);
 
           final session = DiscoveredSession(
-            sessionId: healthData['sessionId'],
+            sessionId: healthData['sessionId'].toString(), // ✅ Ensure String
             ipAddress: host,
             port: port,
             timestamp: DateTime.parse(healthData['timestamp']),
+            name: healthData['name'],
+            location: healthData['location'],
           );
 
           _sessionController?.add(session);
@@ -183,7 +194,7 @@ class SessionDiscoveryService {
     }
   }
 
-  // Get local IP address
+  // ✅ Get local IP address with proper private IP validation
   Future<String?> _getLocalIpAddress() async {
     try {
       final interfaces = await NetworkInterface.list(
@@ -192,11 +203,7 @@ class SessionDiscoveryService {
 
       for (var interface in interfaces) {
         for (var addr in interface.addresses) {
-          //  Check for both 192.168.x.x or 10.x.x.x  or 172.networks
-          if (!addr.isLoopback &&
-              (addr.address.startsWith('192.168') ||
-                  addr.address.startsWith('10.') ||
-                  addr.address.startsWith('172.'))) {
+          if (!addr.isLoopback && _isPrivateIP(addr.address)) {
             return addr.address;
           }
         }
@@ -205,6 +212,35 @@ class SessionDiscoveryService {
       return null;
     } catch (e) {
       return null;
+    }
+  }
+
+  bool _isPrivateIP(String ip) {
+    final parts = ip.split('.');
+    if (parts.length != 4) return false;
+
+    try {
+      final first = int.parse(parts[0]);
+      final second = int.parse(parts[1]);
+
+      // Class A: 10.0.0.0 - 10.255.255.255
+      if (first == 10) {
+        return true;
+      }
+
+      // Class B: 172.16.0.0 - 172.31.255.255
+      if (first == 172 && second >= 16 && second <= 31) {
+        return true;
+      }
+
+      // Class C: 192.168.0.0 - 192.168.255.255
+      if (first == 192 && second == 168) {
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      return false;
     }
   }
 

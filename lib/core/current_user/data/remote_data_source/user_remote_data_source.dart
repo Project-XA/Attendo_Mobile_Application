@@ -5,6 +5,7 @@ import 'package:mobile_app/features/attendance/data/models/get-user-statistics/g
 import 'package:mobile_app/features/auth/data/models/register_request_body.dart';
 import 'package:mobile_app/features/auth/data/models/register_response_body.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/create_session/create_session_request_model.dart';
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/save_attendance/save_attendance_request.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/save_attendance/save_attendance_response.dart';
 
@@ -14,6 +15,7 @@ abstract class UserRemoteDataSource {
   Future<int> createSession(CreateSessionRequestModel createSessionRequest);
   Future<GetUserStatistictsResponseModel> getUserStatistics();
   Future<SaveAttendanceResponse> saveAttendance(SaveAttendanceRequest request);
+  Future<GetAllHallsResponse> getAllHalls(int organizationId);
 }
 
 class UserRemoteDataSourceImp implements UserRemoteDataSource {
@@ -77,6 +79,23 @@ class UserRemoteDataSourceImp implements UserRemoteDataSource {
 
       final data = response.data['data'] as Map<String, dynamic>;
       return GetUserStatistictsResponseModel.fromJson(data);
+    } catch (e) {
+      throw ApiErrorHandler.handle(e);
+    }
+  }
+
+  @override
+  Future<GetAllHallsResponse> getAllHalls(int organizationId) async {
+    try {
+      final response = await networkService.get(
+        ApiConst.getAllHalls(organizationId),
+      );
+
+      final hallsList = (response.data['data'] as List<dynamic>)
+          .map((json) => HallInfo.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      return GetAllHallsResponse(halls: hallsList);
     } catch (e) {
       throw ApiErrorHandler.handle(e);
     }

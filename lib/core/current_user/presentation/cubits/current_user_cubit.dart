@@ -26,14 +26,6 @@ class CurrentUserCubit extends Cubit<CurrentUserState> {
     try {
       emit(const CurrentUserLoading());
       final user = await _getCurrentUserUseCase.call();
-      // final user = User(
-      //   nationalId: '123456667',
-      //   firstNameAr: 'عادل',
-      //   lastNameAr: 'محمد',
-      //   address: 'أسيوط - مصر',
-      //   birthDate: '1999-05-10',
-      //   profileImage: null,
-      // );
       emit(CurrentUserLoaded(user));
     } catch (e) {
       emit(CurrentUserError('Failed to load user: $e'));
@@ -86,6 +78,7 @@ class CurrentUserCubit extends Cubit<CurrentUserState> {
         lastNameEn: currentState.user.lastNameEn,
         organizations: currentState.user.organizations,
         profileImage: currentState.user.profileImage,
+        pinCode: currentState.user.pinCode, // Keep existing PIN
       );
 
       await _updateUserUseCase.call(updatedUser);
@@ -94,6 +87,40 @@ class CurrentUserCubit extends Cubit<CurrentUserState> {
       emit(CurrentUserLoaded(updatedUser));
     } catch (e) {
       emit(CurrentUserError('Failed to update user: $e'));
+      emit(CurrentUserLoaded(currentState.user));
+    }
+  }
+
+  Future<void> updatePinCode(String hashedPin) async {
+    final currentState = state;
+    if (currentState is! CurrentUserLoaded) {
+      emit(const CurrentUserError('No user loaded'));
+      return;
+    }
+
+    try {
+      emit(CurrentUserUpdating(currentState.user));
+
+      final updatedUser = User(
+        nationalId: currentState.user.nationalId,
+        firstNameAr: currentState.user.firstNameAr,
+        lastNameAr: currentState.user.lastNameAr,
+        address: currentState.user.address,
+        birthDate: currentState.user.birthDate,
+        email: currentState.user.email,
+        firstNameEn: currentState.user.firstNameEn,
+        lastNameEn: currentState.user.lastNameEn,
+        organizations: currentState.user.organizations,
+        profileImage: currentState.user.profileImage,
+        pinCode: hashedPin, // Update PIN
+      );
+
+      await _updateUserUseCase.call(updatedUser);
+      emit(CurrentUserUpdated(updatedUser));
+      await Future.delayed(const Duration(milliseconds: 300));
+      emit(CurrentUserLoaded(updatedUser));
+    } catch (e) {
+      emit(CurrentUserError('Failed to update PIN: $e'));
       emit(CurrentUserLoaded(currentState.user));
     }
   }

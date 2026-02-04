@@ -107,7 +107,7 @@ class UserCubit extends Cubit<UserState> {
       emit(
         UserIdle(
           stats: _getStatsFromState(currentState),
-          hasStatsError: _getErrorStateFromState(currentState), // ✅
+          hasStatsError: _getErrorStateFromState(currentState), 
         ),
       );
     }

@@ -81,6 +81,8 @@ class RegisterRepoImp implements RegisterRepo {
       await onboardingService.markOnboardingComplete(
         apiResponse.userResponse.role,
       );
+      await onboardingService.markOCRComplete();
+      await onboardingService.markVerificationComplete();
 
       await onboardingService.markLoggedIn(apiResponse.userResponse.role);
       return ApiResult.success(completeUserData);
