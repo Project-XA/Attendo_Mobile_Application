@@ -6,6 +6,9 @@ class Routes {
   static const String adminDashboard = '/adminDashboard';
   static const String profileScreen = '/profile_screen';
   static const String registerScreen = '/registerScreen';
+  static const String forgotPasswordScreen = '/forgotPasswordScreen';
+  static const String verifyResetPasswordOtpScreen =
+      '/verifyResetPasswordOtpScreen';
   static const String mainNavigation = '/main-navigation';
   static const String verficationScreen = '/verificationScreen';
 }

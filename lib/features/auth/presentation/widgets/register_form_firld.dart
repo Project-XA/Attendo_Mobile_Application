@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_app/core/routing/routes.dart';
+import 'package:mobile_app/core/services/UI/extensions.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
+import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:mobile_app/features/auth/presentation/widgets/field_label.dart';
 import 'package:mobile_app/features/auth/presentation/widgets/password_field.dart';
@@ -30,6 +33,8 @@ class RegisterFormFields extends StatelessWidget {
         _buildEmailField(),
         verticalSpace(15.h),
         PasswordField(controller: passwordController),
+        verticalSpace(8.h),
+        _buildForgotPasswordButton(context),
       ],
     );
   }
@@ -81,6 +86,25 @@ class RegisterFormFields extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildForgotPasswordButton(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: TextButton(
+        onPressed: () {
+          context.pushNamed(Routes.forgotPasswordScreen);
+        },
+        child: Text(
+          'Forgot Password?',
+          style: TextStyle(
+            fontSize: 13.sp,
+            fontWeight: FontWeight.w500,
+            color: AppColors.mainTextColorBlack.withOpacity(0.7),
+          ),
+        ),
+      ),
     );
   }
 

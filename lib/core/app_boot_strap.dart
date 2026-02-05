@@ -38,7 +38,7 @@ class _AppBootstrapState extends State<AppBootstrap> {
     String? routeArgument;
 
     if (!hasCompletedOCR) {
-      initialRoute = Routes.startPage;
+      initialRoute = Routes.registerScreen;//TODO: change to start page
     } else if (!hasRegistered) {
       initialRoute = Routes.registerScreen;
     } else if (!isLoggedIn) {

@@ -7,7 +7,10 @@ import 'package:mobile_app/core/DI/init_user_attendace.dart';
 import 'package:mobile_app/core/DI/init_verify_get_it.dart';
 import 'package:mobile_app/core/DI/register_get_it.dart';
 import 'package:mobile_app/core/DI/scan_ocr_di.dart';
+import 'package:mobile_app/core/DI/forgot_password_get_it.dart';
 import 'package:mobile_app/core/routing/routes.dart';
+import 'package:mobile_app/features/auth/presentation/forgot_password_screen.dart';
+import 'package:mobile_app/features/auth/presentation/verify_reset_password_otp_screen.dart';
 import 'package:mobile_app/features/session_mangement/presentation/admin_dashboard.dart';
 import 'package:mobile_app/features/profile/presentation/profile_screen.dart';
 import 'package:mobile_app/features/attendance/presentation/user_dashboard_screen.dart';
@@ -35,6 +38,17 @@ class AppRoute {
       case Routes.registerScreen:
         initRegister();
         page = const RegisterScreen();
+        break;
+
+      case Routes.forgotPasswordScreen:
+        initForgotPassword();
+        page = const ForgotPasswordScreen();
+        break;
+
+      case Routes.verifyResetPasswordOtpScreen:
+        initForgotPassword();
+        final email = (settings.arguments is String) ? settings.arguments as String : '';
+        page = VerifyResetPasswordOtpScreen(email: email);
         break;
 
       case Routes.mainNavigation:

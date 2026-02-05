@@ -10,11 +10,15 @@ import 'package:mobile_app/core/widgets/custom_app_button.dart';
 class RegisterSubmitButton extends StatelessWidget {
   final bool isLoading;
   final VoidCallback onPressed;
+  final String text;
+  final IconData icon;
 
   const RegisterSubmitButton({
     super.key,
     required this.isLoading,
     required this.onPressed,
+    this.text = 'Add Account',
+    this.icon = Icons.arrow_forward_rounded,
   });
 
   @override
@@ -38,7 +42,7 @@ class RegisterSubmitButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Add Account',
+                  text,
                   style: AppTextStyle.font14MediamGrey.copyWith(
                     color: AppColors.backGroundColorWhite,
                     fontWeight: FontWeightHelper.semiBold,
@@ -48,7 +52,7 @@ class RegisterSubmitButton extends StatelessWidget {
                 ),
                 horizontalSpace(8.w),
                 Icon(
-                  Icons.arrow_forward_rounded,
+                  icon,
                   color: AppColors.backGroundColorWhite,
                   size: 20.sp,
                 ),
