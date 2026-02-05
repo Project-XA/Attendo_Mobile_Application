@@ -10,6 +10,7 @@ import 'package:mobile_app/features/session_mangement/domain/use_cases/end_sessi
 import 'package:mobile_app/features/session_mangement/domain/use_cases/get_all_halls_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/listen_attendence_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/start_session_server_use_case.dart';
+import 'package:mobile_app/features/session_mangement/domain/use_cases/delete_current_session_use_case.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_state.dart';
 
 class SessionMangementCubit extends Cubit<SessionManagementState> {
@@ -18,6 +19,7 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
   final EndSessionUseCase endSessionUseCase;
   final ListenAttendanceUseCase listenAttendanceUseCase;
   final GetAllHallsUseCase getAllHallsUseCase;
+  final DeleteCurrentSessionUseCase deleteCurrentSessionUseCase;
 
   StreamSubscription<AttendanceRecord>? _attendanceSubscription;
   Timer? _sessionTimer;
@@ -29,6 +31,7 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
     required this.endSessionUseCase,
     required this.listenAttendanceUseCase,
     required this.getAllHallsUseCase,
+    required this.deleteCurrentSessionUseCase,
   }) : super(const SessionManagementInitial());
 
   Future<void> loadStats() async {
@@ -355,6 +358,53 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
       _handleSessionError(
         const ApiErrorModel(
           message: 'Failed to end session',
+          type: ApiErrorType.unknown,
+          statusCode: 500,
+        ),
+        currentState.selectedTabIndex,
+      );
+    }
+  }
+
+  Future<void> deleteSession() async {
+    final currentState = state;
+    if (currentState is! SessionState) return;
+
+    try {
+      emit(currentState.copyWith(operation: SessionOperation.deleting));
+
+      _sessionTimer?.cancel();
+      _sessionTimer = null;
+      _warningTimer?.cancel();
+      _warningTimer = null;
+
+      await _attendanceSubscription?.cancel();
+      _attendanceSubscription = null;
+
+      await deleteCurrentSessionUseCase();
+
+      final deletedSession = currentState.session.copyWith(
+        status: SessionStatus.ended,
+      );
+
+      emit(
+        currentState.copyWith(
+          session: deletedSession,
+          operation: SessionOperation.deleted,
+        ),
+      );
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      emit(
+        SessionManagementIdle(selectedTabIndex: currentState.selectedTabIndex),
+      );
+    } on ApiErrorModel catch (error) {
+      _handleSessionError(error, currentState.selectedTabIndex);
+    } catch (e) {
+      _handleSessionError(
+        const ApiErrorModel(
+          message: 'Failed to delete session',
           type: ApiErrorType.unknown,
           statusCode: 500,
         ),

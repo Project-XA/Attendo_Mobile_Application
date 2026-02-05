@@ -29,4 +29,5 @@ abstract class SessionRepository {
   Future<Session?> getCurrentActiveSession();
   Future<SaveAttendanceResponse> saveAttendance(SaveAttendanceRequest request);
   Future<GetAllHallsResponse> getAllHalls();
+  Future<void> deleteCurrentSession();
 }

@@ -7,23 +7,18 @@ import 'package:mobile_app/features/session_mangement/data/service/http_server_s
 import 'package:mobile_app/features/session_mangement/data/service/network_info_service.dart';
 import 'package:mobile_app/features/session_mangement/domain/repos/session_repository.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/create_session_use_case.dart';
+import 'package:mobile_app/features/session_mangement/domain/use_cases/delete_current_session_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/end_session_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/get_all_halls_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/listen_attendence_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/start_session_server_use_case.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_cubit.dart';
 
-
-
 void initSessionManagement() {
   if (getIt.isRegistered<SessionMangementCubit>()) return;
 
-  registerLazyIfNotRegistered<HttpServerService>(
-    () => HttpServerService(),
-  );
-registerLazyIfNotRegistered<NetworkInfoService>(
-    () => NetworkInfoService(),
-  );
+  registerLazyIfNotRegistered<HttpServerService>(() => HttpServerService());
+  registerLazyIfNotRegistered<NetworkInfoService>(() => NetworkInfoService());
 
   /// Repository
   registerLazyIfNotRegistered<SessionRepository>(
@@ -36,7 +31,7 @@ registerLazyIfNotRegistered<NetworkInfoService>(
 
   /// Use Cases
   registerLazyIfNotRegistered<CreateSessionUseCase>(
-    () => CreateSessionUseCase(getIt(),getIt()) ,
+    () => CreateSessionUseCase(getIt(), getIt()),
   );
 
   registerLazyIfNotRegistered<StartSessionServerUseCase>(
@@ -54,6 +49,9 @@ registerLazyIfNotRegistered<NetworkInfoService>(
   registerLazyIfNotRegistered<GetAllHallsUseCase>(
     () => GetAllHallsUseCase(getIt()),
   );
+  registerLazyIfNotRegistered<DeleteCurrentSessionUseCase>(
+    () => DeleteCurrentSessionUseCase(getIt()),
+  );
 
   /// Cubit
   getIt.registerFactory<SessionMangementCubit>(
@@ -63,6 +61,7 @@ registerLazyIfNotRegistered<NetworkInfoService>(
       endSessionUseCase: getIt(),
       listenAttendanceUseCase: getIt(),
       getAllHallsUseCase: getIt(),
+      deleteCurrentSessionUseCase: getIt(),
     ),
   );
 }

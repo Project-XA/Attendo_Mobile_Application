@@ -187,4 +187,15 @@ class SessionRepositoryImpl implements SessionRepository {
 
     return await _remoteDataSource.getAllHalls(organizationId);
   }
+
+  @override
+  Future<void> deleteCurrentSession() async {
+    await _serverService.stopServer();
+    _currentSession = _currentSession!.copyWith(status: SessionStatus.ended);
+    _currentSession = null;
+
+    _sessionLatitude = null;
+    _sessionLongitude = null;
+    _allowedRadius = null;
+  }
 }
