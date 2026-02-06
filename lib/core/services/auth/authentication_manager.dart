@@ -14,7 +14,6 @@ class AuthenticationManager {
   Future<bool> authenticate(BuildContext context) async {
     try {
       final hasBiometric = await _authService.canUseBiometric();
-
       if (hasBiometric) {
         final bioResult = await _authService.authenticateWithBiometric();
         if (bioResult) {
@@ -65,7 +64,6 @@ class AuthenticationManager {
 
     try {
       await currentUserCubit.updatePinCode(hashedPin);
-
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -76,11 +74,7 @@ class AuthenticationManager {
         );
       }
 
-      if (context.mounted) {
-        return await _verifyExistingPin(context, hashedPin);
-      }
-
-      return false;
+      return true;
     } catch (e) {
       debugPrint('Error saving PIN: $e');
       if (context.mounted) {
@@ -92,8 +86,9 @@ class AuthenticationManager {
 
   Future<bool> _verifyExistingPin(
     BuildContext context,
-    String storedHashedPin,
-  ) async {
+    String storedHashedPin, {
+    int attemptNumber = 1,
+  }) async {
     final enteredPin = await Navigator.push<String>(
       context,
       MaterialPageRoute(builder: (_) => const PinVerifyScreen()),
@@ -108,12 +103,25 @@ class AuthenticationManager {
     if (!isCorrect) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Wrong PIN. Please try again.'),
+          SnackBar(
+            content: Text(
+              'Wrong PIN. ${attemptNumber < 3 ? 'Please try again.' : 'Maximum attempts reached.'}',
+            ),
             backgroundColor: Colors.red,
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ),
         );
+
+        if (attemptNumber < 3) {
+          await Future.delayed(const Duration(seconds: 2));
+          if (context.mounted) {
+            return await _verifyExistingPin(
+              context,
+              storedHashedPin,
+              attemptNumber: attemptNumber + 1,
+            );
+          }
+        }
       }
       return false;
     }

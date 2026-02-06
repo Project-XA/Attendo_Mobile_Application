@@ -74,7 +74,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     final currentPin = _isConfirming ? _confirmPin : _pin;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF2C2C2E),
+      backgroundColor: AppColors.backGroundColorWhite,
       body: SafeArea(
         child: Column(
           children: [
@@ -82,7 +82,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
             Text(
               _isConfirming ? 'Confirm your PIN' : 'Enter your PIN to log in',
               style: TextStyle(
-                color: AppColors.backGroundColorWhite,
+                color: AppColors.mainTextColorBlack,
                 fontSize: 20.sp,
                 fontWeight: FontWeightHelper.medium,
               ),
@@ -109,8 +109,8 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: index < pin.length
-                ? AppColors.backGroundColorWhite
-                : AppColors.backGroundColorWhite.withOpacity(0.3),
+                ? AppColors.mainTextColorBlack
+                : AppColors.mainTextColorBlack.withOpacity(0.3),
           ),
         );
       }),
@@ -159,7 +159,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         child: Text(
           number,
           style: TextStyle(
-            color: AppColors.backGroundColorWhite,
+            color: AppColors.mainTextColorBlack,
             fontSize: 32.sp,
             fontWeight: FontWeightHelper.light,
           ),
@@ -177,7 +177,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         alignment: Alignment.center,
         child: Icon(
           Icons.backspace_outlined,
-          color: AppColors.backGroundColorWhite,
+          color: AppColors.mainTextColorBlack,
           size: 28.sp,
         ),
       ),

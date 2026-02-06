@@ -21,7 +21,11 @@ class _PinVerifyScreenState extends State<PinVerifyScreen> {
       });
 
       if (_pin.length == 4) {
-        Navigator.pop(context, _pin);
+        Future.delayed(const Duration(milliseconds: 200), () {
+          if (mounted) {
+            Navigator.pop(context, _pin);
+          }
+        });
       }
     }
   }
@@ -37,14 +41,14 @@ class _PinVerifyScreenState extends State<PinVerifyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF2C2C2E),
+      backgroundColor: AppColors.backGroundColorWhite,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back,
-            color: AppColors.backGroundColorWhite,
+            color: AppColors.mainTextColorBlack,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -56,7 +60,7 @@ class _PinVerifyScreenState extends State<PinVerifyScreen> {
             Text(
               'Enter your PIN',
               style: TextStyle(
-                color: AppColors.backGroundColorWhite,
+                color: AppColors.mainTextColorBlack,
                 fontSize: 24.sp,
                 fontWeight: FontWeightHelper.semiBold,
               ),
@@ -65,7 +69,7 @@ class _PinVerifyScreenState extends State<PinVerifyScreen> {
             Text(
               'Enter your 4-digit PIN to check in',
               style: TextStyle(
-                color: AppColors.backGroundColorWhite.withOpacity(0.7),
+                color: AppColors.mainTextColorBlack.withOpacity(0.7),
                 fontSize: 14.sp,
                 fontWeight: FontWeightHelper.regular,
               ),
@@ -92,10 +96,10 @@ class _PinVerifyScreenState extends State<PinVerifyScreen> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: index < _pin.length
-                ? AppColors.backGroundColorWhite
-                : AppColors.backGroundColorWhite.withOpacity(0.3),
+                ? AppColors.mainTextColorBlack
+                : AppColors.mainTextColorBlack.withOpacity(0.3),
             border: Border.all(
-              color: AppColors.backGroundColorWhite.withOpacity(0.5),
+              color: AppColors.mainTextColorBlack.withOpacity(0.5),
               width: 1,
             ),
           ),
@@ -150,14 +154,14 @@ class _PinVerifyScreenState extends State<PinVerifyScreen> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: AppColors.backGroundColorWhite.withOpacity(0.2),
+            color: AppColors.mainTextColorBlack.withOpacity(0.2),
             width: 1,
           ),
         ),
         child: Text(
           number,
           style: TextStyle(
-            color: AppColors.backGroundColorWhite,
+            color: AppColors.mainTextColorBlack,
             fontSize: 28.sp,
             fontWeight: FontWeightHelper.regular,
           ),
@@ -176,7 +180,7 @@ class _PinVerifyScreenState extends State<PinVerifyScreen> {
         alignment: Alignment.center,
         child: Icon(
           Icons.backspace_outlined,
-          color: AppColors.backGroundColorWhite,
+          color: AppColors.mainTextColorBlack,
           size: 24.sp,
         ),
       ),
