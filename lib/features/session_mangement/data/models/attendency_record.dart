@@ -51,11 +51,12 @@ class AttendanceRecord {
     return AttendanceLogItem(
       userId: userId,
       timeStamp: checkInTime.toIso8601String(),
-      result: AttendanceResult.present, 
-      proofSignature: signature,
-      verificationId: null, 
+      result: AttendanceResult.present,
+      proofSignature: "adel",
+      verificationId: null,
     );
   }
+
   // Create from JSON
   factory AttendanceRecord.fromJson(Map<String, dynamic> json) {
     return AttendanceRecord(

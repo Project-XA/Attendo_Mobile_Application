@@ -12,6 +12,7 @@ import 'package:mobile_app/features/session_mangement/domain/use_cases/listen_at
 import 'package:mobile_app/features/session_mangement/domain/use_cases/start_session_server_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/delete_current_session_use_case.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_state.dart';
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
 
 class SessionMangementCubit extends Cubit<SessionManagementState> {
   final CreateSessionUseCase createSessionUseCase;
@@ -24,6 +25,8 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
   StreamSubscription<AttendanceRecord>? _attendanceSubscription;
   Timer? _sessionTimer;
   Timer? _warningTimer;
+
+  List<HallInfo>? _cachedHalls;
 
   SessionMangementCubit({
     required this.createSessionUseCase,
@@ -68,6 +71,7 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
     emit(
       SessionManagementIdle(
         selectedTabIndex: currentSelectedTab,
+        halls: _cachedHalls, 
         isLoadingHalls: true,
       ),
     );
@@ -75,10 +79,12 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
     try {
       final halls = await getAllHallsUseCase();
 
+      _cachedHalls = halls.halls;
+
       emit(
         SessionManagementIdle(
           selectedTabIndex: currentSelectedTab,
-          halls: halls.halls,
+          halls: _cachedHalls,
           isLoadingHalls: false,
         ),
       );
@@ -350,7 +356,10 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
       await Future.delayed(const Duration(seconds: 2));
 
       emit(
-        SessionManagementIdle(selectedTabIndex: currentState.selectedTabIndex),
+        SessionManagementIdle(
+          selectedTabIndex: currentState.selectedTabIndex,
+          halls: _cachedHalls, 
+        ),
       );
     } on ApiErrorModel catch (error) {
       _handleSessionError(error, currentState.selectedTabIndex);
@@ -396,8 +405,12 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
 
       await Future.delayed(const Duration(seconds: 2));
 
+      // ✅ ارجع للـ Idle مع الـ halls المحفوظة
       emit(
-        SessionManagementIdle(selectedTabIndex: currentState.selectedTabIndex),
+        SessionManagementIdle(
+          selectedTabIndex: currentState.selectedTabIndex,
+          halls: _cachedHalls, // ✅ مهم جداً!
+        ),
       );
     } on ApiErrorModel catch (error) {
       _handleSessionError(error, currentState.selectedTabIndex);
@@ -418,7 +431,12 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
 
     Future.delayed(const Duration(seconds: 3), () {
       if (state is SessionError) {
-        emit(SessionManagementIdle(selectedTabIndex: selectedTabIndex));
+        emit(
+          SessionManagementIdle(
+            selectedTabIndex: selectedTabIndex,
+            halls: _cachedHalls, 
+          ),
+        );
       }
     });
   }

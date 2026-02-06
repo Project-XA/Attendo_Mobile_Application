@@ -121,11 +121,15 @@ class AttendanceCardWidget extends StatelessWidget {
           children: [
             Icon(Icons.badge, size: 12.sp, color: Colors.grey.shade600),
             horizontalSpace(4.w),
-            Text(
-              'ID: ${record.userId}',
-              style: AppTextStyle.font14MediamGrey.copyWith(
-                fontSize: 12.sp,
-                color: Colors.grey.shade600,
+            Flexible(
+              child: Text(
+                'ID: ${record.userId}',
+                style: AppTextStyle.font14MediamGrey.copyWith(
+                  fontSize: 11.sp, 
+                  color: Colors.grey.shade600,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis, 
               ),
             ),
           ],

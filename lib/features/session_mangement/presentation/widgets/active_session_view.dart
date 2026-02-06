@@ -185,14 +185,17 @@ class ActiveSessionView extends StatelessWidget {
                 height: 45.h,
                 decoration: BoxDecoration(
                   color: AppColors.backGroundColorWhite,
-                  border: Border.all(color: Colors.red, width: 2),
+                  border: Border.all(
+                    color: AppColors.mainTextColorBlack,
+                    width: 2,
+                  ),
                   borderRadius: BorderRadius.circular(20.r),
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   'Delete',
                   style: AppTextStyle.font14MediamGrey.copyWith(
-                    color: Colors.red,
+                    color: AppColors.mainTextColorBlack,
                     fontWeight: FontWeightHelper.medium,
                     fontSize: 16.sp,
                   ),

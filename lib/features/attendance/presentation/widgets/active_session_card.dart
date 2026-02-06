@@ -216,7 +216,7 @@ class ActiveSessionCard extends StatelessWidget {
     final isAuthenticated = await authManager.authenticate(context);
 
     if (context.mounted) {
-      Navigator.of(context).pop(); 
+      Navigator.of(context).pop();
     }
 
     if (!isAuthenticated) {
@@ -237,7 +237,7 @@ class ActiveSessionCard extends StatelessWidget {
     if (user != null) {
       context.read<UserCubit>().checkIn(
         session,
-        userId: user.nationalId,
+        userId: user.id!,
         userName: user.fullNameEn,
       );
     }
@@ -248,9 +248,7 @@ class ActiveSessionCard extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (context) => const Center(
-        child: CircularProgressIndicator(
-          color: AppColors.backGroundColorWhite,
-        ),
+        child: CircularProgressIndicator(color: AppColors.backGroundColorWhite),
       ),
     );
   }

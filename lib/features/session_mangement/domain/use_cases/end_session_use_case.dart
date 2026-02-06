@@ -9,10 +9,12 @@ class EndSessionUseCase {
   EndSessionUseCase(this._repository);
 
   Future<void> call(int sessionId, Session session) async {
+
     if (session.attendanceList.isNotEmpty) {
       final attendanceLogs = session.attendanceList
           .map((record) => record.toAttendanceLogItem())
           .toList();
+
       
       final request = SaveAttendanceRequest(
         sessionId: sessionId,

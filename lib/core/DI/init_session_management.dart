@@ -1,7 +1,10 @@
 import 'package:mobile_app/core/DI/get_it.dart';
 import 'package:mobile_app/core/current_user/data/local_data_soruce/user_local_data_source.dart';
 import 'package:mobile_app/core/current_user/data/remote_data_source/user_remote_data_source.dart';
+import 'package:mobile_app/core/networking/network_service.dart';
 import 'package:mobile_app/core/utils/register_lazy_if_not_registered.dart';
+import 'package:mobile_app/features/session_mangement/data/data_source/local_hall_data_source.dart';
+import 'package:mobile_app/features/session_mangement/data/data_source/remote_hall_data_source.dart';
 import 'package:mobile_app/features/session_mangement/data/repo_imp/session_repository_impl.dart';
 import 'package:mobile_app/features/session_mangement/data/service/http_server_service.dart';
 import 'package:mobile_app/features/session_mangement/data/service/network_info_service.dart';
@@ -17,19 +20,29 @@ import 'package:mobile_app/features/session_mangement/presentation/logic/session
 void initSessionManagement() {
   if (getIt.isRegistered<SessionMangementCubit>()) return;
 
+  // Services
   registerLazyIfNotRegistered<HttpServerService>(() => HttpServerService());
   registerLazyIfNotRegistered<NetworkInfoService>(() => NetworkInfoService());
 
-  /// Repository
+  registerLazyIfNotRegistered<RemoteHallDataSource>(
+    () => RemoteHallDataSourceImpl(networkService: getIt<NetworkService>()),
+  );
+
+  registerLazyIfNotRegistered<LocalHallDataSource>(
+    () => LocalHallDataSourceImpl(),
+  );
+
   registerLazyIfNotRegistered<SessionRepository>(
     () => SessionRepositoryImpl(
       serverService: getIt<HttpServerService>(),
       remoteDataSource: getIt<UserRemoteDataSource>(),
       localDataSource: getIt<UserLocalDataSource>(),
+      localHallDataSource: getIt<LocalHallDataSource>(),
+      remoteHallDataSource: getIt<RemoteHallDataSource>(),
     ),
   );
 
-  /// Use Cases
+  // Use Cases
   registerLazyIfNotRegistered<CreateSessionUseCase>(
     () => CreateSessionUseCase(getIt(), getIt()),
   );
@@ -49,11 +62,12 @@ void initSessionManagement() {
   registerLazyIfNotRegistered<GetAllHallsUseCase>(
     () => GetAllHallsUseCase(getIt()),
   );
+
   registerLazyIfNotRegistered<DeleteCurrentSessionUseCase>(
     () => DeleteCurrentSessionUseCase(getIt()),
   );
 
-  /// Cubit
+  // Cubit
   getIt.registerFactory<SessionMangementCubit>(
     () => SessionMangementCubit(
       createSessionUseCase: getIt(),
