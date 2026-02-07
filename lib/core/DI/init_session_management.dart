@@ -1,10 +1,9 @@
 import 'package:mobile_app/core/DI/get_it.dart';
 import 'package:mobile_app/core/current_user/data/local_data_soruce/user_local_data_source.dart';
-import 'package:mobile_app/core/current_user/data/remote_data_source/user_remote_data_source.dart';
 import 'package:mobile_app/core/networking/network_service.dart';
 import 'package:mobile_app/core/utils/register_lazy_if_not_registered.dart';
-import 'package:mobile_app/features/session_mangement/data/data_source/local_hall_data_source.dart';
-import 'package:mobile_app/features/session_mangement/data/data_source/remote_hall_data_source.dart';
+import 'package:mobile_app/features/session_mangement/data/data_source/local_session_data_source.dart';
+import 'package:mobile_app/features/session_mangement/data/data_source/remote_session_data_source.dart';
 import 'package:mobile_app/features/session_mangement/data/repo_imp/session_repository_impl.dart';
 import 'package:mobile_app/features/session_mangement/data/service/http_server_service.dart';
 import 'package:mobile_app/features/session_mangement/data/service/network_info_service.dart';
@@ -24,21 +23,20 @@ void initSessionManagement() {
   registerLazyIfNotRegistered<HttpServerService>(() => HttpServerService());
   registerLazyIfNotRegistered<NetworkInfoService>(() => NetworkInfoService());
 
-  registerLazyIfNotRegistered<RemoteHallDataSource>(
-    () => RemoteHallDataSourceImpl(networkService: getIt<NetworkService>()),
+  registerLazyIfNotRegistered<RemoteSessionDataSource>(
+    () => RemoteSessionDataSourceImpl(networkService: getIt<NetworkService>()),
   );
 
-  registerLazyIfNotRegistered<LocalHallDataSource>(
-    () => LocalHallDataSourceImpl(),
+  registerLazyIfNotRegistered<LocalSessionDataSource>(
+    () => LocalSessionDataSourceImpl(),
   );
 
   registerLazyIfNotRegistered<SessionRepository>(
     () => SessionRepositoryImpl(
       serverService: getIt<HttpServerService>(),
-      remoteDataSource: getIt<UserRemoteDataSource>(),
       localDataSource: getIt<UserLocalDataSource>(),
-      localHallDataSource: getIt<LocalHallDataSource>(),
-      remoteHallDataSource: getIt<RemoteHallDataSource>(),
+      localSessionDataSource: getIt<LocalSessionDataSource>(),
+      remoteSessionDataSource: getIt<RemoteSessionDataSource>(),
     ),
   );
 

@@ -16,7 +16,6 @@ import 'package:mobile_app/features/attendance/domain/use_cases/stop_discover_us
 import 'package:mobile_app/features/attendance/presentation/logic/user_cubit.dart';
 
 void initUserAttendace() {
-  
   if (!getIt.isRegistered<SessionDiscoveryService>()) {
     getIt.registerLazySingleton<SessionDiscoveryService>(
       () => SessionDiscoveryService(),
@@ -24,22 +23,19 @@ void initUserAttendace() {
   }
 
   if (!getIt.isRegistered<AttendanceService>()) {
-    getIt.registerLazySingleton<AttendanceService>(
-      () => AttendanceService(),
-    );
+    getIt.registerLazySingleton<AttendanceService>(() => AttendanceService());
   }
 
   if (!getIt.isRegistered<DeviceInfoPlugin>()) {
-    getIt.registerLazySingleton<DeviceInfoPlugin>(
-      () => DeviceInfoPlugin(),
-    );
+    getIt.registerLazySingleton<DeviceInfoPlugin>(() => DeviceInfoPlugin());
   }
 
   // ==================== REPOSITORIES ====================
-  
+
   if (!getIt.isRegistered<SessionDiscoveryRepository>()) {
     getIt.registerLazySingleton<SessionDiscoveryRepository>(
       () => SessionDiscoveryRepositoryImpl(
+        userLocalDataSource: getIt(),
         discoveryService: getIt<SessionDiscoveryService>(),
       ),
     );
@@ -54,7 +50,6 @@ void initUserAttendace() {
       ),
     );
   }
-
 
   if (!getIt.isRegistered<StartDiscoveryUseCase>()) {
     getIt.registerLazySingleton<StartDiscoveryUseCase>(
@@ -93,7 +88,7 @@ void initUserAttendace() {
   }
 
   // ==================== CUBIT ====================
-  
+
   if (!getIt.isRegistered<UserCubit>()) {
     getIt.registerFactory<UserCubit>(
       () => UserCubit(
