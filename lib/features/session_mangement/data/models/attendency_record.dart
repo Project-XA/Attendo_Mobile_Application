@@ -52,8 +52,6 @@ class AttendanceRecord {
       userId: userId,
       timeStamp: checkInTime.toIso8601String(),
       result: AttendanceResult.present,
-      proofSignature: "adel",
-      verificationId: null,
     );
   }
 
