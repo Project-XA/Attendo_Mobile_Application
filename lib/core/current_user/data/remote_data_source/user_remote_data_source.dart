@@ -2,8 +2,8 @@ import 'package:mobile_app/core/networking/api_const.dart';
 import 'package:mobile_app/core/networking/api_error_handler.dart';
 import 'package:mobile_app/core/networking/network_service.dart';
 import 'package:mobile_app/features/attendance/data/models/get-user-statistics/get_user_statisticts_response_model.dart';
-import 'package:mobile_app/features/auth/data/models/register_request_body.dart';
-import 'package:mobile_app/features/auth/data/models/register_response_body.dart';
+import 'package:mobile_app/features/auth/register/data/models/register_request_body.dart';
+import 'package:mobile_app/features/auth/register/data/models/register_response_body.dart';
 
 abstract class UserRemoteDataSource {
   Future<RegisterResponseBody> registerUser(RegisterRequestBody request);
