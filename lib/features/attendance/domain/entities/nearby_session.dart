@@ -9,6 +9,7 @@ class NearbySession {
   final int port;
   final int attendeeCount;
   final bool isActive;
+  final int organizationId; 
 
   NearbySession({
     required this.sessionId,
@@ -19,6 +20,7 @@ class NearbySession {
     required this.durationMinutes,
     required this.ipAddress,
     required this.port,
+    required this.organizationId,
     this.attendeeCount = 0,
     this.isActive = true,
   });

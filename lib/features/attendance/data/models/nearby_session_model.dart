@@ -11,6 +11,7 @@ class NearbySessionModel {
   final int port;
   final int attendeeCount;
   final bool isActive;
+  final int organizationId; 
 
   NearbySessionModel({
     required this.sessionId,
@@ -21,6 +22,7 @@ class NearbySessionModel {
     required this.durationMinutes,
     required this.ipAddress,
     required this.port,
+    required this.organizationId, 
     this.attendeeCount = 0,
     this.isActive = true,
   });
@@ -39,6 +41,7 @@ class NearbySessionModel {
       durationMinutes: json['durationMinutes'] as int? ?? 60,
       ipAddress: ipAddress,
       port: port,
+      organizationId: json['organizationId'] as int, 
       attendeeCount: json['attendeeCount'] as int? ?? 0,
       isActive: json['status'] == 'active',
     );
@@ -54,6 +57,7 @@ class NearbySessionModel {
       durationMinutes: durationMinutes,
       ipAddress: ipAddress,
       port: port,
+      organizationId: organizationId, 
       attendeeCount: attendeeCount,
       isActive: isActive,
     );

@@ -405,11 +405,10 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
 
       await Future.delayed(const Duration(seconds: 2));
 
-      // ✅ ارجع للـ Idle مع الـ halls المحفوظة
       emit(
         SessionManagementIdle(
           selectedTabIndex: currentState.selectedTabIndex,
-          halls: _cachedHalls, // ✅ مهم جداً!
+          halls: _cachedHalls, 
         ),
       );
     } on ApiErrorModel catch (error) {

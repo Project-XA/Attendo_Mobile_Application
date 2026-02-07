@@ -1,8 +1,7 @@
 import 'package:mobile_app/core/current_user/data/local_data_soruce/user_local_data_source.dart';
-import 'package:mobile_app/core/current_user/data/remote_data_source/user_remote_data_source.dart';
 import 'package:mobile_app/core/networking/api_error_model.dart';
-import 'package:mobile_app/features/session_mangement/data/data_source/local_hall_data_source.dart';
-import 'package:mobile_app/features/session_mangement/data/data_source/remote_hall_data_source.dart';
+import 'package:mobile_app/features/session_mangement/data/data_source/local_session_data_source.dart';
+import 'package:mobile_app/features/session_mangement/data/data_source/remote_session_data_source.dart';
 import 'package:mobile_app/features/session_mangement/data/models/local_models/hall_model.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/create_session/create_session_request_model.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
@@ -16,10 +15,9 @@ import 'package:mobile_app/features/session_mangement/domain/repos/session_repos
 
 class SessionRepositoryImpl implements SessionRepository {
   final HttpServerService _serverService;
-  final UserRemoteDataSource _remoteDataSource;
   final UserLocalDataSource _localDataSource;
-  final LocalHallDataSource _localHallDataSource;
-  final RemoteHallDataSource _remoteHallDataSource;
+  final LocalSessionDataSource _localSessionDataSource;
+  final RemoteSessionDataSource _remoteSessionDataSource;
   Session? _currentSession;
 
   double? _sessionLatitude;
@@ -29,15 +27,13 @@ class SessionRepositoryImpl implements SessionRepository {
 
   SessionRepositoryImpl({
     required HttpServerService serverService,
-    required UserRemoteDataSource remoteDataSource,
     required UserLocalDataSource localDataSource,
-    required LocalHallDataSource localHallDataSource,
-    required RemoteHallDataSource remoteHallDataSource,
+    required LocalSessionDataSource localSessionDataSource,
+    required RemoteSessionDataSource remoteSessionDataSource,
   }) : _serverService = serverService,
-       _remoteDataSource = remoteDataSource,
        _localDataSource = localDataSource,
-       _localHallDataSource = localHallDataSource,
-       _remoteHallDataSource = remoteHallDataSource;
+       _localSessionDataSource = localSessionDataSource,
+       _remoteSessionDataSource = remoteSessionDataSource;
 
   @override
   Future<Session> createSession({
@@ -83,7 +79,7 @@ class SessionRepositoryImpl implements SessionRepository {
       hallId: hallId!,
     );
 
-    sessionId = await _remoteDataSource.createSession(requestModel);
+    sessionId = await _remoteSessionDataSource.createSession(requestModel);
 
     _sessionLatitude = latitude;
     _sessionLongitude = longitude;
@@ -92,6 +88,7 @@ class SessionRepositoryImpl implements SessionRepository {
     _currentSession = Session(
       id: sessionId!,
       name: name,
+      organizationId: organizationId,
       location: location,
       connectionMethod: connectionMethod,
       startTime: startAt,
@@ -120,6 +117,7 @@ class SessionRepositoryImpl implements SessionRepository {
       latitude: _sessionLatitude,
       longitude: _sessionLongitude,
       allowedRadius: _allowedRadius,
+      orgainzationId: _currentSession!.organizationId
     );
 
     _currentSession = _currentSession!.copyWith(status: SessionStatus.active);
@@ -149,7 +147,7 @@ class SessionRepositoryImpl implements SessionRepository {
   Future<SaveAttendanceResponse> saveAttendance(
     SaveAttendanceRequest request,
   ) async {
-    return await _remoteDataSource.saveAttendance(request);
+    return await _remoteSessionDataSource.saveAttendance(request);
   }
 
   @override
@@ -195,7 +193,7 @@ class SessionRepositoryImpl implements SessionRepository {
       );
     }
 
-    final cachedData = await _localHallDataSource.getCachedHalls();
+    final cachedData = await _localSessionDataSource.getCachedHalls();
 
     if (cachedData != null && !cachedData.shouldRefresh()) {
       final hallInfoList = cachedData.halls
@@ -206,13 +204,13 @@ class SessionRepositoryImpl implements SessionRepository {
     }
 
     try {
-      final response = await _remoteHallDataSource.getAllHalls(organizationId);
+      final response = await _remoteSessionDataSource.getAllHalls(organizationId);
 
       final hallModels = response.halls
           .map((hallInfo) => HallModel.fromHallInfo(hallInfo))
           .toList();
 
-      await _localHallDataSource.cacheHalls(hallModels);
+      await _localSessionDataSource.cacheHalls(hallModels);
 
       return response;
     } on ApiErrorModel catch (error) {

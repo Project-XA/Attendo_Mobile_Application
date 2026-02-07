@@ -56,7 +56,6 @@ class SessionDiscoveryService {
     _scanLocalNetwork();
 
     _discoveryTimer?.cancel();
-    // ✅ تقليل المدة من 10 لـ 5 ثواني لاكتشاف أسرع
     _discoveryTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       _scanLocalNetwork();
     });
@@ -64,7 +63,6 @@ class SessionDiscoveryService {
 
   Future<void> _scanLocalNetwork() async {
     try {
-      // Get local IP
       final localIp = await _getLocalIpAddress();
       if (localIp == null) {
         return;
@@ -75,10 +73,8 @@ class SessionDiscoveryService {
 
       final networkPrefix = '${parts[0]}.${parts[1]}.${parts[2]}';
 
-      // Scan in parallel with better error handling
       final futures = <Future>[];
 
-      // Scan common IPs first (1-20, then 100-254)
       final priorityIPs = [
         ...List.generate(20, (i) => i + 1),
         ...List.generate(155, (i) => i + 100),
@@ -106,13 +102,12 @@ class SessionDiscoveryService {
     }
   }
 
-  // ✅ زيادة الـ timeout وإضافة retry logic
   Future<void> _checkSessionAt(String ip, int port, {int retries = 2}) async {
     for (int attempt = 0; attempt <= retries; attempt++) {
       try {
         final response = await http
             .get(Uri.parse('http://$ip:$port/health'))
-            .timeout(const Duration(seconds: 3)); // ✅ زيادة من 1 لـ 3 ثواني
+            .timeout(const Duration(seconds: 3)); 
 
         if (response.statusCode == 200) {
           await _verifyAndAddSession(ip, port);
@@ -145,7 +140,6 @@ class SessionDiscoveryService {
 
         if (healthData['status'] == 'active' &&
             healthData['sessionId'] != null) {
-          // ✅ Now fetch full session info
           try {
             final infoResponse = await http
                 .get(Uri.parse('http://$host:$port/session-info'))
@@ -159,12 +153,13 @@ class SessionDiscoveryService {
 
               // Create discovered session with full details
               final session = DiscoveredSession(
-                sessionId: sessionData['sessionId'].toString(), // ✅ Ensure String
+                sessionId: sessionData['sessionId'].toString(), 
                 ipAddress: host,
                 port: port,
                 timestamp: DateTime.parse(sessionData['timestamp']),
                 name: sessionData['name'],
                 location: sessionData['location'],
+                organizationId: sessionData['organizationId'] as int?,
               );
 
               _sessionController?.add(session);
@@ -178,12 +173,13 @@ class SessionDiscoveryService {
           _discoveredSessionIds.add(sessionKey);
 
           final session = DiscoveredSession(
-            sessionId: healthData['sessionId'].toString(), // ✅ Ensure String
+            sessionId: healthData['sessionId'].toString(), 
             ipAddress: host,
             port: port,
             timestamp: DateTime.parse(healthData['timestamp']),
             name: healthData['name'],
             location: healthData['location'],
+            organizationId: null
           );
 
           _sessionController?.add(session);
@@ -194,7 +190,6 @@ class SessionDiscoveryService {
     }
   }
 
-  // ✅ Get local IP address with proper private IP validation
   Future<String?> _getLocalIpAddress() async {
     try {
       final interfaces = await NetworkInterface.list(

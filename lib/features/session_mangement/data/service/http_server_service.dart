@@ -24,6 +24,7 @@ class HttpServerService {
   double? _sessionLongitude;
   double? _allowedRadius;
 
+
   void updateSessionData(Session session) {
     _currentSession = session;
   }
@@ -34,6 +35,7 @@ class HttpServerService {
     double? latitude,
     double? longitude,
     double? allowedRadius,
+    int? orgainzationId
   }) async {
     try {
       _server = await HttpServer.bind(InternetAddress.anyIPv4, 8080);
@@ -157,7 +159,7 @@ class HttpServerService {
             'status': 'success',
             'message': 'Attendance recorded successfully',
             'time': DateTime.now().toIso8601String(),
-            'sessionId': _currentSessionId.toString(), // ✅ Convert to String
+            'sessionId': _currentSessionId.toString(), 
           }),
         );
     } catch (e) {
@@ -230,7 +232,7 @@ class HttpServerService {
       ..write(
         jsonEncode({
           'status': 'active',
-          'sessionId': _currentSessionId.toString(), // ✅ Convert to String
+          'sessionId': _currentSessionId.toString(), 
           'timestamp': DateTime.now().toIso8601String(),
           'name': _currentSession?.name ?? 'Active Session',
           'location': _currentSession?.location ?? 'Unknown',
@@ -247,7 +249,7 @@ class HttpServerService {
     }
 
     final sessionData = {
-      'sessionId': _currentSession!.id.toString(), // ✅ Convert to String
+      'sessionId': _currentSession!.id.toString(),
       'name': _currentSession!.name,
       'location': _currentSession!.location,
       'connectionMethod': _currentSession!.connectionMethod,
@@ -257,6 +259,7 @@ class HttpServerService {
       'attendeeCount': _currentSession!.attendanceList.length,
       'connectedClients': _currentSession!.connectedClients,
       'timestamp': DateTime.now().toIso8601String(),
+      "organizationId":_currentSession!.organizationId
     };
 
     request.response
@@ -292,7 +295,6 @@ class HttpServerService {
     }
   }
 
-  // ✅ FIXED: Get Local IP Address - support all private IP ranges correctly
   Future<String> _getLocalIpAddress() async {
     try {
       final interfaces = await NetworkInterface.list(
@@ -307,7 +309,6 @@ class HttpServerService {
         }
       }
 
-      // ✅ Fallback to any non-loopback IPv4 address
       for (var interface in interfaces) {
         for (var addr in interface.addresses) {
           if (!addr.isLoopback) {
