@@ -239,33 +239,31 @@ class HttpServerService {
         }),
       );
   }
-
-  void _handleSessionInfo(HttpRequest request) {
-    if (_currentSession == null) {
-      request.response
-        ..statusCode = HttpStatus.notFound
-        ..write(jsonEncode({'error': 'No active session'}));
-      return;
-    }
-
-    final sessionData = {
-      'sessionId': _currentSession!.id.toString(),
-      'name': _currentSession!.name,
-      'location': _currentSession!.location,
-      'connectionMethod': _currentSession!.connectionMethod,
-      'startTime': _currentSession!.startTime.toIso8601String(),
-      'durationMinutes': _currentSession!.durationMinutes,
-      'status': _statusToString(_currentSession!.status),
-      'attendeeCount': _currentSession!.attendanceList.length,
-      'connectedClients': _currentSession!.connectedClients,
-      'timestamp': DateTime.now().toIso8601String(),
-      "organizationId":_currentSession!.organizationId
-    };
-
+void _handleSessionInfo(HttpRequest request) {
+  if (_currentSession == null) {
     request.response
-      ..statusCode = HttpStatus.ok
-      ..write(jsonEncode(sessionData));
+      ..statusCode = HttpStatus.notFound
+      ..write(jsonEncode({'error': 'No active session'}));
+    return;
   }
+
+  final sessionData = {
+    'sessionId': _currentSession!.id.toString(),
+    'name': _currentSession!.name,
+    'location': _currentSession!.location,
+    'connectionMethod': _currentSession!.connectionMethod,
+    'startTime': _currentSession!.startTime.toIso8601String(),
+    'durationMinutes': _currentSession!.durationMinutes,
+    'status': _statusToString(_currentSession!.status),
+    'attendeeCount': _currentSession!.attendanceList.length,
+    'connectedClients': _currentSession!.connectedClients,
+    'timestamp': DateTime.now().toIso8601String(),
+    'organizationId': _currentSession!.organizationId, 
+  };
+  request.response
+    ..statusCode = HttpStatus.ok
+    ..write(jsonEncode(sessionData));
+}
 
   String _statusToString(SessionStatus status) {
     switch (status) {

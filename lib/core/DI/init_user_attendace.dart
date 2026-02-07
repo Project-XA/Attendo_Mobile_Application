@@ -1,6 +1,7 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:mobile_app/core/DI/get_it.dart';
 import 'package:mobile_app/core/current_user/data/remote_data_source/user_remote_data_source.dart';
+import 'package:mobile_app/features/attendance/data/data_source/attendance_local_data_source.dart';
 import 'package:mobile_app/features/attendance/data/repos_imp/session_discovery_repo_impl.dart';
 import 'package:mobile_app/features/attendance/data/repos_imp/user_attendence_repo_impl.dart';
 import 'package:mobile_app/features/attendance/data/services/attendence_service.dart';
@@ -16,6 +17,7 @@ import 'package:mobile_app/features/attendance/domain/use_cases/stop_discover_us
 import 'package:mobile_app/features/attendance/presentation/logic/user_cubit.dart';
 
 void initUserAttendace() {
+  
   if (!getIt.isRegistered<SessionDiscoveryService>()) {
     getIt.registerLazySingleton<SessionDiscoveryService>(
       () => SessionDiscoveryService(),
@@ -23,14 +25,24 @@ void initUserAttendace() {
   }
 
   if (!getIt.isRegistered<AttendanceService>()) {
-    getIt.registerLazySingleton<AttendanceService>(() => AttendanceService());
+    getIt.registerLazySingleton<AttendanceService>(
+      () => AttendanceService(),
+    );
   }
 
   if (!getIt.isRegistered<DeviceInfoPlugin>()) {
-    getIt.registerLazySingleton<DeviceInfoPlugin>(() => DeviceInfoPlugin());
+    getIt.registerLazySingleton<DeviceInfoPlugin>(
+      () => DeviceInfoPlugin(),
+    );
   }
 
-  // ==================== REPOSITORIES ====================
+
+  if (!getIt.isRegistered<AttendanceLocalDataSource>()) {
+    getIt.registerLazySingleton<AttendanceLocalDataSource>(
+      () => AttendanceLocalDataSourceImpl(),
+    );
+  }
+
 
   if (!getIt.isRegistered<SessionDiscoveryRepository>()) {
     getIt.registerLazySingleton<SessionDiscoveryRepository>(
@@ -47,9 +59,11 @@ void initUserAttendace() {
         userRemoteDataSource: getIt<UserRemoteDataSource>(),
         attendanceService: getIt<AttendanceService>(),
         deviceInfo: getIt<DeviceInfoPlugin>(),
+        localDataSource: getIt<AttendanceLocalDataSource>(), 
       ),
     );
   }
+
 
   if (!getIt.isRegistered<StartDiscoveryUseCase>()) {
     getIt.registerLazySingleton<StartDiscoveryUseCase>(
@@ -83,11 +97,12 @@ void initUserAttendace() {
 
   if (!getIt.isRegistered<GetAttendanceStatsUseCase>()) {
     getIt.registerLazySingleton<GetAttendanceStatsUseCase>(
-      () => GetAttendanceStatsUseCase(getIt<UserAttendanceRepository>()),
+      () => GetAttendanceStatsUseCase(
+        repository: getIt<UserAttendanceRepository>(), 
+      ),
     );
   }
 
-  // ==================== CUBIT ====================
 
   if (!getIt.isRegistered<UserCubit>()) {
     getIt.registerFactory<UserCubit>(

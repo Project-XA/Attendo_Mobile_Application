@@ -21,7 +21,6 @@ class SessionDiscoveryRepositoryImpl implements SessionDiscoveryRepository {
     return _discoveryService.sessionStream
         .asyncMap((discovered) async {
           final userData = await _localDataSource.getCurrentUser();
-
           final userOrgId = userData.organizations?.isNotEmpty == true
               ? userData.organizations!.first.organizationId
               : null;

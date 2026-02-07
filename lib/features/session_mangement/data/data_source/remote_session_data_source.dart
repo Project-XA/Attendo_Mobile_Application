@@ -10,7 +10,6 @@ abstract class RemoteSessionDataSource {
   Future<GetAllHallsResponse> getAllHalls(int organizationId);
   Future<SaveAttendanceResponse> saveAttendance(SaveAttendanceRequest request);
   Future<int> createSession(CreateSessionRequestModel createSessionRequest);
-
 }
 
 class RemoteSessionDataSourceImpl extends RemoteSessionDataSource {
@@ -35,7 +34,7 @@ class RemoteSessionDataSourceImpl extends RemoteSessionDataSource {
     }
   }
 
-   @override
+  @override
   Future<int> createSession(
     CreateSessionRequestModel createSessionRequest,
   ) async {
@@ -59,7 +58,7 @@ class RemoteSessionDataSourceImpl extends RemoteSessionDataSource {
     try {
       final response = await networkService.post(
         ApiConst.saveAttendance,
-        request.toJson(),
+        request,
       );
 
       final data = response.data as Map<String, dynamic>;

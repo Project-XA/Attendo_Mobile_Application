@@ -27,15 +27,13 @@ class ManageSessionsView extends StatelessWidget {
         }
 
         // Session ended successfully
-        if (state is SessionState && 
+        if (state is SessionState &&
             state.operation == SessionOperation.ended) {
           return _buildSessionEndedView(state);
         }
 
         // Default: Show create session form
-        return const SingleChildScrollView(
-          child: CreateSessionForm(),
-        );
+        return const SingleChildScrollView(child: CreateSessionForm());
       },
     );
   }
@@ -47,10 +45,7 @@ class ManageSessionsView extends StatelessWidget {
         children: [
           const CircularProgressIndicator(),
           verticalSpace(16.h),
-          Text(
-            operation.message,
-            style: TextStyle(fontSize: 16.sp),
-          ),
+          Text(operation.message, style: TextStyle(fontSize: 16.sp)),
         ],
       ),
     );
@@ -61,26 +56,16 @@ class ManageSessionsView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.check_circle,
-            size: 64.sp,
-            color: Colors.green,
-          ),
+          Icon(Icons.check_circle, size: 64.sp, color: Colors.green),
           verticalSpace(16.h),
           Text(
             'Session Ended Successfully',
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
           ),
           verticalSpace(8.h),
           Text(
             'Total attendance: ${state.session.attendanceList.length}',
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: Colors.grey,
-            ),
+            style: TextStyle(fontSize: 14.sp, color: Colors.grey),
           ),
         ],
       ),

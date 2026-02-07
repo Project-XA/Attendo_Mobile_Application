@@ -123,72 +123,67 @@ class SessionDiscoveryService {
     // Silent fail after all retries
   }
 
-  Future<void> _verifyAndAddSession(String host, int port) async {
-    try {
-      final sessionKey = '$host:$port';
-      if (_discoveredSessionIds.contains(sessionKey)) {
-        return; 
-      }
+Future<void> _verifyAndAddSession(String host, int port) async {
+  try {
+    final sessionKey = '$host:$port';
+    if (_discoveredSessionIds.contains(sessionKey)) {
+      return;
+    }
 
-      // First check health
-      final healthResponse = await http
-          .get(Uri.parse('http://$host:$port/health'))
-          .timeout(const Duration(seconds: 2));
+    // First check health
+    final healthResponse = await http
+        .get(Uri.parse('http://$host:$port/health'))
+        .timeout(const Duration(seconds: 2));
 
-      if (healthResponse.statusCode == 200) {
-        final healthData = jsonDecode(healthResponse.body);
+    if (healthResponse.statusCode == 200) {
+      final healthData = jsonDecode(healthResponse.body);
 
-        if (healthData['status'] == 'active' &&
-            healthData['sessionId'] != null) {
-          try {
-            final infoResponse = await http
-                .get(Uri.parse('http://$host:$port/session-info'))
-                .timeout(const Duration(seconds: 2));
+      if (healthData['status'] == 'active' && healthData['sessionId'] != null) {
+        try {
+          final infoResponse = await http
+              .get(Uri.parse('http://$host:$port/session-info'))
+              .timeout(const Duration(seconds: 2));
 
-            if (infoResponse.statusCode == 200) {
-              final sessionData = jsonDecode(infoResponse.body);
+          if (infoResponse.statusCode == 200) {
+            final sessionData = jsonDecode(infoResponse.body);
+            
+            // ✅ طباعة البيانات للـ debugging
 
-              // Mark as discovered
-              _discoveredSessionIds.add(sessionKey);
+            _discoveredSessionIds.add(sessionKey);
 
-              // Create discovered session with full details
-              final session = DiscoveredSession(
-                sessionId: sessionData['sessionId'].toString(), 
-                ipAddress: host,
-                port: port,
-                timestamp: DateTime.parse(sessionData['timestamp']),
-                name: sessionData['name'],
-                location: sessionData['location'],
-                organizationId: sessionData['organizationId'] as int?,
-              );
-
-              _sessionController?.add(session);
-              return;
+            final orgId = sessionData['organizationId'];
+            final int? organizationId;
+            
+            if (orgId is int) {
+              organizationId = orgId;
+            } else if (orgId is String) {
+              organizationId = int.tryParse(orgId);
+            } else {
+              organizationId = null;
             }
-          } catch (e) {
-            // Could not fetch session-info
+
+            final session = DiscoveredSession(
+              sessionId: sessionData['sessionId'].toString(),
+              ipAddress: host,
+              port: port,
+              timestamp: DateTime.parse(sessionData['timestamp']),
+              name: sessionData['name'],
+              location: sessionData['location'],
+              organizationId: organizationId, 
+            );
+
+            _sessionController?.add(session);
+            return;
           }
-
-          // Fallback: create basic session if /session-info fails
-          _discoveredSessionIds.add(sessionKey);
-
-          final session = DiscoveredSession(
-            sessionId: healthData['sessionId'].toString(), 
-            ipAddress: host,
-            port: port,
-            timestamp: DateTime.parse(healthData['timestamp']),
-            name: healthData['name'],
-            location: healthData['location'],
-            organizationId: null
-          );
-
-          _sessionController?.add(session);
+        // ignore: empty_catches
+        } catch (e) {
         }
       }
-    } catch (e) {
-      // Silent fail - don't spam logs
     }
+  // ignore: empty_catches
+  } catch (e) {
   }
+}
 
   Future<String?> _getLocalIpAddress() async {
     try {

@@ -27,25 +27,23 @@ class NearbySessionModel {
     this.isActive = true,
   });
 
-  factory NearbySessionModel.fromJson(
-    Map<String, dynamic> json,
-    String ipAddress,
-    int port,
-  ) {
-    return NearbySessionModel(
-      sessionId: json['sessionId'] as String,
-      name: json['name'] as String? ?? 'Unknown Session',
-      location: json['location'] as String? ?? 'Unknown Location',
-      connectionMethod: json['connectionMethod'] as String? ?? 'WiFi',
-      startTime: DateTime.parse(json['startTime'] as String),
-      durationMinutes: json['durationMinutes'] as int? ?? 60,
-      ipAddress: ipAddress,
-      port: port,
-      organizationId: json['organizationId'] as int, 
-      attendeeCount: json['attendeeCount'] as int? ?? 0,
-      isActive: json['status'] == 'active',
-    );
-  }
+// في nearby_session_model.dart
+factory NearbySessionModel.fromJson(Map<String, dynamic> json, String host, int port) {
+  return NearbySessionModel(
+    sessionId: json['sessionId']?.toString() ?? '',
+    name: json['name'] ?? '',
+    location: json['location'] ?? '',
+    connectionMethod: json['connectionMethod'] ?? '',
+    startTime: DateTime.tryParse(json['startTime'] ?? '') ?? DateTime.now(),
+    durationMinutes: json['durationMinutes'] as int? ?? 0,
+    attendeeCount: json['attendeeCount'] as int? ?? 0,
+    ipAddress: host,
+    port: port,
+    organizationId: json['organizationId'] is int 
+        ? json['organizationId'] as int
+        : int.tryParse(json['organizationId']?.toString() ?? '0') ?? 0,
+  );
+}
 
   NearbySession toEntity() {
     return NearbySession(

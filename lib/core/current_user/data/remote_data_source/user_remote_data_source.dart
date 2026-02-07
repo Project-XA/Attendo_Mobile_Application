@@ -29,19 +29,18 @@ class UserRemoteDataSourceImp implements UserRemoteDataSource {
     }
   }
 
- 
-
   @override
   Future<GetUserStatistictsResponseModel> getUserStatistics() async {
     try {
       final response = await networkService.get(ApiConst.userStatistics);
 
       final data = response.data['data'] as Map<String, dynamic>;
-      return GetUserStatistictsResponseModel.fromJson(data);
+
+      final stats = GetUserStatistictsResponseModel.fromJson(data);
+
+      return stats;
     } catch (e) {
       throw ApiErrorHandler.handle(e);
     }
   }
-
-
 }

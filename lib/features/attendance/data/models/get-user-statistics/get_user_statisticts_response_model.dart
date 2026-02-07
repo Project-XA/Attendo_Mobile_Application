@@ -16,7 +16,9 @@ class GetUserStatistictsResponseModel {
       totalSessions: json['totalSessions'] as int,
       attendedSessions: json['attendedSessions'] as int,
       missedSessions: json['missedSessions'] as int,
-      attendancePercentage: json['attendancePercentage'] as double,
+      attendancePercentage: (json['attendancePercentage'] is int)
+          ? (json['attendancePercentage'] as int).toDouble()
+          : (json['attendancePercentage'] as double),
     );
   }
 }
