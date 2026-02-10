@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:mobile_app/core/current_user/data/remote_data_source/user_remote_data_source.dart';
+import 'package:mobile_app/features/attendance/data/data_source/attendance_local_data_source.dart';
 import 'package:mobile_app/features/attendance/data/models/attendence_history_model.dart';
 import 'package:mobile_app/features/attendance/data/services/attendence_service.dart';
 import 'package:mobile_app/features/attendance/domain/entities/attendance_history.dart';
@@ -14,18 +15,30 @@ class UserAttendanceRepositoryImpl implements UserAttendanceRepository {
   final AttendanceService _attendanceService;
   final DeviceInfoPlugin _deviceInfo;
   final UserRemoteDataSource userRemoteDataSource;
+  final AttendanceLocalDataSource _localDataSource;
   final List<AttendanceHistoryModel> _historyCache = [];
 
   UserAttendanceRepositoryImpl({
-  
     required AttendanceService attendanceService,
     required DeviceInfoPlugin deviceInfo,
     required this.userRemoteDataSource,
-  })  : _attendanceService = attendanceService,
-        _deviceInfo = deviceInfo;
+    required AttendanceLocalDataSource localDataSource,
+  }) : _attendanceService = attendanceService,
+       _deviceInfo = deviceInfo,
+       _localDataSource = localDataSource;
 
   @override
-  Future<AttendanceResponse> checkIn({ 
+  Future<AttendanceStats?> getCachedStatsOnly() async {
+    return await _localDataSource.getCachedStats();
+  }
+
+  @override
+  Future<void> saveStatsToCache(AttendanceStats stats) async {
+    await _localDataSource.cacheStats(stats);
+  }
+
+  @override
+  Future<AttendanceResponse> checkIn({
     required String sessionId,
     required String baseUrl,
     required String userId,
@@ -34,7 +47,6 @@ class UserAttendanceRepositoryImpl implements UserAttendanceRepository {
   }) async {
     try {
       final deviceHash = await _getDeviceHash();
-      
       final response = await _attendanceService.sendAttendanceRequest(
         baseUrl: baseUrl,
         userId: userId,
@@ -43,22 +55,28 @@ class UserAttendanceRepositoryImpl implements UserAttendanceRepository {
       );
 
       if (response.success) {
-        _historyCache.add(AttendanceHistoryModel(
-          id: '${sessionId}_${DateTime.now().millisecondsSinceEpoch}',
-          sessionId: sessionId,
-          sessionName: 'Session',
-          location: location ?? 'Unknown',
-          checkInTime: DateTime.now(),
-          status: 'present',
-        ));
+        _historyCache.add(
+          AttendanceHistoryModel(
+            id: '${sessionId}_${DateTime.now().millisecondsSinceEpoch}',
+            sessionId: sessionId,
+            sessionName: 'Session',
+            location: location ?? 'Unknown',
+            checkInTime: DateTime.now(),
+            status: 'present',
+          ),
+        );
+
+        try {
+          final updatedStats = await getAttendanceStats();
+          await _localDataSource.cacheStats(updatedStats);
+        } catch (e) {
+          // Ignore cache update errors
+        }
       }
-      
+
       return response;
     } catch (e) {
-      return AttendanceResponse(
-        success: false,
-        message: 'Network error: $e',
-      );
+      return AttendanceResponse(success: false, message: 'Network error: $e');
     }
   }
 
@@ -71,17 +89,21 @@ class UserAttendanceRepositoryImpl implements UserAttendanceRepository {
   Future<AttendanceStats> getAttendanceStats() async {
     try {
       final statsResponse = await userRemoteDataSource.getUserStatistics();
-      return AttendanceStats(
+      final freshStats = AttendanceStats(
         totalSessions: statsResponse.totalSessions,
         attendedSessions: statsResponse.attendedSessions,
         attendancePercentage: statsResponse.attendancePercentage,
       );
+
+      await _localDataSource.cacheStats(freshStats);
+
+      return freshStats;
     } catch (e) {
-      return AttendanceStats(
-        totalSessions: 0,
-        attendedSessions: 0,
-        attendancePercentage: 0.0,
-      );
+      final cachedStats = await _localDataSource.getCachedStats();
+      if (cachedStats != null) {
+        return cachedStats;
+      }
+      rethrow;
     }
   }
 

@@ -229,16 +229,6 @@ class _UserDashboardState extends State<UserDashboardScreen> {
                 fontWeight: FontWeightHelper.bold,
               ),
             ),
-            TextButton(
-              onPressed: () {},
-              child: Text(
-                'View All',
-                style: AppTextStyle.font14MediamGrey.copyWith(
-                  fontSize: 13.sp,
-                  color: AppColors.mainTextColorBlack,
-                ),
-              ),
-            ),
           ],
         ),
         verticalSpace(12.h),

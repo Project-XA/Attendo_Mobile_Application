@@ -1,4 +1,5 @@
 import 'package:mobile_app/core/networking/api_error_model.dart';
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/server_info.dart';
 import 'package:mobile_app/features/session_mangement/data/models/attendency_record.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/session.dart';
@@ -29,20 +30,37 @@ sealed class SessionManagementStateWithTab extends SessionManagementState {
 }
 
 final class SessionManagementIdle extends SessionManagementStateWithTab {
+  final List<HallInfo>? halls;
+  final bool isLoadingHalls;
+  
   const SessionManagementIdle({
     super.selectedTabIndex,
+    this.halls,
+    this.isLoadingHalls = false,
   });
 
   SessionManagementIdle copyWith({
     int? selectedTabIndex,
+    List<HallInfo>? halls,
+    bool? isLoadingHalls,
   }) {
     return SessionManagementIdle(
       selectedTabIndex: selectedTabIndex ?? this.selectedTabIndex,
+      halls: halls ?? this.halls,
+      isLoadingHalls: isLoadingHalls ?? this.isLoadingHalls,
     );
   }
 }
 
-enum SessionOperation { creating, starting, active, ending, ended }
+enum SessionOperation { 
+  creating, 
+  starting, 
+  active, 
+  ending, 
+  ended,
+  deleting,  
+  deleted,  
+}
 
 extension SessionOperationX on SessionOperation {
   String get message {
@@ -57,6 +75,10 @@ extension SessionOperationX on SessionOperation {
         return 'Session ended successfully';
       case SessionOperation.active:
         return 'Session is active';
+      case SessionOperation.deleting:
+        return 'Deleting session...';  
+      case SessionOperation.deleted:
+        return 'Session deleted successfully';  
     }
   }
 }
@@ -82,9 +104,12 @@ final class SessionState extends SessionManagementStateWithTab {
   bool get isLoading =>
       operation == SessionOperation.creating ||
       operation == SessionOperation.starting ||
-      operation == SessionOperation.ending;
+      operation == SessionOperation.ending ||
+      operation == SessionOperation.deleting;  // NEW
 
   bool get isActive => operation == SessionOperation.active;
+  
+  bool get isDeleted => operation == SessionOperation.deleted;  // NEW
 
   SessionState copyWith({
     Session? session,
@@ -103,13 +128,13 @@ final class SessionState extends SessionManagementStateWithTab {
       latestRecord: clearLatestRecord ? null : (latestRecord ?? this.latestRecord),
       selectedTabIndex: selectedTabIndex ?? this.selectedTabIndex,
       showWarning: showWarning ?? this.showWarning,
-      showNetworkError: showNetworkError ?? this.showNetworkError, // ⬅️ إضافة هنا
+      showNetworkError: showNetworkError ?? this.showNetworkError,
     );
   }
 }
 
 final class SessionError extends SessionManagementStateWithTab {
-  final ApiErrorModel error; // ✅ error كامل
+  final ApiErrorModel error; 
   final Session? session;
   
   const SessionError({
@@ -118,7 +143,6 @@ final class SessionError extends SessionManagementStateWithTab {
     super.selectedTabIndex,
   });
   
-  // Convenience getters
   String get message => error.message;
   bool get isNetworkError => error.isNetworkError;
   

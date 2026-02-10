@@ -25,15 +25,13 @@ class AttendanceLogItem {
   final String timeStamp;
   @JsonKey(unknownEnumValue: AttendanceResult.absent)
   final AttendanceResult result;
-  final String? proofSignature;
-  final int? verificationId;
+ 
 
   AttendanceLogItem({
     required this.userId,
     required this.timeStamp,
     required this.result,
-    this.proofSignature,
-    this.verificationId,
+  
   });
 
   factory AttendanceLogItem.fromJson(Map<String, dynamic> json) =>

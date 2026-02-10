@@ -5,6 +5,7 @@ class DiscoveredSession {
   final DateTime timestamp;
   final String? name;
   final String? location;
+  final int? organizationId;
 
   DiscoveredSession({
     required this.sessionId,
@@ -12,6 +13,7 @@ class DiscoveredSession {
     required this.port,
     required this.timestamp,
     this.name,
+    this.organizationId,
     this.location,
   });
 

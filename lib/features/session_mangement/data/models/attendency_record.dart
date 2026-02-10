@@ -40,7 +40,7 @@ class AttendanceRecord {
     return {
       'userId': userId,
       'userName': userName,
-      'checkInTime': checkInTime.toIso8601String(),
+      'checkInTime': checkInTime.toUtc().toIso8601String(),
       'deviceIdHash': deviceIdHash,
       'location': location,
       'signature': signature,
@@ -50,12 +50,11 @@ class AttendanceRecord {
   AttendanceLogItem toAttendanceLogItem() {
     return AttendanceLogItem(
       userId: userId,
-      timeStamp: checkInTime.toIso8601String(),
-      result: AttendanceResult.present, 
-      proofSignature: signature,
-      verificationId: null, 
+      timeStamp: checkInTime.toUtc().toIso8601String(),
+      result: AttendanceResult.present,
     );
   }
+
   // Create from JSON
   factory AttendanceRecord.fromJson(Map<String, dynamic> json) {
     return AttendanceRecord(

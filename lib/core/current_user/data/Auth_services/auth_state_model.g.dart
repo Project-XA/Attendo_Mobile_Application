@@ -20,6 +20,7 @@ class AuthStateModelAdapter extends TypeAdapter<AuthStateModel> {
       hasCompletedOCR: fields[0] as bool,
       hasRegistered: fields[1] as bool,
       isLoggedIn: fields[2] as bool,
+      hasCompletedVerification: fields[4] as bool,
       userRole: fields[3] as String?,
     );
   }
@@ -27,7 +28,7 @@ class AuthStateModelAdapter extends TypeAdapter<AuthStateModel> {
   @override
   void write(BinaryWriter writer, AuthStateModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.hasCompletedOCR)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class AuthStateModelAdapter extends TypeAdapter<AuthStateModel> {
       ..writeByte(2)
       ..write(obj.isLoggedIn)
       ..writeByte(3)
-      ..write(obj.userRole);
+      ..write(obj.userRole)
+      ..writeByte(4)
+      ..write(obj.hasCompletedVerification);
   }
 
   @override

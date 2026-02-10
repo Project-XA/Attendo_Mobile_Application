@@ -28,8 +28,6 @@ AttendanceLogItem _$AttendanceLogItemFromJson(Map<String, dynamic> json) =>
       timeStamp: json['timeStamp'] as String,
       result: $enumDecode(_$AttendanceResultEnumMap, json['result'],
           unknownValue: AttendanceResult.absent),
-      proofSignature: json['proofSignature'] as String?,
-      verificationId: (json['verificationId'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$AttendanceLogItemToJson(AttendanceLogItem instance) =>
@@ -37,8 +35,6 @@ Map<String, dynamic> _$AttendanceLogItemToJson(AttendanceLogItem instance) =>
       'userId': instance.userId,
       'timeStamp': instance.timeStamp,
       'result': _$AttendanceResultEnumMap[instance.result]!,
-      'proofSignature': instance.proofSignature,
-      'verificationId': instance.verificationId,
     };
 
 const _$AttendanceResultEnumMap = {

@@ -1,3 +1,4 @@
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/save_attendance/save_attendance_request.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/save_attendance/save_attendance_response.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/server_info.dart';
@@ -11,7 +12,7 @@ abstract class SessionRepository {
     required String connectionMethod,
     required DateTime startAt,
     required DateTime endAt,
-
+    required int? hallId,
     required double allowedRadius,
     required String networkSSID,
     required String networkBSSID,
@@ -27,4 +28,6 @@ abstract class SessionRepository {
 
   Future<Session?> getCurrentActiveSession();
   Future<SaveAttendanceResponse> saveAttendance(SaveAttendanceRequest request);
+  Future<GetAllHallsResponse> getAllHalls();
+  Future<void> deleteCurrentSession();
 }

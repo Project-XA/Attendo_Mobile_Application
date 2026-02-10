@@ -4,12 +4,13 @@ class Session {
   final int id;
   final String name;
   final String location;
-  final String connectionMethod; 
+  final String connectionMethod;
   final DateTime startTime;
   final int durationMinutes;
   final SessionStatus status;
   final int connectedClients;
   final List<AttendanceRecord> attendanceList;
+  final int? organizationId;
 
   Session({
     required this.id,
@@ -21,6 +22,7 @@ class Session {
     required this.status,
     this.connectedClients = 0,
     this.attendanceList = const [],
+    this.organizationId,
   });
 
   Session copyWith({
@@ -33,6 +35,7 @@ class Session {
     SessionStatus? status,
     int? connectedClients,
     List<AttendanceRecord>? attendanceList,
+    int? organizationId
   }) {
     return Session(
       id: id ?? this.id,
@@ -44,12 +47,8 @@ class Session {
       status: status ?? this.status,
       connectedClients: connectedClients ?? this.connectedClients,
       attendanceList: attendanceList ?? this.attendanceList,
+      organizationId: organizationId ?? this.organizationId
     );
   }
 }
-
-enum SessionStatus {
-  inactive,
-  active,
-  ended,
-}
+enum SessionStatus { inactive, active, ended }

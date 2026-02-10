@@ -1,8 +1,8 @@
 import 'package:mobile_app/core/DI/get_it.dart';
-import 'package:mobile_app/features/auth/data/repo_imp/register_repo_imp.dart';
-import 'package:mobile_app/features/auth/domain/repos/register_repo.dart';
-import 'package:mobile_app/features/auth/domain/use_cases/register_use_case.dart';
-import 'package:mobile_app/features/auth/presentation/logic/register_cubit.dart';
+import 'package:mobile_app/features/auth/register/data/repo_imp/register_repo_imp.dart';
+import 'package:mobile_app/features/auth/register/domain/repos/register_repo.dart';
+import 'package:mobile_app/features/auth/register/domain/use_cases/register_use_case.dart';
+import 'package:mobile_app/features/auth/register/presentation/logic/register_cubit.dart';
 
 void initRegister() {
   if (getIt.isRegistered<RegisterRepo>()) return;

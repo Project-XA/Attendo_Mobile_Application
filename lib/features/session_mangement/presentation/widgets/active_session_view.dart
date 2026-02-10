@@ -31,6 +31,30 @@ class ActiveSessionView extends StatelessWidget {
         if (state is SessionState && state.showWarning) {
           _showWarningSnackBar(context);
         }
+
+        if (state is SessionState && state.isDeleted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(
+                    Icons.delete_outline,
+                    color: AppColors.backGroundColorWhite,
+                  ),
+                  horizontalSpace(12.w),
+                  const Expanded(
+                    child: Text(
+                      'Session deleted successfully without saving attendance',
+                    ),
+                  ),
+                ],
+              ),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
       },
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8.w),
@@ -49,7 +73,8 @@ class ActiveSessionView extends StatelessWidget {
             SliverToBoxAdapter(child: verticalSpace(10)),
             SliverToBoxAdapter(child: ServerInfoCard(serverInfo: serverInfo)),
             SliverToBoxAdapter(child: verticalSpace(20)),
-            SliverToBoxAdapter(child: _buildEndSessionButton(context)),
+
+            SliverToBoxAdapter(child: _buildActionButtons(context)),
           ],
         ),
       ),
@@ -127,20 +152,58 @@ class ActiveSessionView extends StatelessWidget {
     );
   }
 
-  Widget _buildEndSessionButton(BuildContext context) {
-    return CustomAppButton(
-      onPressed: () => _showEndSessionDialog(context),
-      backgroundColor: AppColors.mainTextColorBlack,
-      borderRadius: 20.r,
-      width: double.infinity,
-      height: 45.h,
-      child: Text(
-        'End Session',
-        style: AppTextStyle.font14MediamGrey.copyWith(
-          color: AppColors.backGroundColorWhite,
-          fontWeight: FontWeightHelper.medium,
-          fontSize: 16.sp,
-        ),
+  Widget _buildActionButtons(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.w),
+      child: Row(
+        children: [
+          // End Session Button
+          Expanded(
+            child: CustomAppButton(
+              onPressed: () => _showEndSessionDialog(context),
+              backgroundColor: AppColors.mainTextColorBlack,
+              borderRadius: 20.r,
+              height: 45.h,
+              child: Text(
+                'End Session',
+                style: AppTextStyle.font14MediamGrey.copyWith(
+                  color: AppColors.backGroundColorWhite,
+                  fontWeight: FontWeightHelper.medium,
+                  fontSize: 16.sp,
+                ),
+              ),
+            ),
+          ),
+
+          horizontalSpace(12.w),
+
+          // Delete Session Button
+          Expanded(
+            child: GestureDetector(
+              onTap: () => _showDeleteSessionDialog(context),
+              child: Container(
+                height: 45.h,
+                decoration: BoxDecoration(
+                  color: AppColors.backGroundColorWhite,
+                  border: Border.all(
+                    color: AppColors.mainTextColorBlack,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(20.r),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  'Delete',
+                  style: AppTextStyle.font14MediamGrey.copyWith(
+                    color: AppColors.mainTextColorBlack,
+                    fontWeight: FontWeightHelper.medium,
+                    fontSize: 16.sp,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -149,26 +212,117 @@ class ActiveSessionView extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('End Session'),
-        content: Text(
-          'Are you sure you want to end this session? '
-          '${session.attendanceList.length} attendees have checked in.',
+        backgroundColor: AppColors.backGroundColorWhite,
+        title: Row(
+          children: [
+            Icon(Icons.check_circle_outline, color: Colors.green, size: 24.sp),
+            horizontalSpace(8.w),
+            Flexible(
+              child: Text(
+                'End Session',
+                style: TextStyle(
+                  color: AppColors.mainTextColorBlack,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18.sp,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            'Are you sure you want to end this session?\n\n'
+            '✓ ${session.attendanceList.length} attendees will be saved\n'
+            '✓ Attendance data will be recorded',
+            style: TextStyle(
+              color: AppColors.subTextColorGrey,
+              fontSize: 14.sp,
+            ),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppColors.mainTextColorBlack),
+              style: TextStyle(
+                color: AppColors.subTextColorGrey,
+                fontSize: 14.sp,
+              ),
             ),
           ),
-          TextButton(
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: AppColors.backGroundColorWhite,
+              elevation: 0,
+            ),
             onPressed: () {
               Navigator.pop(dialogContext);
               context.read<SessionMangementCubit>().endSession();
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('End Session'),
+            child: Text('End & Save', style: TextStyle(fontSize: 14.sp)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteSessionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.backGroundColorWhite,
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.red, size: 24.sp),
+            horizontalSpace(8.w),
+            Flexible(
+              child: Text(
+                'Delete Session',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18.sp,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            'Are you sure you want to delete this session?\n\n'
+            '⚠️ ${session.attendanceList.length} attendees will NOT be saved\n'
+            '⚠️ All attendance data will be lost\n'
+            '⚠️ This action cannot be undone',
+            style: TextStyle(
+              color: AppColors.subTextColorGrey,
+              fontSize: 14.sp,
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: AppColors.mainTextColorBlack,
+                fontSize: 14.sp,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: AppColors.backGroundColorWhite,
+              elevation: 0,
+            ),
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              context.read<SessionMangementCubit>().deleteSession();
+            },
+            child: Text('Delete', style: TextStyle(fontSize: 14.sp)),
           ),
         ],
       ),

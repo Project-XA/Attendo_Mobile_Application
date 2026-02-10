@@ -12,6 +12,7 @@ import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/core/widgets/custom_app_button.dart';
 import 'package:mobile_app/features/attendance/domain/entities/nearby_session.dart';
 import 'package:mobile_app/features/attendance/presentation/logic/user_cubit.dart';
+import 'package:mobile_app/core/services/auth/authentication_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ActiveSessionCard extends StatelessWidget {
@@ -208,16 +209,49 @@ class ActiveSessionCard extends StatelessWidget {
       return;
     }
 
-    // ignore: use_build_context_synchronously
+    if (!context.mounted) return;
+    _showLoadingDialog(context);
+
+    final authManager = AuthenticationManager();
+    final isAuthenticated = await authManager.authenticate(context);
+
+    if (context.mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+
+    if (!isAuthenticated) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Authentication required to check in'),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+      return;
+    }
+
+    if (!context.mounted) return;
     final user = context.read<CurrentUserCubit>().currentUser;
     if (user != null) {
-      // ignore: use_build_context_synchronously
       context.read<UserCubit>().checkIn(
         session,
-        userId: user.nationalId,
+        userId: user.id!,
         userName: user.fullNameEn,
       );
     }
+  }
+
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      useRootNavigator: true,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(color: AppColors.backGroundColorWhite),
+      ),
+    );
   }
 
   void _showLocationSettingsDialog(BuildContext context) {

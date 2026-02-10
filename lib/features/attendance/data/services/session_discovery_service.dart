@@ -56,14 +56,13 @@ class SessionDiscoveryService {
     _scanLocalNetwork();
 
     _discoveryTimer?.cancel();
-    _discoveryTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+    _discoveryTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       _scanLocalNetwork();
     });
   }
 
   Future<void> _scanLocalNetwork() async {
     try {
-      // Get local IP
       final localIp = await _getLocalIpAddress();
       if (localIp == null) {
         return;
@@ -74,10 +73,8 @@ class SessionDiscoveryService {
 
       final networkPrefix = '${parts[0]}.${parts[1]}.${parts[2]}';
 
-      // Scan in parallel with better error handling
       final futures = <Future>[];
 
-      // Scan common IPs first (1-20, then 100-254)
       final priorityIPs = [
         ...List.generate(20, (i) => i + 1),
         ...List.generate(155, (i) => i + 100),
@@ -105,85 +102,89 @@ class SessionDiscoveryService {
     }
   }
 
-  Future<void> _checkSessionAt(String ip, int port) async {
-    try {
-      final response = await http
-          .get(Uri.parse('http://$ip:$port/health'))
-          .timeout(const Duration(seconds: 1)); // 
+  Future<void> _checkSessionAt(String ip, int port, {int retries = 2}) async {
+    for (int attempt = 0; attempt <= retries; attempt++) {
+      try {
+        final response = await http
+            .get(Uri.parse('http://$ip:$port/health'))
+            .timeout(const Duration(seconds: 3)); 
 
-      if (response.statusCode == 200) {
-        await _verifyAndAddSession(ip, port);
-      }
-    } catch (_) {
-      // Silent fail - expected for non-session IPs
-    }
-  }
-
-  Future<void> _verifyAndAddSession(String host, int port) async {
-    try {
-      final sessionKey = '$host:$port';
-      if (_discoveredSessionIds.contains(sessionKey)) {
-        return; 
-      }
-
-      // First check health
-      final healthResponse = await http
-          .get(Uri.parse('http://$host:$port/health'))
-          .timeout(const Duration(seconds: 2));
-
-      if (healthResponse.statusCode == 200) {
-        final healthData = jsonDecode(healthResponse.body);
-
-        if (healthData['status'] == 'active' &&
-            healthData['sessionId'] != null) {
-          // ✅ Now fetch full session info
-          try {
-            final infoResponse = await http
-                .get(Uri.parse('http://$host:$port/session-info'))
-                .timeout(const Duration(seconds: 2));
-
-            if (infoResponse.statusCode == 200) {
-              final sessionData = jsonDecode(infoResponse.body);
-
-              // Mark as discovered
-              _discoveredSessionIds.add(sessionKey);
-
-              // Create discovered session with full details
-              final session = DiscoveredSession(
-                sessionId: sessionData['sessionId'],
-                ipAddress: host,
-                port: port,
-                timestamp: DateTime.parse(sessionData['timestamp']),
-                name: sessionData['name'],
-                location: sessionData['location'],
-              );
-
-              _sessionController?.add(session);
-              return;
-            }
-          } catch (e) {
-            // Could not fetch session-info
-          }
-
-          // Fallback: create basic session if /session-info fails
-          _discoveredSessionIds.add(sessionKey);
-
-          final session = DiscoveredSession(
-            sessionId: healthData['sessionId'],
-            ipAddress: host,
-            port: port,
-            timestamp: DateTime.parse(healthData['timestamp']),
-          );
-
-          _sessionController?.add(session);
+        if (response.statusCode == 200) {
+          await _verifyAndAddSession(ip, port);
+          return; 
+        }
+      } catch (_) {
+        if (attempt < retries) {
+          await Future.delayed(Duration(milliseconds: 500 * (attempt + 1)));
+          continue;
         }
       }
-    } catch (e) {
-      // Silent fail - don't spam logs
     }
+    // Silent fail after all retries
   }
 
-  // Get local IP address
+Future<void> _verifyAndAddSession(String host, int port) async {
+  try {
+    final sessionKey = '$host:$port';
+    if (_discoveredSessionIds.contains(sessionKey)) {
+      return;
+    }
+
+    // First check health
+    final healthResponse = await http
+        .get(Uri.parse('http://$host:$port/health'))
+        .timeout(const Duration(seconds: 2));
+
+    if (healthResponse.statusCode == 200) {
+      final healthData = jsonDecode(healthResponse.body);
+
+      if (healthData['status'] == 'active' && healthData['sessionId'] != null) {
+        try {
+          final infoResponse = await http
+              .get(Uri.parse('http://$host:$port/session-info'))
+              .timeout(const Duration(seconds: 2));
+
+          if (infoResponse.statusCode == 200) {
+            final sessionData = jsonDecode(infoResponse.body);
+            
+            // ✅ طباعة البيانات للـ debugging
+
+            _discoveredSessionIds.add(sessionKey);
+
+            final orgId = sessionData['organizationId'];
+            final int? organizationId;
+            
+            if (orgId is int) {
+              organizationId = orgId;
+            } else if (orgId is String) {
+              organizationId = int.tryParse(orgId);
+            } else {
+              organizationId = null;
+            }
+
+            final session = DiscoveredSession(
+              sessionId: sessionData['sessionId'].toString(),
+              ipAddress: host,
+              port: port,
+              timestamp: DateTime.parse(sessionData['timestamp']),
+              name: sessionData['name'],
+              location: sessionData['location'],
+              organizationId: organizationId, 
+            );
+
+            _sessionController?.add(session);
+            return;
+          }
+        // ignore: empty_catches
+        } catch (e) {
+        }
+      }
+    }
+  // ignore: empty_catches
+  } catch (e) {
+  }
+}
+
   Future<String?> _getLocalIpAddress() async {
     try {
       final interfaces = await NetworkInterface.list(
@@ -192,11 +193,7 @@ class SessionDiscoveryService {
 
       for (var interface in interfaces) {
         for (var addr in interface.addresses) {
-          //  Check for both 192.168.x.x or 10.x.x.x  or 172.networks
-          if (!addr.isLoopback &&
-              (addr.address.startsWith('192.168') ||
-                  addr.address.startsWith('10.') ||
-                  addr.address.startsWith('172.'))) {
+          if (!addr.isLoopback && _isPrivateIP(addr.address)) {
             return addr.address;
           }
         }
@@ -205,6 +202,35 @@ class SessionDiscoveryService {
       return null;
     } catch (e) {
       return null;
+    }
+  }
+
+  bool _isPrivateIP(String ip) {
+    final parts = ip.split('.');
+    if (parts.length != 4) return false;
+
+    try {
+      final first = int.parse(parts[0]);
+      final second = int.parse(parts[1]);
+
+      // Class A: 10.0.0.0 - 10.255.255.255
+      if (first == 10) {
+        return true;
+      }
+
+      // Class B: 172.16.0.0 - 172.31.255.255
+      if (first == 172 && second >= 16 && second <= 31) {
+        return true;
+      }
+
+      // Class C: 192.168.0.0 - 192.168.255.255
+      if (first == 192 && second == 168) {
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      return false;
     }
   }
 

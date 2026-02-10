@@ -10,6 +10,7 @@ import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/core/widgets/custom_app_button.dart';
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_cubit.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_state.dart';
 import 'package:mobile_app/features/session_mangement/presentation/widgets/session_form_field.dart';
@@ -31,6 +32,7 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
 
   TimeOfDay? _selectedTime;
   String? _selectedWifiOption = 'WiFi';
+  int? _selectedHallId;
 
   @override
   void dispose() {
@@ -49,6 +51,17 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
       return;
     }
 
+    final timeValidation = _validateSelectedTime(_selectedTime!);
+    if (timeValidation != null) {
+      if (timeValidation == TimeValidation.pastTime) {
+        _showPastTimeConfirmationDialog();
+        return;
+      } else if (timeValidation == TimeValidation.futureTime) {
+        _showFutureTimeDialog();
+        return;
+      }
+    }
+
     final locationStatus = await LocationHelper.check();
 
     if (locationStatus == LocationStatus.serviceDisabled) {
@@ -61,7 +74,156 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
       return;
     }
 
-    // ignore: use_build_context_synchronously
+    _startSession();
+  }
+
+  TimeValidation? _validateSelectedTime(TimeOfDay selectedTime) {
+    final now = DateTime.now();
+    final sessionStartTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      selectedTime.hour,
+      selectedTime.minute,
+    );
+
+    final difference = sessionStartTime.difference(now);
+
+    if (difference.isNegative && difference.inMinutes.abs() > 5) {
+      return TimeValidation.pastTime;
+    }
+
+    if (difference.inMinutes > 10) {
+      return TimeValidation.futureTime;
+    }
+
+    return null;
+  }
+
+  void _showPastTimeConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.backGroundColorWhite,
+        title: Row(
+          children: [
+            Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.orange,
+              size: 24.sp,
+            ),
+            horizontalSpace(8.w),
+            Flexible(
+              child: Text(
+                'Past Time Selected',
+                style: TextStyle(
+                  color: AppColors.mainTextColorBlack,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18.sp,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            'The selected start time is more than 5 minutes in the past. Do you want to continue and start the session immediately?',
+            style: TextStyle(
+              color: AppColors.subTextColorGrey,
+              fontSize: 14.sp,
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: AppColors.subTextColorGrey,
+                fontSize: 14.sp,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.mainTextColorBlack,
+              foregroundColor: AppColors.backGroundColorWhite,
+              elevation: 0,
+            ),
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              _startSession();
+            },
+            child: Text('Continue', style: TextStyle(fontSize: 14.sp)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showFutureTimeDialog() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.backGroundColorWhite,
+        title: Row(
+          children: [
+            Icon(Icons.schedule, color: Colors.blue, size: 24.sp),
+            horizontalSpace(8.w),
+            Flexible(
+              child: Text(
+                'Future Session Planned',
+                style: TextStyle(
+                  color: AppColors.mainTextColorBlack,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18.sp,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            'The session is scheduled to start more than 10 minutes from now. This session will be created as a future planned session.',
+            style: TextStyle(
+              color: AppColors.subTextColorGrey,
+              fontSize: 14.sp,
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: AppColors.subTextColorGrey,
+                fontSize: 14.sp,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: AppColors.backGroundColorWhite,
+              elevation: 0,
+            ),
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              showToast(
+                message: 'Future sessions are not supported yet',
+                type: ToastType.info,
+              );
+            },
+            child: Text('OK', style: TextStyle(fontSize: 14.sp)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _startSession() {
     context.read<SessionMangementCubit>().createAndStartSession(
       name: _sessionNameController.text.trim(),
       location: _locationController.text.trim(),
@@ -69,6 +231,7 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
       startTime: _selectedTime!,
       durationMinutes: int.parse(_durationController.text.trim()),
       allowedRadius: double.parse(_allowedRadiusController.text.trim()),
+      hallId: _selectedHallId,
     );
   }
 
@@ -77,23 +240,34 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.backGroundColorWhite,
-        title: const Text(
-          'Location Services Disabled',
-          style: TextStyle(
-            color: AppColors.mainTextColorBlack,
-            fontWeight: FontWeight.w600,
+        title: Flexible(
+          child: Text(
+            'Location Services Disabled',
+            style: TextStyle(
+              color: AppColors.mainTextColorBlack,
+              fontWeight: FontWeight.w600,
+              fontSize: 18.sp,
+            ),
           ),
         ),
-        content: const Text(
-          'Location services are required to create a session. Please enable location services in your device settings.',
-          style: TextStyle(color: AppColors.subTextColorGrey),
+        content: SingleChildScrollView(
+          child: Text(
+            'Location services are required to create a session. Please enable location services in your device settings.',
+            style: TextStyle(
+              color: AppColors.subTextColorGrey,
+              fontSize: 14.sp,
+            ),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppColors.subTextColorGrey),
+              style: TextStyle(
+                color: AppColors.subTextColorGrey,
+                fontSize: 14.sp,
+              ),
             ),
           ),
           ElevatedButton(
@@ -106,7 +280,7 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
               Navigator.pop(context);
               await Geolocator.openLocationSettings();
             },
-            child: const Text('Open Settings'),
+            child: Text('Open Settings', style: TextStyle(fontSize: 14.sp)),
           ),
         ],
       ),
@@ -117,21 +291,48 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Location Permission Required'),
-        content: const Text(
-          'Location permission is permanently denied. Please enable it in app settings to create a session.',
+        backgroundColor: AppColors.backGroundColorWhite,
+        title: Flexible(
+          child: Text(
+            'Location Permission Required',
+            style: TextStyle(
+              color: AppColors.mainTextColorBlack,
+              fontWeight: FontWeight.w600,
+              fontSize: 18.sp,
+            ),
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            'Location permission is permanently denied. Please enable it in app settings to create a session.',
+            style: TextStyle(
+              color: AppColors.subTextColorGrey,
+              fontSize: 14.sp,
+            ),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: AppColors.subTextColorGrey,
+                fontSize: 14.sp,
+              ),
+            ),
           ),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.mainTextColorBlack,
+              foregroundColor: AppColors.backGroundColorWhite,
+              elevation: 0,
+            ),
             onPressed: () async {
               Navigator.pop(context);
               await openAppSettings();
             },
-            child: const Text('Open Settings'),
+            child: Text('Open Settings', style: TextStyle(fontSize: 14.sp)),
           ),
         ],
       ),
@@ -197,6 +398,11 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
         final isLoading = state is SessionState && state.isLoading;
         final showNetworkError = state is SessionError && state.isNetworkError;
 
+        List<HallInfo>? halls;
+        if (state is SessionManagementIdle) {
+          halls = state.halls;
+        }
+
         return Form(
           key: _formKey,
           child: Padding(
@@ -215,12 +421,19 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
                   allowedRadiusController: _allowedRadiusController,
                   initialTime: _selectedTime,
                   initialWifiOption: _selectedWifiOption,
+                  halls: halls,
+                  selectedHallId: _selectedHallId,
                   onTimeSelected: (time) {
                     setState(() => _selectedTime = time);
                   },
                   onWifiOptionChanged: (option) {
                     setState(() => _selectedWifiOption = option);
                   },
+                  onHallSelected: (hallId) {
+                    setState(() => _selectedHallId = hallId);
+                  },
+                  onRefreshHalls: () =>
+                      context.read<SessionMangementCubit>().loadHalls(),
                 ),
 
                 verticalSpace(25.h),
@@ -261,3 +474,5 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
     );
   }
 }
+
+enum TimeValidation { pastTime, futureTime }

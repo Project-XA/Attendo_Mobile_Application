@@ -8,4 +8,6 @@ class ApiConst {
   static const String refreshToken = "null";
   static const String userStatistics = "user/statistics";
   static const String saveAttendance = "Session/save-attend";
+  static String getAllHalls(int organizationId) =>
+      '/hall/get-all-halls/$organizationId';
 }

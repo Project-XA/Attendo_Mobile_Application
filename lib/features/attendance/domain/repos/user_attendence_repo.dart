@@ -13,4 +13,6 @@ abstract class UserAttendanceRepository {
   
   Future<List<AttendanceHistory>> getAttendanceHistory();
   Future<AttendanceStats> getAttendanceStats();
+    Future<AttendanceStats?> getCachedStatsOnly();
+    Future<void> saveStatsToCache(AttendanceStats stats);
 }

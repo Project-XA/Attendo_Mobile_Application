@@ -24,6 +24,7 @@ class HttpServerService {
   double? _sessionLongitude;
   double? _allowedRadius;
 
+
   void updateSessionData(Session session) {
     _currentSession = session;
   }
@@ -34,12 +35,13 @@ class HttpServerService {
     double? latitude,
     double? longitude,
     double? allowedRadius,
+    int? orgainzationId
   }) async {
     try {
       _server = await HttpServer.bind(InternetAddress.anyIPv4, 8080);
       _currentSessionId = sessionId;
       _currentSession = session;
-      
+
       _sessionLatitude = latitude;
       _sessionLongitude = longitude;
       _allowedRadius = allowedRadius;
@@ -106,7 +108,7 @@ class HttpServerService {
 
       if (alreadyCheckedIn) {
         request.response
-          ..statusCode = HttpStatus.conflict 
+          ..statusCode = HttpStatus.conflict
           ..write(
             jsonEncode({
               'status': 'error',
@@ -118,8 +120,10 @@ class HttpServerService {
       }
 
       if (attendanceRequest.location != null) {
-        final locationValid = _validateUserLocation(attendanceRequest.location!);
-        
+        final locationValid = _validateUserLocation(
+          attendanceRequest.location!,
+        );
+
         if (!locationValid) {
           request.response
             ..statusCode = HttpStatus.forbidden
@@ -155,7 +159,7 @@ class HttpServerService {
             'status': 'success',
             'message': 'Attendance recorded successfully',
             'time': DateTime.now().toIso8601String(),
-            'sessionId': _currentSessionId,
+            'sessionId': _currentSessionId.toString(), 
           }),
         );
     } catch (e) {
@@ -169,8 +173,8 @@ class HttpServerService {
 
   bool _validateUserLocation(String locationString) {
     try {
-      if (_sessionLatitude == null || 
-          _sessionLongitude == null || 
+      if (_sessionLatitude == null ||
+          _sessionLongitude == null ||
           _allowedRadius == null) {
         return false;
       }
@@ -190,7 +194,6 @@ class HttpServerService {
         _sessionLongitude!,
       );
 
-
       return distance <= _allowedRadius!;
     } catch (e) {
       return false;
@@ -204,18 +207,19 @@ class HttpServerService {
     double lon2,
   ) {
     const earthRadius = 6371000;
-    
+
     final dLat = _toRadians(lat2 - lat1);
     final dLon = _toRadians(lon2 - lon1);
-    
-    final a = 
-      (sin(dLat / 2) * sin(dLat / 2)) +
-      cos(_toRadians(lat1)) * cos(_toRadians(lat2)) *
-      (sin(dLon / 2) * sin(dLon / 2));
-    
+
+    final a =
+        (sin(dLat / 2) * sin(dLat / 2)) +
+        cos(_toRadians(lat1)) *
+            cos(_toRadians(lat2)) *
+            (sin(dLon / 2) * sin(dLon / 2));
+
     final c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    
-    return earthRadius * c; 
+
+    return earthRadius * c;
   }
 
   double _toRadians(double degrees) {
@@ -228,37 +232,38 @@ class HttpServerService {
       ..write(
         jsonEncode({
           'status': 'active',
-          'sessionId': _currentSessionId,
+          'sessionId': _currentSessionId.toString(), 
           'timestamp': DateTime.now().toIso8601String(),
+          'name': _currentSession?.name ?? 'Active Session',
+          'location': _currentSession?.location ?? 'Unknown',
         }),
       );
   }
-
-  void _handleSessionInfo(HttpRequest request) {
-    if (_currentSession == null) {
-      request.response
-        ..statusCode = HttpStatus.notFound
-        ..write(jsonEncode({'error': 'No active session'}));
-      return;
-    }
-
-    final sessionData = {
-      'sessionId': _currentSession!.id,
-      'name': _currentSession!.name,
-      'location': _currentSession!.location,
-      'connectionMethod': _currentSession!.connectionMethod,
-      'startTime': _currentSession!.startTime.toIso8601String(),
-      'durationMinutes': _currentSession!.durationMinutes,
-      'status': _statusToString(_currentSession!.status),
-      'attendeeCount': _currentSession!.attendanceList.length,
-      'connectedClients': _currentSession!.connectedClients,
-      'timestamp': DateTime.now().toIso8601String(),
-    };
-
+void _handleSessionInfo(HttpRequest request) {
+  if (_currentSession == null) {
     request.response
-      ..statusCode = HttpStatus.ok
-      ..write(jsonEncode(sessionData));
+      ..statusCode = HttpStatus.notFound
+      ..write(jsonEncode({'error': 'No active session'}));
+    return;
   }
+
+  final sessionData = {
+    'sessionId': _currentSession!.id.toString(),
+    'name': _currentSession!.name,
+    'location': _currentSession!.location,
+    'connectionMethod': _currentSession!.connectionMethod,
+    'startTime': _currentSession!.startTime.toIso8601String(),
+    'durationMinutes': _currentSession!.durationMinutes,
+    'status': _statusToString(_currentSession!.status),
+    'attendeeCount': _currentSession!.attendanceList.length,
+    'connectedClients': _currentSession!.connectedClients,
+    'timestamp': DateTime.now().toIso8601String(),
+    'organizationId': _currentSession!.organizationId, 
+  };
+  request.response
+    ..statusCode = HttpStatus.ok
+    ..write(jsonEncode(sessionData));
+}
 
   String _statusToString(SessionStatus status) {
     switch (status) {
@@ -288,7 +293,6 @@ class HttpServerService {
     }
   }
 
-  // Get Local IP Address
   Future<String> _getLocalIpAddress() async {
     try {
       final interfaces = await NetworkInterface.list(
@@ -297,7 +301,15 @@ class HttpServerService {
 
       for (var interface in interfaces) {
         for (var addr in interface.addresses) {
-          if (!addr.isLoopback && addr.address.startsWith('192.168')) {
+          if (!addr.isLoopback && _isPrivateIP(addr.address)) {
+            return addr.address;
+          }
+        }
+      }
+
+      for (var interface in interfaces) {
+        for (var addr in interface.addresses) {
+          if (!addr.isLoopback) {
             return addr.address;
           }
         }
@@ -306,6 +318,32 @@ class HttpServerService {
       return '0.0.0.0';
     } catch (e) {
       return '0.0.0.0';
+    }
+  }
+
+  bool _isPrivateIP(String ip) {
+    final parts = ip.split('.');
+    if (parts.length != 4) return false;
+
+    try {
+      final first = int.parse(parts[0]);
+      final second = int.parse(parts[1]);
+
+      if (first == 10) {
+        return true;
+      }
+
+      if (first == 172 && second >= 16 && second <= 31) {
+        return true;
+      }
+
+      if (first == 192 && second == 168) {
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      return false;
     }
   }
 

@@ -1,5 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_app/core/DI/get_it.dart';
+import 'package:mobile_app/core/services/auth/onboarding_service.dart';
 import 'package:mobile_app/features/verification/data/exceptions/face_recognition_exception.dart';
 import 'package:mobile_app/features/verification/data/exceptions/no_face_detected_exception.dart';
 import 'package:mobile_app/features/verification/domain/repo/verify_repo.dart';
@@ -119,7 +121,7 @@ class VerificationCubit extends Cubit<VerificationState> {
 
       if (result) {
         await _verifyRepo.closeCamera();
-
+        await getIt<OnboardingService>().markVerificationComplete();
         emit(
           state.copyWith(
             isprocessing: false,
@@ -156,7 +158,11 @@ class VerificationCubit extends Cubit<VerificationState> {
     }
   }
 
-  void _handleError(String errorMessage, {bool isNotVerified = false , bool isFaceNotMatched = false}) {
+  void _handleError(
+    String errorMessage, {
+    bool isNotVerified = false,
+    bool isFaceNotMatched = false,
+  }) {
     if (!isClosed) {
       emit(
         state.copyWith(
@@ -165,7 +171,7 @@ class VerificationCubit extends Cubit<VerificationState> {
           isnotVerified: isNotVerified,
           isFaceNotMatched: isFaceNotMatched,
           errorMessage: errorMessage,
-          
+
           hascaptured: false,
           clearController: true,
           isOpened: false,
@@ -184,7 +190,7 @@ class VerificationCubit extends Cubit<VerificationState> {
         isnotVerified: false,
         isVerificationComplete: false,
         isprocessing: false,
-        isFaceNotMatched: false, 
+        isFaceNotMatched: false,
       ),
     );
 

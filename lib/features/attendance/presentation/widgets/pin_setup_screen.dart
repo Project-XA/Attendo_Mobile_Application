@@ -38,8 +38,8 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
 
   void _verifyPins() {
     if (_pin == _confirmPin) {
-      // Save PIN
-      Navigator.pop(context, _pin);
+      // ⭐ استخدم pop مع الـ dialog
+      Navigator.of(context, rootNavigator: true).pop(_pin);
     } else {
       // Reset and show error
       setState(() {
@@ -74,15 +74,27 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     final currentPin = _isConfirming ? _confirmPin : _pin;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF2C2C2E),
+      backgroundColor: AppColors.backGroundColorWhite,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.close,
+            color: AppColors.mainTextColorBlack,
+          ),
+          // ⭐ استخدم rootNavigator
+          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
             const Spacer(),
             Text(
-              _isConfirming ? 'Confirm your PIN' : 'Enter your PIN to log in',
+              _isConfirming ? 'Confirm your PIN' : 'Create your PIN',
               style: TextStyle(
-                color: AppColors.backGroundColorWhite,
+                color: AppColors.mainTextColorBlack,
                 fontSize: 20.sp,
                 fontWeight: FontWeightHelper.medium,
               ),
@@ -109,8 +121,8 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: index < pin.length
-                ? AppColors.backGroundColorWhite
-                : AppColors.backGroundColorWhite.withOpacity(0.3),
+                ? AppColors.mainTextColorBlack
+                : AppColors.mainTextColorBlack.withOpacity(0.3),
           ),
         );
       }),
@@ -159,7 +171,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         child: Text(
           number,
           style: TextStyle(
-            color: AppColors.backGroundColorWhite,
+            color: AppColors.mainTextColorBlack,
             fontSize: 32.sp,
             fontWeight: FontWeightHelper.light,
           ),
@@ -177,7 +189,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         alignment: Alignment.center,
         child: Icon(
           Icons.backspace_outlined,
-          color: AppColors.backGroundColorWhite,
+          color: AppColors.mainTextColorBlack,
           size: 28.sp,
         ),
       ),

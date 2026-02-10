@@ -15,6 +15,7 @@ class CreateSessionUseCase {
     required DateTime startTime,
     required int durationMinutes,
     required double allowedRadius,
+    required int? hallId,
   }) async {
     final networkInfo = await _networkInfoService.getNetworkAndLocationInfo();
 
@@ -32,6 +33,7 @@ class CreateSessionUseCase {
       networkBSSID: networkInfo.bssid,
       latitude: networkInfo.latitude,
       longitude: networkInfo.longitude,
+      hallId: hallId,
     );
   }
 }

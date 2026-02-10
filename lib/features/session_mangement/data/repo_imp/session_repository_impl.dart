@@ -1,7 +1,10 @@
 import 'package:mobile_app/core/current_user/data/local_data_soruce/user_local_data_source.dart';
-import 'package:mobile_app/core/current_user/data/remote_data_source/user_remote_data_source.dart';
 import 'package:mobile_app/core/networking/api_error_model.dart';
+import 'package:mobile_app/features/session_mangement/data/data_source/local_session_data_source.dart';
+import 'package:mobile_app/features/session_mangement/data/data_source/remote_session_data_source.dart';
+import 'package:mobile_app/features/session_mangement/data/models/local_models/hall_model.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/create_session/create_session_request_model.dart';
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/save_attendance/save_attendance_request.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/save_attendance/save_attendance_response.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/server_info.dart';
@@ -12,8 +15,9 @@ import 'package:mobile_app/features/session_mangement/domain/repos/session_repos
 
 class SessionRepositoryImpl implements SessionRepository {
   final HttpServerService _serverService;
-  final UserRemoteDataSource _remoteDataSource;
   final UserLocalDataSource _localDataSource;
+  final LocalSessionDataSource _localSessionDataSource;
+  final RemoteSessionDataSource _remoteSessionDataSource;
   Session? _currentSession;
 
   double? _sessionLatitude;
@@ -23,11 +27,14 @@ class SessionRepositoryImpl implements SessionRepository {
 
   SessionRepositoryImpl({
     required HttpServerService serverService,
-    required UserRemoteDataSource remoteDataSource,
     required UserLocalDataSource localDataSource,
+    required LocalSessionDataSource localSessionDataSource,
+    required RemoteSessionDataSource remoteSessionDataSource,
   }) : _serverService = serverService,
-       _remoteDataSource = remoteDataSource,
-       _localDataSource = localDataSource;
+       _localDataSource = localDataSource,
+       _localSessionDataSource = localSessionDataSource,
+       _remoteSessionDataSource = remoteSessionDataSource;
+
   @override
   Future<Session> createSession({
     required String name,
@@ -40,6 +47,7 @@ class SessionRepositoryImpl implements SessionRepository {
     required String networkBSSID,
     required double latitude,
     required double longitude,
+    required int? hallId,
   }) async {
     final userData = await _localDataSource.getCurrentUser();
 
@@ -68,10 +76,10 @@ class SessionRepositoryImpl implements SessionRepository {
       networkBSSID: networkBSSID,
       startAt: startAt.toIso8601String(),
       endAt: endAt.toIso8601String(),
-      hallId: 1,
+      hallId: hallId!,
     );
 
-    sessionId = await _remoteDataSource.createSession(requestModel);
+    sessionId = await _remoteSessionDataSource.createSession(requestModel);
 
     _sessionLatitude = latitude;
     _sessionLongitude = longitude;
@@ -80,6 +88,7 @@ class SessionRepositoryImpl implements SessionRepository {
     _currentSession = Session(
       id: sessionId!,
       name: name,
+      organizationId: organizationId,
       location: location,
       connectionMethod: connectionMethod,
       startTime: startAt,
@@ -108,6 +117,7 @@ class SessionRepositoryImpl implements SessionRepository {
       latitude: _sessionLatitude,
       longitude: _sessionLongitude,
       allowedRadius: _allowedRadius,
+      orgainzationId: _currentSession!.organizationId
     );
 
     _currentSession = _currentSession!.copyWith(status: SessionStatus.active);
@@ -133,9 +143,11 @@ class SessionRepositoryImpl implements SessionRepository {
     _allowedRadius = null;
   }
 
-@override
-  Future<SaveAttendanceResponse> saveAttendance(SaveAttendanceRequest request) async {
-    return await _remoteDataSource.saveAttendance(request);
+  @override
+  Future<SaveAttendanceResponse> saveAttendance(
+    SaveAttendanceRequest request,
+  ) async {
+    return await _remoteSessionDataSource.saveAttendance(request);
   }
 
   @override
@@ -163,5 +175,75 @@ class SessionRepositoryImpl implements SessionRepository {
   @override
   Future<Session?> getCurrentActiveSession() async {
     return _currentSession;
+  }
+
+  @override
+  Future<GetAllHallsResponse> getAllHalls() async {
+    final userData = await _localDataSource.getCurrentUser();
+
+    final organizationId = userData.organizations?.isNotEmpty == true
+        ? userData.organizations!.first.organizationId
+        : null;
+
+    if (organizationId == null) {
+      throw const ApiErrorModel(
+        message: 'Invalid organization ID',
+        type: ApiErrorType.defaultError,
+        statusCode: 400,
+      );
+    }
+
+    final cachedData = await _localSessionDataSource.getCachedHalls();
+
+    if (cachedData != null && !cachedData.shouldRefresh()) {
+      final hallInfoList = cachedData.halls
+          .map((hallModel) => hallModel.toHallInfo())
+          .toList();
+
+      return GetAllHallsResponse(halls: hallInfoList);
+    }
+
+    try {
+      final response = await _remoteSessionDataSource.getAllHalls(organizationId);
+
+      final hallModels = response.halls
+          .map((hallInfo) => HallModel.fromHallInfo(hallInfo))
+          .toList();
+
+      await _localSessionDataSource.cacheHalls(hallModels);
+
+      return response;
+    } on ApiErrorModel catch (error) {
+      if (error.isNetworkError && cachedData != null) {
+        final hallInfoList = cachedData.halls
+            .map((hallModel) => hallModel.toHallInfo())
+            .toList();
+
+        return GetAllHallsResponse(halls: hallInfoList);
+      }
+
+      rethrow;
+    } catch (e) {
+      if (cachedData != null) {
+        final hallInfoList = cachedData.halls
+            .map((hallModel) => hallModel.toHallInfo())
+            .toList();
+
+        return GetAllHallsResponse(halls: hallInfoList);
+      }
+
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteCurrentSession() async {
+    await _serverService.stopServer();
+    _currentSession = _currentSession!.copyWith(status: SessionStatus.ended);
+    _currentSession = null;
+
+    _sessionLatitude = null;
+    _sessionLongitude = null;
+    _allowedRadius = null;
   }
 }

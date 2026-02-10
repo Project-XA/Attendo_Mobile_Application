@@ -29,16 +29,20 @@ class _AppBootstrapState extends State<AppBootstrap> {
     await initCore();
 
     final onboardingService = getIt<OnboardingService>();
-    
+
     final hasCompletedOCR = await onboardingService.hasCompletedOCR();
     final hasRegistered = await onboardingService.hasCompletedOnboarding();
     final isLoggedIn = await onboardingService.isLoggedIn();
+    final hasCompletedVerification = await onboardingService
+        .hasCompletedVerification();
 
     String initialRoute;
     String? routeArgument;
 
     if (!hasCompletedOCR) {
-      initialRoute = Routes.registerScreen;//TODO: change to start page
+      initialRoute = Routes.startPage;
+    } else if (!hasCompletedVerification) {
+      initialRoute = Routes.verficationScreen;
     } else if (!hasRegistered) {
       initialRoute = Routes.registerScreen;
     } else if (!isLoggedIn) {

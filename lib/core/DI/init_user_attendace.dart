@@ -1,6 +1,7 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:mobile_app/core/DI/get_it.dart';
 import 'package:mobile_app/core/current_user/data/remote_data_source/user_remote_data_source.dart';
+import 'package:mobile_app/features/attendance/data/data_source/attendance_local_data_source.dart';
 import 'package:mobile_app/features/attendance/data/repos_imp/session_discovery_repo_impl.dart';
 import 'package:mobile_app/features/attendance/data/repos_imp/user_attendence_repo_impl.dart';
 import 'package:mobile_app/features/attendance/data/services/attendence_service.dart';
@@ -35,11 +36,18 @@ void initUserAttendace() {
     );
   }
 
-  // ==================== REPOSITORIES ====================
-  
+
+  if (!getIt.isRegistered<AttendanceLocalDataSource>()) {
+    getIt.registerLazySingleton<AttendanceLocalDataSource>(
+      () => AttendanceLocalDataSourceImpl(),
+    );
+  }
+
+
   if (!getIt.isRegistered<SessionDiscoveryRepository>()) {
     getIt.registerLazySingleton<SessionDiscoveryRepository>(
       () => SessionDiscoveryRepositoryImpl(
+        userLocalDataSource: getIt(),
         discoveryService: getIt<SessionDiscoveryService>(),
       ),
     );
@@ -51,6 +59,7 @@ void initUserAttendace() {
         userRemoteDataSource: getIt<UserRemoteDataSource>(),
         attendanceService: getIt<AttendanceService>(),
         deviceInfo: getIt<DeviceInfoPlugin>(),
+        localDataSource: getIt<AttendanceLocalDataSource>(), 
       ),
     );
   }
@@ -88,12 +97,13 @@ void initUserAttendace() {
 
   if (!getIt.isRegistered<GetAttendanceStatsUseCase>()) {
     getIt.registerLazySingleton<GetAttendanceStatsUseCase>(
-      () => GetAttendanceStatsUseCase(getIt<UserAttendanceRepository>()),
+      () => GetAttendanceStatsUseCase(
+        repository: getIt<UserAttendanceRepository>(), 
+      ),
     );
   }
 
-  // ==================== CUBIT ====================
-  
+
   if (!getIt.isRegistered<UserCubit>()) {
     getIt.registerFactory<UserCubit>(
       () => UserCubit(
