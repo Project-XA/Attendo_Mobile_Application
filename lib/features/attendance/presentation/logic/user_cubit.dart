@@ -45,30 +45,35 @@ class UserCubit extends Cubit<UserState> {
 
       if (cachedStats != null) {
         _cachedStats = cachedStats;
-        emit(UserIdle(stats: cachedStats, hasStatsError: false));
+        if (!isClosed) {
+          emit(UserIdle(stats: cachedStats, hasStatsError: false));
+        }
       } else {
-        emit(const UserLoading());
+        if (!isClosed) {
+          emit(const UserLoading());
+        }
       }
 
       final freshStats = await getAttendanceStatsUseCase.call();
 
       await getAttendanceStatsUseCase.saveToCache(freshStats);
       _cachedStats = freshStats;
-
     } catch (e) {
-      if (_cachedStats != null) {
-        emit(UserIdle(stats: _cachedStats, hasStatsError: true));
-      } else {
-        emit(
-          UserIdle(
-            stats: AttendanceStats(
-              totalSessions: 0,
-              attendedSessions: 0,
-              attendancePercentage: 0.0,
+      if (!isClosed) {
+        if (_cachedStats != null) {
+          emit(UserIdle(stats: _cachedStats, hasStatsError: true));
+        } else {
+          emit(
+            UserIdle(
+              stats: AttendanceStats(
+                totalSessions: 0,
+                attendedSessions: 0,
+                attendancePercentage: 0.0,
+              ),
+              hasStatsError: true,
             ),
-            hasStatsError: true,
-          ),
-        );
+          );
+        }
       }
     }
   }
@@ -104,44 +109,54 @@ class UserCubit extends Cubit<UserState> {
         await getAttendanceStatsUseCase.saveToCache(optimisticStats);
         _cachedStats = optimisticStats;
 
-        emit(
-          CheckInState(
-            session: session,
-            operation: CheckInOperation.success,
-            checkInTime: DateTime.now(),
-            stats: optimisticStats,
-          ),
-        );
+        if (!isClosed) {
+          emit(
+            CheckInState(
+              session: session,
+              operation: CheckInOperation.success,
+              checkInTime: DateTime.now(),
+              stats: optimisticStats,
+            ),
+          );
+        }
 
         await Future.delayed(const Duration(seconds: 2));
-        await stopSessionDiscovery();
-
-        emit(UserIdle(stats: optimisticStats, hasStatsError: false));
+        if (!isClosed) {
+          await stopSessionDiscovery();
+        }
       } else {
+        if (!isClosed) {
+          emit(
+            CheckInState(
+              session: session,
+              operation: CheckInOperation.failed,
+              errorMessage: response.message,
+              stats: _getStatsFromState(currentState),
+            ),
+          );
+        }
+
+        await Future.delayed(const Duration(seconds: 2));
+        if (!isClosed) {
+          await stopSessionDiscovery();
+        }
+      }
+    } catch (e) {
+      if (!isClosed) {
         emit(
           CheckInState(
             session: session,
             operation: CheckInOperation.failed,
-            errorMessage: response.message,
+            errorMessage: e.toString(),
             stats: _getStatsFromState(currentState),
           ),
         );
-
-        await Future.delayed(const Duration(seconds: 2));
-        await stopSessionDiscovery();
       }
-    } catch (e) {
-      emit(
-        CheckInState(
-          session: session,
-          operation: CheckInOperation.failed,
-          errorMessage: e.toString(),
-          stats: _getStatsFromState(currentState),
-        ),
-      );
 
       await Future.delayed(const Duration(seconds: 2));
-      await stopSessionDiscovery();
+      if (!isClosed) {
+        await stopSessionDiscovery();
+      }
     }
   }
 
@@ -285,13 +300,15 @@ class UserCubit extends Cubit<UserState> {
 
       await stopDiscoveryUseCase.call();
 
-      final currentState = state;
-      emit(
-        UserIdle(
-          stats: _getStatsFromState(currentState),
-          hasStatsError: _getErrorStateFromState(currentState),
-        ),
-      );
+      if (!isClosed) {
+        final currentState = state;
+        emit(
+          UserIdle(
+            stats: _getStatsFromState(currentState),
+            hasStatsError: _getErrorStateFromState(currentState),
+          ),
+        );
+      }
     } catch (e) {
       // Stop discovery error handled silently
     }
@@ -301,19 +318,21 @@ class UserCubit extends Cubit<UserState> {
     final currentState = state;
 
     try {
-      emit(
-        AttendanceHistoryState(
-          history: const [],
-          stats:
-              _getStatsFromState(currentState) ??
-              AttendanceStats(
-                totalSessions: 0,
-                attendedSessions: 0,
-                attendancePercentage: 0,
-              ),
-          isLoading: true,
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          AttendanceHistoryState(
+            history: const [],
+            stats:
+                _getStatsFromState(currentState) ??
+                AttendanceStats(
+                  totalSessions: 0,
+                  attendedSessions: 0,
+                  attendancePercentage: 0,
+                ),
+            isLoading: true,
+          ),
+        );
+      }
 
       final history = await getAttendanceHistoryUseCase.call();
       final stats = await getAttendanceStatsUseCase.call();
@@ -321,15 +340,19 @@ class UserCubit extends Cubit<UserState> {
       await getAttendanceStatsUseCase.saveToCache(stats);
       _cachedStats = stats;
 
-      emit(
-        AttendanceHistoryState(
-          history: history,
-          stats: stats,
-          isLoading: false,
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          AttendanceHistoryState(
+            history: history,
+            stats: stats,
+            isLoading: false,
+          ),
+        );
+      }
     } catch (e) {
-      emit(UserError('Failed to load history: $e'));
+      if (!isClosed) {
+        emit(UserError('Failed to load history: $e'));
+      }
     }
   }
 

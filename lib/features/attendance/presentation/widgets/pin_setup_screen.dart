@@ -38,8 +38,8 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
 
   void _verifyPins() {
     if (_pin == _confirmPin) {
-      // Save PIN
-      Navigator.pop(context, _pin);
+      // ⭐ استخدم pop مع الـ dialog
+      Navigator.of(context, rootNavigator: true).pop(_pin);
     } else {
       // Reset and show error
       setState(() {
@@ -75,12 +75,24 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.backGroundColorWhite,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.close,
+            color: AppColors.mainTextColorBlack,
+          ),
+          // ⭐ استخدم rootNavigator
+          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
             const Spacer(),
             Text(
-              _isConfirming ? 'Confirm your PIN' : 'Enter your PIN to log in',
+              _isConfirming ? 'Confirm your PIN' : 'Create your PIN',
               style: TextStyle(
                 color: AppColors.mainTextColorBlack,
                 fontSize: 20.sp,

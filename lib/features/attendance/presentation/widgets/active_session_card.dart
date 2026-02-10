@@ -216,7 +216,7 @@ class ActiveSessionCard extends StatelessWidget {
     final isAuthenticated = await authManager.authenticate(context);
 
     if (context.mounted) {
-      Navigator.of(context).pop();
+      Navigator.of(context, rootNavigator: true).pop();
     }
 
     if (!isAuthenticated) {
@@ -247,6 +247,7 @@ class ActiveSessionCard extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
+      useRootNavigator: true,
       builder: (context) => const Center(
         child: CircularProgressIndicator(color: AppColors.backGroundColorWhite),
       ),

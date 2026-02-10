@@ -139,10 +139,46 @@ class UserModel extends HiveObject {
       organizations: organizations,
       profileImage: profileImage,
       idCardImage: idCardImage,
-      loginToken: null, 
+      loginToken: null,
       username: username,
       pinCode: null,
       // Clear token only
+    );
+  }
+
+  UserModel copyWith({
+    String? id,
+    String? nationalId,
+    String? firstNameAr,
+    String? lastNameAr,
+    String? address,
+    String? birthDate,
+    String? email,
+    String? firstNameEn,
+    String? lastNameEn,
+    List<UserOrgModel>? organizations,
+    String? profileImage,
+    String? idCardImage,
+    String? loginToken,
+    String? username,
+    String? pinCode,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      nationalId: nationalId ?? this.nationalId,
+      firstNameAr: firstNameAr ?? this.firstNameAr,
+      lastNameAr: lastNameAr ?? this.lastNameAr,
+      address: address ?? this.address,
+      birthDate: birthDate ?? this.birthDate,
+      email: email ?? this.email,
+      firstNameEn: firstNameEn ?? this.firstNameEn,
+      lastNameEn: lastNameEn ?? this.lastNameEn,
+      organizations: organizations ?? this.organizations,
+      profileImage: profileImage ?? this.profileImage,
+      idCardImage: idCardImage ?? this.idCardImage,
+      loginToken: loginToken ?? this.loginToken,
+      username: username ?? this.username,
+      pinCode: pinCode ?? this.pinCode,
     );
   }
 }

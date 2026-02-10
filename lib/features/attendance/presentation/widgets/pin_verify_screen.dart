@@ -23,7 +23,7 @@ class _PinVerifyScreenState extends State<PinVerifyScreen> {
       if (_pin.length == 4) {
         Future.delayed(const Duration(milliseconds: 200), () {
           if (mounted) {
-            Navigator.pop(context, _pin);
+            Navigator.of(context, rootNavigator: true).pop(_pin);
           }
         });
       }
@@ -47,10 +47,10 @@ class _PinVerifyScreenState extends State<PinVerifyScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
-            Icons.arrow_back,
+            Icons.close,
             color: AppColors.mainTextColorBlack,
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
         ),
       ),
       body: SafeArea(

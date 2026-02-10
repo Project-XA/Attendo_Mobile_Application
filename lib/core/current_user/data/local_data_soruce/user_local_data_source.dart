@@ -31,7 +31,8 @@ class UserLocalDataSourceImp extends UserLocalDataSource {
       if (user == null) {
         throw CacheException('No user found in local storage');
       }
-      return user;
+
+      return user.copyWith();
     } catch (e) {
       if (e is CacheException) rethrow;
       throw CacheException('Failed to read user data: $e');
@@ -66,9 +67,9 @@ class UserLocalDataSourceImp extends UserLocalDataSource {
   Future<bool> hasValidToken() async {
     try {
       final user = userBox.get(_currentUserKey);
-      return user != null && 
-             user.loginToken != null && 
-             user.loginToken!.isNotEmpty;
+      return user != null &&
+          user.loginToken != null &&
+          user.loginToken!.isNotEmpty;
     } catch (e) {
       return false;
     }
@@ -174,9 +175,9 @@ class UserLocalDataSourceImp extends UserLocalDataSource {
   Future<void> logout() async {
     try {
       final user = await getCurrentUser();
-      
+
       user.loginToken = null;
-      
+
       await userBox.put(_currentUserKey, user);
       await userBox.flush();
     } catch (e) {

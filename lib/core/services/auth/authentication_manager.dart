@@ -51,9 +51,11 @@ class AuthenticationManager {
     BuildContext context,
     CurrentUserCubit currentUserCubit,
   ) async {
-    final newPin = await Navigator.push<String>(
-      context,
-      MaterialPageRoute(builder: (_) => const PinSetupScreen()),
+    // ⭐ استخدم showDialog بدل Navigator.push
+    final newPin = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Dialog.fullscreen(child: PinSetupScreen()),
     );
 
     if (newPin == null || newPin.length != 4) {
@@ -73,7 +75,6 @@ class AuthenticationManager {
           ),
         );
       }
-
       return true;
     } catch (e) {
       debugPrint('Error saving PIN: $e');
@@ -89,9 +90,11 @@ class AuthenticationManager {
     String storedHashedPin, {
     int attemptNumber = 1,
   }) async {
-    final enteredPin = await Navigator.push<String>(
-      context,
-      MaterialPageRoute(builder: (_) => const PinVerifyScreen()),
+    // ⭐ استخدم showDialog بدل Navigator.push
+    final enteredPin = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Dialog.fullscreen(child: PinVerifyScreen()),
     );
 
     if (enteredPin == null || enteredPin.length != 4) {
@@ -131,6 +134,7 @@ class AuthenticationManager {
 
   void _showError(BuildContext context, String message) {
     if (!context.mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),

@@ -67,18 +67,11 @@ class CurrentUserCubit extends Cubit<CurrentUserState> {
     try {
       emit(CurrentUserUpdating(currentState.user));
 
-      final updatedUser = User(
-        nationalId: currentState.user.nationalId,
-        firstNameAr: firstNameAr ?? currentState.user.firstNameAr,
-        lastNameAr: lastNameAr ?? currentState.user.lastNameAr,
-        address: address ?? currentState.user.address,
-        birthDate: currentState.user.birthDate,
-        email: email ?? currentState.user.email,
-        firstNameEn: currentState.user.firstNameEn,
-        lastNameEn: currentState.user.lastNameEn,
-        organizations: currentState.user.organizations,
-        profileImage: currentState.user.profileImage,
-        pinCode: currentState.user.pinCode, // Keep existing PIN
+      final updatedUser = currentState.user.copyWith(
+        firstNameAr: firstNameAr,
+        lastNameAr: lastNameAr,
+        address: address,
+        email: email,
       );
 
       await _updateUserUseCase.call(updatedUser);
@@ -101,19 +94,7 @@ class CurrentUserCubit extends Cubit<CurrentUserState> {
     try {
       emit(CurrentUserUpdating(currentState.user));
 
-      final updatedUser = User(
-        nationalId: currentState.user.nationalId,
-        firstNameAr: currentState.user.firstNameAr,
-        lastNameAr: currentState.user.lastNameAr,
-        address: currentState.user.address,
-        birthDate: currentState.user.birthDate,
-        email: currentState.user.email,
-        firstNameEn: currentState.user.firstNameEn,
-        lastNameEn: currentState.user.lastNameEn,
-        organizations: currentState.user.organizations,
-        profileImage: currentState.user.profileImage,
-        pinCode: hashedPin, // Update PIN
-      );
+      final updatedUser = currentState.user.copyWith(pinCode: hashedPin);
 
       await _updateUserUseCase.call(updatedUser);
       emit(CurrentUserUpdated(updatedUser));
