@@ -13,12 +13,16 @@ class AuthenticationManager {
 
   Future<bool> authenticate(BuildContext context) async {
     try {
-      final hasBiometric = await _authService.canUseBiometric();
-      if (hasBiometric) {
-        final bioResult = await _authService.authenticateWithBiometric();
-        if (bioResult) {
-          return true;
-        }
+      final hasFace = await _authService.hasFaceId();
+      if (hasFace) {
+        final faceResult = await _authService.authenticateWithFaceId();
+        if (faceResult) return true;
+      }
+
+      final hasFinger = await _authService.hasFingerprint();
+      if (hasFinger) {
+        final fingerResult = await _authService.authenticateWithFingerprint();
+        if (fingerResult) return true;
       }
 
       // ignore: use_build_context_synchronously
@@ -51,7 +55,6 @@ class AuthenticationManager {
     BuildContext context,
     CurrentUserCubit currentUserCubit,
   ) async {
-    // ⭐ استخدم showDialog بدل Navigator.push
     final newPin = await showDialog<String>(
       context: context,
       barrierDismissible: false,
@@ -90,7 +93,6 @@ class AuthenticationManager {
     String storedHashedPin, {
     int attemptNumber = 1,
   }) async {
-    // ⭐ استخدم showDialog بدل Navigator.push
     final enteredPin = await showDialog<String>(
       context: context,
       barrierDismissible: false,

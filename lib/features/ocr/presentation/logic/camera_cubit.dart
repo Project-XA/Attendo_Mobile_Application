@@ -1,10 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_app/features/ocr/domain/repo/camera_repo.dart';
-import 'package:mobile_app/features/ocr/domain/usecases/process_card_use_case.dart';
 import 'package:mobile_app/features/ocr/domain/usecases/save_scanned_card_use_case.dart';
-import 'package:mobile_app/features/ocr/domain/usecases/validate_card_use_case.dart';
-import 'package:mobile_app/features/ocr/domain/usecases/validate_required_field_use_case.dart';
+import 'package:mobile_app/features/ocr/domain/usecases/validate_and_process_card_use_case.dart';
 import 'package:mobile_app/features/ocr/presentation/logic/camera_state.dart';
 import 'package:mobile_app/features/ocr/domain/usecases/captured_photo.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -12,23 +10,69 @@ import 'package:permission_handler/permission_handler.dart';
 class CameraCubit extends Cubit<CameraState> {
   final CameraRepository _repository;
   final CapturePhotoUseCase _captureUseCase;
-  final ValidateCardUseCase _validateUseCase;
-  final ValidateRequiredFieldsUseCase _validateFieldsUseCase;
-  final ProcessCardUseCase _processUseCase;
+  final ValidateAndProcessCardUseCase _pipelineUseCase;
   final SaveScannedCardUseCase _saveCardUseCase;
 
   CameraCubit(
     this._repository,
     this._captureUseCase,
-    this._validateUseCase,
-    this._validateFieldsUseCase,
-    this._processUseCase,
+    this._pipelineUseCase,
     this._saveCardUseCase,
   ) : super(const CameraState());
 
   CameraController? get controller => state.controller;
   bool get isInitialized => state.isOpened;
   bool get isBusy => state.isBusy;
+
+  void _startProcessing() {
+    emit(
+      state.copyWith(
+        isProcessing: true,
+        hasError: false,
+        showInvalidCardMessage: false,
+      ),
+    );
+  }
+
+  Future<void> _showTemporaryMessageAndReopen({
+    required String message,
+    bool isError = false,
+  }) async {
+    emit(
+      state.copyWith(
+        isProcessing: false,
+        showResult: false,
+        hasError: isError,
+        hasCaptured: false,
+        showInvalidCardMessage: true,
+        errorMessage: message,
+      ),
+    );
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    emit(
+      state.copyWith(
+        showInvalidCardMessage: false,
+        errorMessage: null,
+        hasError: false,
+      ),
+    );
+
+    await openCamera();
+  }
+
+  void _emitCapturedPhotoState(CapturedPhoto photo) {
+    emit(
+      state.copyWith(
+        isOpened: false,
+        controller: null,
+        hasCaptured: true,
+        photo: photo,
+        isProcessing: true,
+      ),
+    );
+  }
 
   Future<void> openCamera() async {
     if (state.isOpened) return;
@@ -94,145 +138,64 @@ class CameraCubit extends Cubit<CameraState> {
   Future<void> capturePhoto() async {
     if (!state.canCapture) return;
 
-    emit(
-      state.copyWith(
-        isProcessing: true,
-        hasError: false,
-        showInvalidCardMessage: false,
-      ),
-    );
+    _startProcessing();
 
     try {
       final photo = await _captureUseCase.execute();
       await _repository.closeCamera();
 
-      emit(
-        state.copyWith(
-          isOpened: false,
-          controller: null,
-          hasCaptured: true,
-          photo: photo,
-          isProcessing: true,
-        ),
-      );
+      _emitCapturedPhotoState(photo);
 
-      final isCard = await _validateUseCase.execute(photo);
+      final pipelineResult = await _pipelineUseCase.execute(photo);
 
-      if (!isCard) {
-        emit(
-          state.copyWith(
-            isProcessing: false,
-            showResult: false,
-            hasError: false,
-            hasCaptured: false,
-            showInvalidCardMessage: true,
-            errorMessage: 'Please use a valid ID card',
-          ),
-        );
-
-        await Future.delayed(const Duration(seconds: 2));
-
-        emit(state.copyWith(showInvalidCardMessage: false, errorMessage: null));
-
-        await openCamera();
-        return;
+      switch (pipelineResult.status) {
+        case ValidateAndProcessCardStatus.invalidCard:
+          await _showTemporaryMessageAndReopen(
+            message: 'Please use a valid ID card',
+          );
+          return;
+        case ValidateAndProcessCardStatus.missingRequiredFields:
+          await _showTemporaryMessageAndReopen(
+            message: 'Required fields missing. Please try again',
+          );
+          return;
+        case ValidateAndProcessCardStatus.nameIncomplete:
+          await _showTemporaryMessageAndReopen(
+            message: 'Could not extract name. Please try again',
+          );
+          return;
+        case ValidateAndProcessCardStatus.error:
+          await _showTemporaryMessageAndReopen(
+            message: 'An error occurred. Please try again',
+            isError: true,
+          );
+          return;
+        case ValidateAndProcessCardStatus.success:
+          final result = pipelineResult.processingResult!;
+          emit(
+            state.copyWith(
+              isProcessing: false,
+              showResult: true,
+              croppedFields: result.croppedFields,
+              finalData: result.rawData,
+              extractedData: result.extractedData,
+              hasError: false,
+            ),
+          );
+          return;
       }
-
-      final detections = await _repository.detectFields(photo);
-
-      final validationResult = await _validateFieldsUseCase.execute(detections);
-
-      if (!validationResult.isValid) {
-        emit(
-          state.copyWith(
-            isProcessing: false,
-            showResult: false,
-            hasError: false,
-            hasCaptured: false,
-            showInvalidCardMessage: true,
-            errorMessage: 'Required fields missing. Please try again',
-          ),
-        );
-
-        await Future.delayed(const Duration(seconds: 2));
-
-        emit(state.copyWith(showInvalidCardMessage: false, errorMessage: null));
-
-        await openCamera();
-        return;
-      }
-
-      final result = await _processUseCase.execute(photo);
-
-      final hasFirstName =
-          result.finalData['firstName'] != null &&
-          result.finalData['firstName']!.isNotEmpty;
-      final hasLastName =
-          result.finalData['lastName'] != null &&
-          result.finalData['lastName']!.isNotEmpty;
-
-      if (!hasFirstName || !hasLastName) {
-        emit(
-          state.copyWith(
-            isProcessing: false,
-            showResult: false,
-            hasError: false,
-            hasCaptured: false,
-            showInvalidCardMessage: true,
-            errorMessage: 'Could not extract name. Please try again',
-          ),
-        );
-
-        await Future.delayed(const Duration(seconds: 2));
-
-        emit(state.copyWith(showInvalidCardMessage: false, errorMessage: null));
-
-        await openCamera();
-        return;
-      }
-
-      emit(
-        state.copyWith(
-          isProcessing: false,
-          showResult: true,
-          croppedFields: result.croppedFields,
-          finalData: result.finalData,
-          hasError: false,
-        ),
-      );
     } catch (e) {
-      emit(
-        state.copyWith(
-          isProcessing: false,
-          showResult: false,
-          hasCaptured: false,
-          hasError: true,
-          showInvalidCardMessage: true,
-          errorMessage: 'An error occurred. Please try again',
-        ),
+      await _showTemporaryMessageAndReopen(
+        message: 'An error occurred. Please try again',
+        isError: true,
       );
-
-      await Future.delayed(const Duration(seconds: 2));
-
-      emit(
-        state.copyWith(
-          showInvalidCardMessage: false,
-          errorMessage: null,
-          hasError: false,
-        ),
-      );
-
-      await openCamera();
     }
   }
 
   Future<void> verifyAndSaveData() async {
-    if (state.finalData == null) {
-      return;
-    }
-
+    if (state.extractedData == null) return;
     try {
-      await _saveCardUseCase.execute(state.finalData!);
+      await _saveCardUseCase.execute(state.extractedData!);
     } catch (e) {
       rethrow;
     }

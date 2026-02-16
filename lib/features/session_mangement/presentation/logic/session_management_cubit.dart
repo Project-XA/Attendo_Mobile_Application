@@ -419,7 +419,7 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
           halls: _cachedHalls,
         ),
       );
-      loadHalls();
+      loadHalls().catchError((_) {});
     } on ApiErrorModel catch (error) {
       _handleSessionError(error, currentState.selectedTabIndex);
     } catch (e) {

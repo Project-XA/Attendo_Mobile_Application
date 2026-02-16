@@ -9,17 +9,15 @@ class ProcessCardUseCase {
 
   Future<CardProcessingResult> execute(CapturedPhoto photo) async {
     final detections = await _repository.detectFields(photo);
-
     final croppedFields = await _repository.cropDetectedFields(
       photo,
       detections,
     );
-
     final finalData = await _repository.extractFinalData(croppedFields);
 
     return CardProcessingResult(
       croppedFields: croppedFields,
-      finalData: finalData,
+      rawData: finalData, 
     );
   }
 }

@@ -39,7 +39,7 @@ class _RegisterFormState extends State<RegisterForm> {
       try {
         final localDataSource = getIt<UserLocalDataSource>();
         final localUserData = await localDataSource.getCurrentUser();
-        //  final user = UserModel(
+       //  final user = UserModel(
         //    nationalId: '123456667',
         //   firstNameAr: 'عادل',
         //  lastNameAr: 'محمد',

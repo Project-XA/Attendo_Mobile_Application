@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:mobile_app/features/ocr/data/model/cropped_field.dart';
+import 'package:mobile_app/features/ocr/domain/entities/extracted_id_card_data.dart';
 import 'package:mobile_app/features/ocr/domain/usecases/captured_photo.dart';
 import 'package:mobile_app/features/ocr/presentation/logic/processing_status.dart';
 import 'camera_status.dart';
@@ -19,6 +20,7 @@ class CameraState {
   final bool hasPermissionDenied;
   final bool showInvalidCardMessage; 
   final String? errorMessage;
+  final ExtractedIdCardData? extractedData;
 
   const CameraState({
     this.controller,
@@ -34,7 +36,7 @@ class CameraState {
     this.hasError = false,
     this.hasPermissionDenied = false,
     this.showInvalidCardMessage = false,
-    this.errorMessage, 
+    this.errorMessage, this.extractedData, 
   });
 
   
@@ -96,6 +98,8 @@ class CameraState {
     List<CroppedField>? croppedFields,
     Map<String, String>? extractedText,
     Map<String, String>? finalData,
+      ExtractedIdCardData? extractedData,
+
   }) {
     return CameraState(
       controller: controller ?? this.controller,
@@ -112,6 +116,7 @@ class CameraState {
       croppedFields: croppedFields ?? this.croppedFields,
       extractedText: extractedText ?? this.extractedText,
       finalData: finalData ?? this.finalData,
+          extractedData: extractedData ?? this.extractedData,
     );
   }
 

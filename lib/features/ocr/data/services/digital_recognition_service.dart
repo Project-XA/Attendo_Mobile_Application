@@ -12,19 +12,22 @@ class DigitRecognitionService {
   }) async {
     final receivePort = ReceivePort();
 
-    await Isolate.spawn(
-      _digitRecognitionIsolate,
-      _DigitRecognitionData(
-        sendPort: receivePort.sendPort,
-        imagePath: imagePath,
-        interpreterAddress: interpreterAddress,
-        confidenceThreshold: confidenceThreshold,
-      ),
-    );
+    try {
+      await Isolate.spawn(
+        _digitRecognitionIsolate,
+        _DigitRecognitionData(
+          sendPort: receivePort.sendPort,
+          imagePath: imagePath,
+          interpreterAddress: interpreterAddress,
+          confidenceThreshold: confidenceThreshold,
+        ),
+      );
 
-    final result = await receivePort.first as String;
-
-    return result;
+      final result = await receivePort.first as String;
+      return result;
+    } finally {
+      receivePort.close();
+    }
   }
 
   static void _digitRecognitionIsolate(_DigitRecognitionData data) async {

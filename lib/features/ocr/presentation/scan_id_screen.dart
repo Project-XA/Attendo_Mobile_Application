@@ -76,20 +76,12 @@ class _ScanIdScreenState extends State<ScanIdScreen> {
                     verticalSpace(20),
                   ],
 
-                  if (state.showResult && state.finalData != null) ...[
+                  if (state.showResult && state.extractedData != null) ...[
                     IdDataWidget(
-                      firstName: state.finalData!['firstName'] ?? 'N/A',
-                      lastName: state.finalData!['lastName'] ?? 'N/A',
+                      firstName: state.extractedData!.firstName,
+                      lastName: state.extractedData!.lastName,
                     ),
-                    verticalSpace(20),
-                    // Expanded(
-                    //   child: CroppedFieldsViewer(
-                    //     croppedFields: state.croppedFields!,
-                    //     extractedText: state.finalData,
-                    //   ),
-                    // ),
                   ],
-
                   const Spacer(),
 
                   ActionButtons(state: state),

@@ -37,22 +37,33 @@ class FieldProcessingService {
 
     for (final field in croppedFields) {
       if (FieldTypeHelper.isPhotoField(field.fieldName)) {
-        results['photo'] = field.imagePath; 
+        results['photo'] = field.imagePath;
         continue;
       }
-
-      if (FieldTypeHelper.isInvalidField(field.fieldName)) continue;
-
+      if (FieldTypeHelper.isInvalidField(field.fieldName)) {
+        await _cleanupFile(field.imagePath);
+        continue;
+      }
       try {
         final fieldType = FieldTypeHelper.getFieldType(field.fieldName);
         final text = await _extractByFieldType(field.imagePath, fieldType);
         results[field.fieldName] = text;
       } catch (e) {
         results[field.fieldName] = '';
+      } finally {
+        if (!FieldTypeHelper.isPhotoField(field.fieldName)) {
+          await _cleanupFile(field.imagePath);
+        }
       }
     }
-
     return results;
+  }
+
+  Future<void> _cleanupFile(String path) async {
+    try {
+      final file = File(path);
+      if (await file.exists()) await file.delete();
+    } catch (_) {}
   }
 
   Future<String> _extractByFieldType(String imagePath, String fieldType) async {

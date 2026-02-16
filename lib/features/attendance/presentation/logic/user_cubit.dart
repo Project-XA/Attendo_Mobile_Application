@@ -58,6 +58,7 @@ class UserCubit extends Cubit<UserState> {
 
       await getAttendanceStatsUseCase.saveToCache(freshStats);
       _cachedStats = freshStats;
+      emit(UserIdle(stats: freshStats, hasStatsError: false));
     } catch (e) {
       if (!isClosed) {
         if (_cachedStats != null) {
@@ -103,11 +104,9 @@ class UserCubit extends Cubit<UserState> {
       );
 
       if (response.success) {
-        final currentStats = _getStatsFromState(currentState);
-        final optimisticStats = _createOptimisticStats(currentStats);
-
-        await getAttendanceStatsUseCase.saveToCache(optimisticStats);
-        _cachedStats = optimisticStats;
+        final freshStats = await getAttendanceStatsUseCase.call();
+        await getAttendanceStatsUseCase.saveToCache(freshStats);
+        _cachedStats = freshStats;
 
         if (!isClosed) {
           emit(
@@ -115,7 +114,7 @@ class UserCubit extends Cubit<UserState> {
               session: session,
               operation: CheckInOperation.success,
               checkInTime: DateTime.now(),
-              stats: optimisticStats,
+              stats: freshStats,
             ),
           );
         }
@@ -138,7 +137,7 @@ class UserCubit extends Cubit<UserState> {
 
         await Future.delayed(const Duration(seconds: 2));
         if (!isClosed) {
-          await stopSessionDiscovery();
+          await _returnToDiscovery();
         }
       }
     } catch (e) {
@@ -155,29 +154,30 @@ class UserCubit extends Cubit<UserState> {
 
       await Future.delayed(const Duration(seconds: 2));
       if (!isClosed) {
-        await stopSessionDiscovery();
+        await _returnToDiscovery();
       }
     }
   }
 
-  AttendanceStats _createOptimisticStats(AttendanceStats? currentStats) {
-    if (currentStats == null) {
-      return AttendanceStats(
-        totalSessions: 1,
-        attendedSessions: 1,
-        attendancePercentage: 100.0,
-      );
+  Future<void> _returnToDiscovery() async {
+    await _discoverySubscription?.cancel();
+    _discoverySubscription = null;
+
+    _sessionRefreshTimer?.cancel();
+    _sessionRefreshTimer = null;
+
+    _searchTimeoutTimer?.cancel();
+    _searchTimeoutTimer = null;
+
+    _sessionFound = false;
+
+    try {
+      await stopDiscoveryUseCase.call();
+    } catch (_) {}
+
+    if (!isClosed) {
+      await startSessionDiscovery();
     }
-
-    final newAttended = currentStats.attendedSessions + 1;
-    final newTotal = currentStats.totalSessions;
-    final newPercentage = (newAttended / newTotal) * 100;
-
-    return AttendanceStats(
-      totalSessions: newTotal,
-      attendedSessions: newAttended,
-      attendancePercentage: newPercentage,
-    );
   }
 
   Future<void> startSessionDiscovery() async {

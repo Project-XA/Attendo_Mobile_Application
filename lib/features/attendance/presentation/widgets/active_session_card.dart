@@ -210,14 +210,10 @@ class ActiveSessionCard extends StatelessWidget {
     }
 
     if (!context.mounted) return;
-    _showLoadingDialog(context);
 
     final authManager = AuthenticationManager();
-    final isAuthenticated = await authManager.authenticate(context);
 
-    if (context.mounted) {
-      Navigator.of(context, rootNavigator: true).pop();
-    }
+    final isAuthenticated = await authManager.authenticate(context);
 
     if (!isAuthenticated) {
       if (context.mounted) {
@@ -233,6 +229,8 @@ class ActiveSessionCard extends StatelessWidget {
     }
 
     if (!context.mounted) return;
+    _showLoadingDialog(context);
+
     final user = context.read<CurrentUserCubit>().currentUser;
     if (user != null) {
       context.read<UserCubit>().checkIn(
@@ -240,6 +238,10 @@ class ActiveSessionCard extends StatelessWidget {
         userId: user.id!,
         userName: user.fullNameEn,
       );
+    }
+
+    if (context.mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
     }
   }
 

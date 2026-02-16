@@ -11,17 +11,22 @@ class InferenceService {
   }) async {
     final receivePort = ReceivePort();
 
-    await Isolate.spawn(
-      _cardDetectionIsolate,
-      _IsolateData(
-        sendPort: receivePort.sendPort,
-        imagePath: imagePath,
-        interpreterAddress: interpreterAddress,
-        confidenceThreshold: confidenceThreshold,
-      ),
-    );
+    try {
+      await Isolate.spawn(
+        _cardDetectionIsolate,
+        _IsolateData(
+          sendPort: receivePort.sendPort,
+          imagePath: imagePath,
+          interpreterAddress: interpreterAddress,
+          confidenceThreshold: confidenceThreshold,
+        ),
+      );
 
-    return await receivePort.first as CardDetectionResult;
+      final result = await receivePort.first as CardDetectionResult;
+      return result;
+    } finally {
+      receivePort.close();
+    }
   }
 
   static void _cardDetectionIsolate(_IsolateData data) async {

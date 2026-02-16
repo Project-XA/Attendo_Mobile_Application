@@ -1,50 +1,32 @@
+import 'package:mobile_app/features/ocr/data/constant/ocr_config.dart';
 import 'package:mobile_app/features/ocr/data/model/detection_model.dart';
 
 class ValidateRequiredFieldsUseCase {
-  static const List<String> _requiredLabels = [
-    'photo',        
-    'firstName',   
-    'lastName',    
-  ];
+  final OcrConfig _config;
 
-  static const List<String> _invalidLabels = [
-    'invalid_address',
-    'invalid_barcode',
-    'invalid_demo',
-    'invalid_dob',
-    'invalid_expiry',
-    'invalid_firstName',
-    'invalid_issue',
-    'invalid_job',
-    'invalid_lastName',
-    'invalid_logo',
-    'invalid_nid',
-    'invalid_nid_back',
-    'invalid_photo',
-    'invalid_poe',
-    'invalid_serial',
-    'invalid_watermark_tut',
-  ];
+
+  ValidateRequiredFieldsUseCase({ OcrConfig config=OcrConfig.defaultConfig}) : _config = config;
 
   Future<ValidationResult> execute(List<DetectionModel> detections) async {
     try {
       if (detections.isEmpty) {
         return ValidationResult(
           isValid: false,
-          missingFields: _requiredLabels,
+          missingFields: _config.requiredLabels,
           reason: 'No fields detected',
         );
       }
 
       final invalidDetections = detections
-          .where((d) => _invalidLabels.contains(d.className))
+          .where((d) => _config.invalidLabels.contains(d.className))
           .toList();
 
       if (invalidDetections.isNotEmpty) {
         return ValidationResult(
           isValid: false,
           invalidFields: invalidDetections.map((d) => d.className).toList(),
-          reason: 'Invalid fields detected: ${invalidDetections.map((d) => d.className).join(", ")}',
+          reason:
+              'Invalid fields detected: ${invalidDetections.map((d) => d.className).join(", ")}',
         );
       }
 
@@ -52,13 +34,11 @@ class ValidateRequiredFieldsUseCase {
           .map((detection) => detection.className)
           .toSet();
 
-      final missingLabels = _requiredLabels
+      final missingLabels = _config.requiredLabels
           .where((label) => !detectedLabels.contains(label))
           .toList();
 
       if (missingLabels.isNotEmpty) {
-     
-        
         return ValidationResult(
           isValid: false,
           missingFields: missingLabels,
@@ -68,8 +48,8 @@ class ValidateRequiredFieldsUseCase {
       }
 
       final lowConfidenceFields = <String>[];
-      
-      for (final requiredLabel in _requiredLabels) {
+
+      for (final requiredLabel in _config.requiredLabels) {
         final detection = detections.firstWhere(
           (d) => d.className == requiredLabel,
         );
@@ -82,7 +62,6 @@ class ValidateRequiredFieldsUseCase {
       }
 
       if (lowConfidenceFields.isNotEmpty) {
-        
         return ValidationResult(
           isValid: false,
           lowConfidenceFields: lowConfidenceFields,
@@ -90,19 +69,13 @@ class ValidateRequiredFieldsUseCase {
         );
       }
 
-
-      
       return ValidationResult(
         isValid: true,
         detectedFields: detectedLabels.toList(),
         reason: 'All required fields detected',
       );
-
     } catch (e) {
-      return ValidationResult(
-        isValid: false,
-        reason: 'Validation error: $e',
-      );
+      return ValidationResult(isValid: false, reason: 'Validation error: $e');
     }
   }
 }

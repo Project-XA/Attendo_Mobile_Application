@@ -4,8 +4,10 @@ import 'package:mobile_app/features/ocr/domain/repo/camera_repo.dart';
 import 'package:mobile_app/features/ocr/domain/usecases/captured_photo.dart';
 import 'package:mobile_app/features/ocr/domain/usecases/process_card_use_case.dart';
 import 'package:mobile_app/features/ocr/domain/usecases/save_scanned_card_use_case.dart';
+import 'package:mobile_app/features/ocr/domain/usecases/validate_and_process_card_use_case.dart';
 import 'package:mobile_app/features/ocr/domain/usecases/validate_card_use_case.dart';
 import 'package:mobile_app/features/ocr/domain/usecases/validate_required_field_use_case.dart';
+import 'package:mobile_app/features/ocr/domain/usecases/initialize_ocr_use_case.dart';
 import 'package:mobile_app/features/ocr/presentation/logic/camera_cubit.dart';
 
 
@@ -28,23 +30,28 @@ void setupScanOcrFeature() {
   if (!getIt.isRegistered<ValidateRequiredFieldsUseCase>()) {
     getIt.registerLazySingleton(() => ValidateRequiredFieldsUseCase());
   }
-  getIt.registerLazySingleton(
-    () => ProcessCardUseCase(getIt()),
-  );
+  getIt.registerLazySingleton(() => ProcessCardUseCase(getIt()));
+
+  getIt.registerLazySingleton(() => InitializeOcrUseCase());
 
   getIt.registerLazySingleton(
-    () => SaveScannedCardUseCase(getIt()),
+    () => ValidateAndProcessCardUseCase(
+      getIt(), 
+      getIt(), 
+      getIt(), 
+      getIt(), 
+    ),
   );
+
+  getIt.registerLazySingleton(() => SaveScannedCardUseCase(getIt()));
 
 
   getIt.registerFactory(
     () => CameraCubit(
-      getIt(),
-      getIt(),
-      getIt(),
-      getIt(),
-      getIt(),
-      getIt(),
+      getIt(), 
+      getIt(), 
+      getIt(), 
+      getIt(), 
     ),
   );
 }
