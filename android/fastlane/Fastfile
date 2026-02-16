@@ -1,0 +1,19 @@
+
+
+default_platform(:android)
+
+platform :android do
+  desc "Lane for android firebase App Distribution"
+  lane :firebase_distribution do
+    sh "flutter clean"
+    sh "flutter build apk --release --split-per-abi"
+    firebase_app_distribution(
+      app:"1:765829538129:android:1119452812915439aa7370",
+      firebase_cli_token:ENV["FIREBASE_CLI_TOKEN"],
+      android_artifact_type:"APK",
+      android_artifact_path:"../build/app/outputs/flutter-apk/app-arm64-v8a-release.apk",
+      groups:"attendo_testers",
+      release_notes:"First Fastlane Firebase Distribution for Attendo"
+    )
+  end
+end
