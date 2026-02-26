@@ -79,9 +79,9 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
-  // ---------------------------------------------------------------------------
+  
   // Discovery
-  // ---------------------------------------------------------------------------
+  
 
   Future<void> startSessionDiscovery() async {
     try {
