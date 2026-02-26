@@ -61,7 +61,7 @@ class CroppedFieldsViewer extends StatelessWidget {
   }
 
   Widget _buildFieldCard(CroppedField field) {
-    final extractedValue = extractedText?[field.fieldName]; // ✅ جديد
+    final extractedValue = extractedText?[field.fieldName]; 
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),

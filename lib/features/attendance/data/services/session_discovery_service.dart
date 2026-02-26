@@ -4,7 +4,12 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:mobile_app/features/attendance/data/models/discover_session_model.dart';
 import 'package:nsd/nsd.dart' as nsd;
-
+/*
+this service is responsible for discovering active attendance sessions on the local network using both mDNS and direct network scanning.
+It listens for mDNS service announcements for services named "attendance" and resolves their details, while also performing periodic scans of the local network IP range to identify potential sessions by checking for a specific health endpoint.
+The service maintains a stream of discovered sessions, ensuring that duplicate sessions are filtered out and that only sessions with an active status are emitted to listeners.
+It also includes error handling to manage scenarios where mDNS is not available or when network requests fail, ensuring that the discovery process continues smoothly without crashing the application. The service can be stopped and disposed of when no longer needed to free up resources.
+*/
 class SessionDiscoveryService {
   StreamController<DiscoveredSession>? _sessionController;
   nsd.Discovery? _discovery;
@@ -29,7 +34,7 @@ class SessionDiscoveryService {
           }
         });
       } catch (e) {
-        // mDNS not available
+        // mDNS discovery error, fallback to network scan
       }
 
       _startNetworkScan();
@@ -74,7 +79,7 @@ class SessionDiscoveryService {
       final networkPrefix = '${parts[0]}.${parts[1]}.${parts[2]}';
 
       final futures = <Future>[];
-
+// Prioritize common local IP ranges (e.g., .1 to .20, .100 to .254) for faster discovery of typical router and device addresses
       final priorityIPs = [
         ...List.generate(20, (i) => i + 1),
         ...List.generate(155, (i) => i + 100),
@@ -102,6 +107,7 @@ class SessionDiscoveryService {
     }
   }
 
+// Checks for an active session at the given IP and port, with retries and exponential backoff
   Future<void> _checkSessionAt(String ip, int port, {int retries = 2}) async {
     for (int attempt = 0; attempt <= retries; attempt++) {
       try {
@@ -122,6 +128,7 @@ class SessionDiscoveryService {
     }
     // Silent fail after all retries
   }
+// Verifies the session at the given host and port, and adds it to the stream if valid
 
 Future<void> _verifyAndAddSession(String host, int port) async {
   try {
@@ -147,7 +154,6 @@ Future<void> _verifyAndAddSession(String host, int port) async {
           if (infoResponse.statusCode == 200) {
             final sessionData = jsonDecode(infoResponse.body);
             
-            // ✅ طباعة البيانات للـ debugging
 
             _discoveredSessionIds.add(sessionKey);
 

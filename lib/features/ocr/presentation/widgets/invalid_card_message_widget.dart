@@ -25,7 +25,6 @@ class InvalidCardMessageWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // رمز متحرك
           TweenAnimationBuilder<double>(
             tween: Tween(begin: 0.0, end: 1.0),
             duration: const Duration(milliseconds: 500),
@@ -42,7 +41,6 @@ class InvalidCardMessageWidget extends StatelessWidget {
           ),
           SizedBox(height: 20.h),
           
-          // العنوان
           Text(
             'Invalid ID Card',
             style: TextStyle(
@@ -53,7 +51,6 @@ class InvalidCardMessageWidget extends StatelessWidget {
           ),
           SizedBox(height: 8.h),
           
-          // الرسالة
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 32.w),
             child: Text(

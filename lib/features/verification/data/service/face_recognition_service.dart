@@ -7,6 +7,14 @@ import 'package:mobile_app/features/verification/data/exceptions/face_recognitio
 import 'package:mobile_app/features/verification/domain/entities/face_detection_result.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
+/*
+This service is responsible for performing face recognition by extracting facial embeddings from detected faces in input images using a TensorFlow Lite model.
+It runs the inference in a separate isolate to avoid blocking the main thread,
+and processes the model output to extract facial embeddings.
+The service includes functionality to compare two facial embeddings using cosine similarity and determine if they match based on a configurable threshold.
+It also handles image preprocessing steps such as face alignment, cropping, and enhancement to improve recognition accuracy. 
+The service is designed to work with the output from the FaceDetectionService, utilizing the detected face bounding boxes and landmarks to focus on the relevant facial regions for embedding extraction.
+*/
 class FaceRecognitionService {
   static const int inputWidth = 112;
   static const int inputHeight = 112;

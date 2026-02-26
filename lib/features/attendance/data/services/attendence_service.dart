@@ -3,8 +3,17 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_app/core/services/location/location_helper.dart';
 import 'package:mobile_app/features/attendance/domain/entities/attendence_reponse.dart';
-
+/*
+this service is responsible for handling the attendance check-in process by sending a request to the server with the user's information and current location.
+It first checks the status of location services and permissions, then retrieves the user's current location coordinates.
+It constructs a request body containing the user's ID, name, timestamp, device ID hash, and location, and sends it to the server's attendance endpoint.
+The service handles various response scenarios, including successful attendance recording, duplicate check-ins, out-of-zone errors, and network issues, returning an appropriate AttendanceResponse object based on the outcome of the request.
+*/
 class AttendanceService {
+
+  // Main method to send attendance request
+  // It checks location permissions, gets the current location, and sends the attendance data to the server.
+  // It returns an AttendanceResponse indicating the success or failure of the operation, along with any relevant messages or data.
   Future<AttendanceResponse> sendAttendanceRequest({
     required String baseUrl,
     required String userId,

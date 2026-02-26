@@ -7,6 +7,14 @@ import 'package:mobile_app/features/verification/domain/entities/face_detection_
 import 'package:mobile_app/features/verification/domain/entities/face_landmark.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
+/*
+This service is responsible for performing face detection on input images using a TensorFlow Lite model.
+It runs the inference in a separate isolate to avoid blocking the main thread, and processes the model
+output to extract detected faces based on confidence scores, applying non-maximum suppression to filter out overlapping detections.
+It also includes size-based filtering to ensure that detected faces meet a minimum size requirement relative to the
+original image dimensions, which helps reduce false positives from small detections.
+The service is designed to handle both ID card images (where the face may be smaller and multiple
+*/
 class FaceDetectionService {
   static const int inputWidth = 256;
   static const int inputHeight = 256;
