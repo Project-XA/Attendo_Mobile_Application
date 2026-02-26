@@ -2,7 +2,7 @@
 
 A Flutter-based mobile application for attendance management using OCR (Optical Character Recognition) for ID card scanning and proximity-based session discovery for check-in/check-out.
 
-## 📱 Overview
+##  Overview
 
 **Attendency** is an attendance management system that enables:
 - **ID Card Scanning**: Extract user information from ID cards using OCR and ML models
@@ -10,7 +10,7 @@ A Flutter-based mobile application for attendance management using OCR (Optical 
 - **Proximity Check-in**: Users discover nearby sessions via mDNS/network scanning and check in
 - **User Profiles**: Manage user information and view attendance statistics
 
-## 🏗️ Architecture
+##  Architecture
 
 The app follows **Clean Architecture** with clear separation of concerns:
 
@@ -42,7 +42,7 @@ Each feature follows the **data/domain/presentation** pattern:
 - **domain**: Entities, repositories interfaces, use cases
 - **presentation**: UI (screens, widgets), state management (Cubit/Bloc)
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -88,7 +88,7 @@ flutter build appbundle --release
 flutter build ios --release
 ```
 
-## 📦 Key Dependencies
+##  Key Dependencies
 
 | Package | Purpose |
 |---------|---------|
@@ -104,7 +104,7 @@ flutter build ios --release
 | `permission_handler` | Runtime permissions |
 | `flutter_screenutil` | Responsive UI scaling |
 
-## 🔑 Features
+##  Features
 
 ### 1. **Onboarding & Registration**
 - Welcome screen with app introduction
@@ -138,7 +138,7 @@ flutter build ios --release
 - Edit user details
 - View organization information
 
-## 🔐 Authentication Flow
+##  Authentication Flow
 
 1. **First Launch**: User sees onboarding → scans ID card → registers
 2. **Subsequent Launches**: App checks auth state:
@@ -148,7 +148,7 @@ flutter build ios --release
 
 Authentication state is stored in **Hive** (`AuthStateModel`).
 
-## 🌐 API Integration
+##  API Integration
 
 The app communicates with a backend API for:
 - User registration
@@ -161,7 +161,7 @@ API configuration:
 - Authentication: Token-based (stored in Dio interceptor)
 - Error handling: Centralized in `api_error_handler.dart`
 
-## 💾 Local Storage
+##  Local Storage
 
 **Hive** is used for:
 - User data (`UserModel`)
@@ -169,20 +169,13 @@ API configuration:
 - Organization data (`OrganizationModel`, `UserOrgModel`)
 
 
-## 📱 Permissions Required
+##  Permissions Required
 
 - **Camera**: For ID card scanning
 - **Location**: For proximity-based check-in
 - **Storage**: For saving images and data
 
-## 🧪 Testing
-
-Run tests:
-```bash
-flutter test
-```
-
-## 📝 Code Generation
+## Code Generation
 
 This project uses code generation for:
 - **Freezed**: Immutable data classes (`api_error_model.freezed.dart`)
@@ -194,25 +187,10 @@ After modifying models, regenerate:
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-## 📚 Documentation
+##  Documentation
 
 - **[Features & Data Flow](./docs/FEATURES_AND_DATA_FLOW.md)**: Detailed feature documentation with data flow diagrams
 
-## 🤝 Contributing
-
-1. Follow the existing architecture (data/domain/presentation)
-2. Use Cubit/Bloc for state management
-3. Keep domain layer framework-agnostic
-4. Write use cases for business logic
-5. Use dependency injection (GetIt)
-
-## 📄 License
-
-[Add your license here]
-
-## 👥 Team
-
-[Add team/author information]
 
 ---
 
