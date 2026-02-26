@@ -189,7 +189,7 @@ flutter pub run build_runner build --delete-conflicting-outputs
 
 ##  Documentation
 
-- **[Features & Data Flow](./docs/FEATURES_AND_DATA_FLOW.md)**: Detailed feature documentation with data flow diagrams
+- **[Features & Data Flow](./FEATURES_AND_DATA_FLOW.md)**: Detailed feature documentation with data flow diagrams
 
 
 ---

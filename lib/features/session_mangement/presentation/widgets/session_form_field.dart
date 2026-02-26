@@ -158,7 +158,7 @@ class _SessionFormFieldsState extends State<SessionFormFields> {
   }
 
   Widget _buildHallDropdown() {
-    final state = context.watch<SessionMangementCubit>().state;
+    final state = context.watch<SessionManagementCubit>().state;
 
     final bool isLoadingHalls =
         state is SessionManagementIdle && state.isLoadingHalls;

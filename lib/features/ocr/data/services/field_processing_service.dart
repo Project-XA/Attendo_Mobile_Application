@@ -5,6 +5,7 @@ import 'package:mobile_app/features/ocr/data/model/ml_models/id_service_model.da
 import 'package:mobile_app/features/ocr/data/services/digital_recognition_service.dart';
 import 'package:mobile_app/features/ocr/data/services/ocr_service.dart';
 
+
 class FieldProcessingService {
   final IdServiceModel _idModel;
 

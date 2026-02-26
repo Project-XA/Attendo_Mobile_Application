@@ -4,6 +4,12 @@ import 'package:mobile_app/features/ocr/data/model/detection_model.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'image_processing_service.dart';
 
+/*
+This service is responsible for performing object detection on input images using a TensorFlow Lite model.
+It runs the inference in a separate isolate to avoid blocking the main thread,
+and processes the model output to extract detected fields based on confidence scores,
+applying non-maximum suppression to filter out overlapping detections.
+ */
 class ObjectDetectionService {
   static Future<List<DetectionModel>> detectFields({
     required String imagePath,

@@ -3,6 +3,11 @@ import 'dart:typed_data';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'image_processing_service.dart';
 
+/*
+This service is responsible for performing card detection on input images using a TensorFlow Lite model.
+It runs the inference in a separate isolate to avoid blocking the main thread,
+and processes the model output to determine if a card is detected, along with the confidence score and class
+*/ 
 class InferenceService {
   static Future<CardDetectionResult> detectCard({
     required String imagePath,
@@ -10,7 +15,7 @@ class InferenceService {
     double confidenceThreshold = 0.3,
   }) async {
     final receivePort = ReceivePort();
-
+// Spawn a new isolate to perform the card detection inference
     try {
       await Isolate.spawn(
         _cardDetectionIsolate,
@@ -57,6 +62,9 @@ class InferenceService {
       );
     }
   }
+
+  // Runs the inference using the provided interpreter and input bytes, and returns the output as a List
+  // The input is reshaped to match the expected model input dimensions, and the output is reshaped to match the model's output dimensions
 
   static List _runInference(Interpreter interpreter, Float32List inputBytes) {
     final input = inputBytes.reshape([1, 640, 640, 3]);

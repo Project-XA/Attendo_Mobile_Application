@@ -17,7 +17,7 @@ import 'package:mobile_app/features/session_mangement/domain/use_cases/start_ses
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_cubit.dart';
 
 void initSessionManagement() {
-  if (getIt.isRegistered<SessionMangementCubit>()) return;
+  if (getIt.isRegistered<SessionManagementCubit>()) return;
 
   // Services
   registerLazyIfNotRegistered<HttpServerService>(() => HttpServerService());
@@ -66,8 +66,8 @@ void initSessionManagement() {
   );
 
   // Cubit
-  getIt.registerFactory<SessionMangementCubit>(
-    () => SessionMangementCubit(
+  getIt.registerFactory<SessionManagementCubit>(
+    () => SessionManagementCubit(
       createSessionUseCase: getIt(),
       startSessionServerUseCase: getIt(),
       endSessionUseCase: getIt(),

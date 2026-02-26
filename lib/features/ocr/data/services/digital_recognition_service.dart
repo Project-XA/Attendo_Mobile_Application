@@ -4,6 +4,11 @@ import 'package:mobile_app/features/ocr/data/model/digital_detection.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'image_processing_service.dart';
 
+/*
+This service is responsible for performing digit recognition on cropped field images using a TensorFlow Lite model.
+It runs the inference in a separate isolate to avoid blocking the main thread, 
+and processes the model output to extract detected digits based on confidence scores, applying non-maximum suppression to filter out overlapping detections.
+*/
 class DigitRecognitionService {
   static Future<String> extractDigits({
     required String imagePath,

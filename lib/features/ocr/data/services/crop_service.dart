@@ -6,6 +6,13 @@ import 'package:mobile_app/features/ocr/data/model/detection_model.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
+
+/*
+this service takes the original image path and a list of detections (each containing normalized coordinates,
+class name, and confidence) and crops the relevant fields from the original image.
+It saves each cropped field as a separate image file and returns a list of CroppedField objects containing the field name,
+confidence, image path, and bounding box information.
+*/ 
 class CropService {
   static Future<List<CroppedField>> cropFields({
     required String originalImagePath,

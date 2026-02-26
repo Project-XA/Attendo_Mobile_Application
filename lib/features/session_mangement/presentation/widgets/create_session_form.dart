@@ -224,7 +224,7 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
   }
 
   void _startSession() {
-    context.read<SessionMangementCubit>().createAndStartSession(
+    context.read<SessionManagementCubit>().createAndStartSession(
       name: _sessionNameController.text.trim(),
       location: _locationController.text.trim(),
       connectionMethod: _selectedWifiOption ?? 'WiFi',
@@ -382,7 +382,7 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SessionMangementCubit, SessionManagementState>(
+    return BlocConsumer<SessionManagementCubit, SessionManagementState>(
       listener: (context, state) {
         if (state is SessionError) {
           if (!state.error.isNetworkError) {
@@ -433,7 +433,7 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
                     setState(() => _selectedHallId = hallId);
                   },
                   onRefreshHalls: () =>
-                      context.read<SessionMangementCubit>().loadHalls(),
+                      context.read<SessionManagementCubit>().loadHalls(),
                 ),
 
                 verticalSpace(25.h),

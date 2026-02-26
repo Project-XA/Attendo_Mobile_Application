@@ -25,20 +25,20 @@ class AdminDashboard extends StatelessWidget {
     final isSmallScreen = width < 360;
 
     return BlocProvider(
-      create: (context) => getIt<SessionMangementCubit>()..loadStats(),
+      create: (context) => getIt<SessionManagementCubit>()..loadHalls(),
       child: Scaffold(
         backgroundColor: AppColors.backGroundColorWhite,
-        body: BlocBuilder<SessionMangementCubit, SessionManagementState>(
+        body: BlocBuilder<SessionManagementCubit, SessionManagementState>(
           builder: (context, adminState) {
-            // Loading state
+            // Loading state (first load / no cache)
             if (adminState is SessionManagementLoading ||
                 adminState is SessionManagementInitial) {
               return const AdminHomeShimmer();
             }
 
             // Error state
-            if (adminState is SessionManagementError) {
-              return _buildErrorView(context, adminState.message);
+            if (adminState is SessionError) {
+              return _buildErrorView(context, adminState.error.message);
             }
 
             final currentUserCubit = context.read<CurrentUserCubit>();
@@ -111,7 +111,8 @@ class AdminDashboard extends StatelessWidget {
           ),
           verticalSpace(16.h),
           ElevatedButton(
-            onPressed: () => context.read<SessionMangementCubit>().loadStats(),
+            // Retry directly calls loadHalls()
+            onPressed: () => context.read<SessionManagementCubit>().loadHalls(),
             child: const Text('Retry'),
           ),
         ],
@@ -124,7 +125,7 @@ class AdminDashboard extends StatelessWidget {
         ? state.selectedTabIndex
         : 0;
 
-    return BlocBuilder<SessionMangementCubit, SessionManagementState>(
+    return BlocBuilder<SessionManagementCubit, SessionManagementState>(
       buildWhen: (previous, current) {
         if (previous is SessionManagementStateWithTab &&
             current is SessionManagementStateWithTab) {
@@ -137,7 +138,7 @@ class AdminDashboard extends StatelessWidget {
           tabs: const ["Manage Sessions", "User Attendance"],
           selectedIndex: selectedIndex,
           onTabSelected: (index) =>
-              context.read<SessionMangementCubit>().changeTab(index),
+              context.read<SessionManagementCubit>().changeTab(index),
         );
       },
     );

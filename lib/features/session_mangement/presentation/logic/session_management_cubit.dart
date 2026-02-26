@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_app/core/networking/api_error_model.dart';
-import 'package:mobile_app/features/session_mangement/domain/entities/server_info.dart';
+import 'package:mobile_app/features/session_mangement/data/service/session_time_service.dart';
 import 'package:mobile_app/features/session_mangement/data/models/attendency_record.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/session.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/create_session_use_case.dart';
@@ -14,71 +14,52 @@ import 'package:mobile_app/features/session_mangement/domain/use_cases/delete_cu
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_state.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
 
-class SessionMangementCubit extends Cubit<SessionManagementState> {
+class SessionManagementCubit extends Cubit<SessionManagementState> {
   final CreateSessionUseCase createSessionUseCase;
   final StartSessionServerUseCase startSessionServerUseCase;
   final EndSessionUseCase endSessionUseCase;
   final ListenAttendanceUseCase listenAttendanceUseCase;
   final GetAllHallsUseCase getAllHallsUseCase;
   final DeleteCurrentSessionUseCase deleteCurrentSessionUseCase;
+  final SessionTimerService _timerService;
 
   StreamSubscription<AttendanceRecord>? _attendanceSubscription;
-  Timer? _sessionTimer;
-  Timer? _warningTimer;
 
   List<HallInfo>? _cachedHalls;
 
-  SessionMangementCubit({
+  SessionManagementCubit({
     required this.createSessionUseCase,
     required this.startSessionServerUseCase,
     required this.endSessionUseCase,
     required this.listenAttendanceUseCase,
     required this.getAllHallsUseCase,
     required this.deleteCurrentSessionUseCase,
-  }) : super(const SessionManagementInitial());
+    SessionTimerService? timerService,
+  })  : _timerService = timerService ?? SessionTimerService(),
+        super(const SessionManagementInitial());
 
-  Future<void> loadStats() async {
-    try {
+  
+  // Halls
+
+  Future<void> loadHalls() async {
+    final currentSelectedTab = _currentTabIndex;
+
+    // First load (no cache) → show full-screen shimmer, same as old loadStats()
+    if (_cachedHalls == null) {
       emit(const SessionManagementLoading());
-      await loadHalls();
-    } on ApiErrorModel catch (error) {
-      final selectedTab = state is SessionManagementStateWithTab
-          ? (state as SessionManagementStateWithTab).selectedTabIndex
-          : 0;
-      emit(SessionError(error: error, selectedTabIndex: selectedTab));
-    } catch (e) {
-      final selectedTab = state is SessionManagementStateWithTab
-          ? (state as SessionManagementStateWithTab).selectedTabIndex
-          : 0;
+    } else {
+      // Subsequent loads → keep existing content, just show inline loader
       emit(
-        SessionError(
-          error: const ApiErrorModel(
-            message: 'Failed to load halls',
-            type: ApiErrorType.connectionError,
-            statusCode: 0,
-          ),
-          selectedTabIndex: selectedTab,
+        SessionManagementIdle(
+          selectedTabIndex: currentSelectedTab,
+          halls: _cachedHalls,
+          isLoadingHalls: true,
         ),
       );
     }
-  }
-
-  Future<void> loadHalls() async {
-    final currentSelectedTab = state is SessionManagementStateWithTab
-        ? (state as SessionManagementStateWithTab).selectedTabIndex
-        : 0;
-
-    emit(
-      SessionManagementIdle(
-        selectedTabIndex: currentSelectedTab,
-        halls: _cachedHalls,
-        isLoadingHalls: true,
-      ),
-    );
 
     try {
       final halls = await getAllHallsUseCase();
-
       _cachedHalls = halls.halls;
 
       emit(
@@ -90,7 +71,7 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
       );
     } on ApiErrorModel catch (error) {
       emit(SessionError(error: error, selectedTabIndex: currentSelectedTab));
-    } catch (e) {
+    } catch (_) {
       emit(
         SessionError(
           error: const ApiErrorModel(
@@ -104,15 +85,19 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
     }
   }
 
+  // Tab
+
   void changeTab(int index) {
     final currentState = state;
-
     if (currentState is SessionManagementIdle) {
       emit(currentState.copyWith(selectedTabIndex: index));
     } else if (currentState is SessionState) {
       emit(currentState.copyWith(selectedTabIndex: index));
     }
   }
+
+  // Session Lifecycle
+  
 
   Future<void> createAndStartSession({
     required String name,
@@ -141,7 +126,7 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
       await _startServer(currentState.selectedTabIndex);
     } on ApiErrorModel catch (error) {
       _handleSessionError(error, currentState.selectedTabIndex);
-    } catch (e) {
+    } catch (_) {
       _handleSessionError(
         const ApiErrorModel(
           message: 'An unexpected error occurred',
@@ -152,6 +137,80 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
       );
     }
   }
+
+  Future<void> endSession() async {
+    final currentState = state;
+    if (currentState is! SessionState) return;
+
+    try {
+      emit(currentState.copyWith(operation: SessionOperation.ending));
+
+      _timerService.cancel();
+      await _cancelAttendanceSubscription();
+
+      await endSessionUseCase(currentState.session.id, currentState.session);
+
+      emit(
+        currentState.copyWith(
+          session: currentState.session.copyWith(status: SessionStatus.ended),
+          operation: SessionOperation.ended,
+        ),
+      );
+
+      await Future.delayed(const Duration(seconds: 2));
+      _goIdle(currentState.selectedTabIndex);
+    } on ApiErrorModel catch (error) {
+      _handleSessionError(error, currentState.selectedTabIndex);
+    } catch (_) {
+      _handleSessionError(
+        const ApiErrorModel(
+          message: 'Failed to end session',
+          type: ApiErrorType.unknown,
+          statusCode: 500,
+        ),
+        currentState.selectedTabIndex,
+      );
+    }
+  }
+
+  Future<void> deleteSession() async {
+    final currentState = state;
+    if (currentState is! SessionState) return;
+
+    try {
+      emit(currentState.copyWith(operation: SessionOperation.deleting));
+
+      _timerService.cancel();
+      await _cancelAttendanceSubscription();
+
+      await deleteCurrentSessionUseCase();
+
+      emit(
+        currentState.copyWith(
+          session: currentState.session.copyWith(status: SessionStatus.ended),
+          operation: SessionOperation.deleted,
+        ),
+      );
+
+      await Future.delayed(const Duration(seconds: 2));
+      _goIdle(currentState.selectedTabIndex);
+
+      loadHalls().catchError((_) {});
+    } on ApiErrorModel catch (error) {
+      _handleSessionError(error, currentState.selectedTabIndex);
+    } catch (_) {
+      _handleSessionError(
+        const ApiErrorModel(
+          message: 'Failed to delete session',
+          type: ApiErrorType.unknown,
+          statusCode: 500,
+        ),
+        currentState.selectedTabIndex,
+      );
+    }
+  }
+
+  // Private helpers
 
   Future<void> _createSession({
     required String name,
@@ -172,288 +231,161 @@ class SessionMangementCubit extends Cubit<SessionManagementState> {
       startTime.minute,
     );
 
-    final placeholderSession = Session(
-      id: 0,
-      name: name,
-      location: location,
-      connectionMethod: connectionMethod,
-      startTime: sessionStartTime,
-      durationMinutes: durationMinutes,
-      status: SessionStatus.inactive,
-      connectedClients: 0,
-      attendanceList: [],
-    );
-
+    // Show optimistic placeholder while creating
     emit(
       SessionState(
-        session: placeholderSession,
+        session: Session(
+          id: 0,
+          name: name,
+          location: location,
+          connectionMethod: connectionMethod,
+          startTime: sessionStartTime,
+          durationMinutes: durationMinutes,
+          status: SessionStatus.inactive,
+          connectedClients: 0,
+          attendanceList: [],
+        ),
         operation: SessionOperation.creating,
         selectedTabIndex: selectedTabIndex,
       ),
     );
 
-    try {
-      final session = await createSessionUseCase(
-        name: name,
-        location: location,
-        connectionMethod: connectionMethod,
-        startTime: sessionStartTime,
-        durationMinutes: durationMinutes,
-        allowedRadius: allowedRadius,
-        hallId: hallId,
-      );
+    final session = await createSessionUseCase(
+      name: name,
+      location: location,
+      connectionMethod: connectionMethod,
+      startTime: sessionStartTime,
+      durationMinutes: durationMinutes,
+      allowedRadius: allowedRadius,
+      hallId: hallId,
+    );
 
-      await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
 
-      emit(
-        SessionState(
-          session: session,
-          operation: SessionOperation.starting,
-          selectedTabIndex: selectedTabIndex,
-        ),
-      );
-    } catch (e) {
-      rethrow;
-    }
+    emit(
+      SessionState(
+        session: session,
+        operation: SessionOperation.starting,
+        selectedTabIndex: selectedTabIndex,
+      ),
+    );
   }
 
   Future<void> _startServer(int selectedTabIndex) async {
     final currentState = state;
-    if (currentState is! SessionState) {
-      return;
-    }
+    if (currentState is! SessionState) return;
 
-    try {
-      final serverInfo = await startSessionServerUseCase(
-        currentState.session.id,
-      );
-
-      _listenToAttendance(currentState.session, serverInfo, selectedTabIndex);
-
-      final activeSession = currentState.session.copyWith(
-        status: SessionStatus.active,
-      );
-
-      emit(
-        SessionState(
-          session: activeSession,
-          operation: SessionOperation.active,
-          serverInfo: serverInfo,
-          selectedTabIndex: selectedTabIndex,
-        ),
-      );
-
-      _startSessionTimer(activeSession);
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  void _startSessionTimer(Session session) {
-    _sessionTimer?.cancel();
-    _warningTimer?.cancel();
-
-    final endTime = session.startTime.add(
-      Duration(minutes: session.durationMinutes),
+    final serverInfo = await startSessionServerUseCase(
+      currentState.session.id,
     );
-    final timeUntilEnd = endTime.difference(DateTime.now());
 
-    if (timeUntilEnd.isNegative) {
-      _autoEndSession();
-      return;
-    }
+    final activeSession = currentState.session.copyWith(
+      status: SessionStatus.active,
+    );
 
-    _sessionTimer = Timer(timeUntilEnd, () {
-      _autoEndSession();
-    });
+    _listenToAttendance();
 
-    final warningTime = timeUntilEnd - const Duration(minutes: 5);
-    if (warningTime.isNegative) {
-      _showWarning();
-    } else {
-      _warningTimer = Timer(warningTime, () {
-        _showWarning();
-      });
-    }
+    emit(
+      SessionState(
+        session: activeSession,
+        operation: SessionOperation.active,
+        serverInfo: serverInfo,
+        selectedTabIndex: selectedTabIndex,
+      ),
+    );
+
+    // Delegate timer logic to the dedicated service
+    _timerService.start(
+      session: activeSession,
+      onExpired: _onSessionExpired,
+      onWarning: _onSessionWarning,
+    );
   }
 
-  void _showWarning() {
+  void _listenToAttendance() {
+    _attendanceSubscription?.cancel();
+    _attendanceSubscription = listenAttendanceUseCase().listen(
+      (record) {
+        final currentState = state;
+        if (currentState is! SessionState) return;
+
+        final updatedAttendance = List<AttendanceRecord>.from(
+          currentState.session.attendanceList,
+        )..add(record);
+
+        emit(
+          currentState.copyWith(
+            session: currentState.session.copyWith(
+              attendanceList: updatedAttendance,
+              connectedClients: updatedAttendance.length,
+            ),
+            latestRecord: record,
+          ),
+        );
+
+        // Clear the latest record badge after a short delay
+        Future.delayed(const Duration(milliseconds: 100), () {
+          final s = state;
+          if (s is SessionState && s.latestRecord != null) {
+            emit(s.copyWith(clearLatestRecord: true));
+          }
+        });
+      },
+      onError: (_) {},
+    );
+  }
+
+  // --- Timer callbacks (called by SessionTimerService) ---
+
+  void _onSessionExpired() {
+    if (state is! SessionState) return;
+    endSession().catchError((_) {});
+  }
+
+  void _onSessionWarning() {
     final currentState = state;
     if (currentState is! SessionState) return;
 
     emit(currentState.copyWith(showWarning: true));
 
     Future.delayed(const Duration(seconds: 5), () {
-      final state = this.state;
-      if (state is SessionState && state.showWarning) {
-        emit(state.copyWith(showWarning: false));
+      final s = state;
+      if (s is SessionState && s.showWarning) {
+        emit(s.copyWith(showWarning: false));
       }
     });
   }
 
-  Future<void> _autoEndSession() async {
-    final currentState = state;
-    if (currentState is! SessionState) return;
-
-    try {
-      await endSession();
-      // ignore: empty_catches
-    } catch (e) {}
-  }
-
-  void _listenToAttendance(
-    Session session,
-    ServerInfo serverInfo,
-    int selectedTabIndex,
-  ) {
-    _attendanceSubscription?.cancel();
-    _attendanceSubscription = listenAttendanceUseCase().listen((record) {
-      final currentState = state;
-      if (currentState is! SessionState) return;
-
-      final updatedAttendance = List<AttendanceRecord>.from(
-        currentState.session.attendanceList,
-      )..add(record);
-
-      final updatedSession = currentState.session.copyWith(
-        attendanceList: updatedAttendance,
-        connectedClients: updatedAttendance.length,
-      );
-
-      emit(
-        currentState.copyWith(session: updatedSession, latestRecord: record),
-      );
-
-      Future.delayed(const Duration(milliseconds: 100), () {
-        final state = this.state;
-        if (state is SessionState && state.latestRecord != null) {
-          emit(state.copyWith(clearLatestRecord: true));
-        }
-      });
-    }, onError: (error) {});
-  }
-
-  Future<void> endSession() async {
-    final currentState = state;
-    if (currentState is! SessionState) return;
-
-    try {
-      emit(currentState.copyWith(operation: SessionOperation.ending));
-
-      _sessionTimer?.cancel();
-      _sessionTimer = null;
-      _warningTimer?.cancel();
-      _warningTimer = null;
-
-      await _attendanceSubscription?.cancel();
-      _attendanceSubscription = null;
-
-      await endSessionUseCase(currentState.session.id, currentState.session);
-
-      final endedSession = currentState.session.copyWith(
-        status: SessionStatus.ended,
-      );
-
-      emit(
-        currentState.copyWith(
-          session: endedSession,
-          operation: SessionOperation.ended,
-        ),
-      );
-
-      await Future.delayed(const Duration(seconds: 2));
-
-      emit(
-        SessionManagementIdle(
-          selectedTabIndex: currentState.selectedTabIndex,
-          halls: _cachedHalls,
-        ),
-      );
-    } on ApiErrorModel catch (error) {
-      _handleSessionError(error, currentState.selectedTabIndex);
-    } catch (e) {
-      _handleSessionError(
-        const ApiErrorModel(
-          message: 'Failed to end session',
-          type: ApiErrorType.unknown,
-          statusCode: 500,
-        ),
-        currentState.selectedTabIndex,
-      );
-    }
-  }
-
-  Future<void> deleteSession() async {
-    final currentState = state;
-    if (currentState is! SessionState) return;
-
-    try {
-      emit(currentState.copyWith(operation: SessionOperation.deleting));
-
-      _sessionTimer?.cancel();
-      _sessionTimer = null;
-      _warningTimer?.cancel();
-      _warningTimer = null;
-
-      await _attendanceSubscription?.cancel();
-      _attendanceSubscription = null;
-
-      await deleteCurrentSessionUseCase();
-
-      final deletedSession = currentState.session.copyWith(
-        status: SessionStatus.ended,
-      );
-
-      emit(
-        currentState.copyWith(
-          session: deletedSession,
-          operation: SessionOperation.deleted,
-        ),
-      );
-
-      await Future.delayed(const Duration(seconds: 2));
-
-      emit(
-        SessionManagementIdle(
-          selectedTabIndex: currentState.selectedTabIndex,
-          halls: _cachedHalls,
-        ),
-      );
-      loadHalls().catchError((_) {});
-    } on ApiErrorModel catch (error) {
-      _handleSessionError(error, currentState.selectedTabIndex);
-    } catch (e) {
-      _handleSessionError(
-        const ApiErrorModel(
-          message: 'Failed to delete session',
-          type: ApiErrorType.unknown,
-          statusCode: 500,
-        ),
-        currentState.selectedTabIndex,
-      );
-    }
-  }
 
   void _handleSessionError(ApiErrorModel error, int selectedTabIndex) {
     emit(SessionError(error: error, selectedTabIndex: selectedTabIndex));
 
     Future.delayed(const Duration(seconds: 3), () {
       if (state is SessionError) {
-        emit(
-          SessionManagementIdle(
-            selectedTabIndex: selectedTabIndex,
-            halls: _cachedHalls,
-          ),
-        );
+        _goIdle(selectedTabIndex);
       }
     });
   }
 
+  void _goIdle(int tabIndex) {
+    emit(SessionManagementIdle(selectedTabIndex: tabIndex, halls: _cachedHalls));
+  }
+
+  Future<void> _cancelAttendanceSubscription() async {
+    await _attendanceSubscription?.cancel();
+    _attendanceSubscription = null;
+  }
+
+  int get _currentTabIndex => state is SessionManagementStateWithTab
+      ? (state as SessionManagementStateWithTab).selectedTabIndex
+      : 0;
+
+  
+
   @override
   Future<void> close() {
+    _timerService.dispose();
     _attendanceSubscription?.cancel();
-    _sessionTimer?.cancel();
-    _warningTimer?.cancel();
     return super.close();
   }
 }

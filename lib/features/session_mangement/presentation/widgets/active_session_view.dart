@@ -26,7 +26,7 @@ class ActiveSessionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SessionMangementCubit, SessionManagementState>(
+    return BlocListener<SessionManagementCubit, SessionManagementState>(
       listener: (context, state) {
         if (state is SessionState && state.showWarning) {
           _showWarningSnackBar(context);
@@ -60,7 +60,7 @@ class ActiveSessionView extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 8.w),
         child: CustomScrollView(
           slivers: [
-            BlocBuilder<SessionMangementCubit, SessionManagementState>(
+            BlocBuilder<SessionManagementCubit, SessionManagementState>(
               builder: (context, state) {
                 if (state is SessionState && state.showWarning) {
                   return SliverToBoxAdapter(child: _buildWarningBanner());
@@ -259,7 +259,7 @@ class ActiveSessionView extends StatelessWidget {
             ),
             onPressed: () {
               Navigator.pop(dialogContext);
-              context.read<SessionMangementCubit>().endSession();
+              context.read<SessionManagementCubit>().endSession();
             },
             child: Text('End & Save', style: TextStyle(fontSize: 14.sp)),
           ),
@@ -320,7 +320,7 @@ class ActiveSessionView extends StatelessWidget {
             ),
             onPressed: () {
               Navigator.pop(dialogContext);
-              context.read<SessionMangementCubit>().deleteSession();
+              context.read<SessionManagementCubit>().deleteSession();
             },
             child: Text('Delete', style: TextStyle(fontSize: 14.sp)),
           ),

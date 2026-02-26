@@ -12,7 +12,7 @@ class ManageSessionsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SessionMangementCubit, SessionManagementState>(
+    return BlocBuilder<SessionManagementCubit, SessionManagementState>(
       builder: (context, state) {
         if (state is SessionState && state.isActive) {
           return ActiveSessionView(
