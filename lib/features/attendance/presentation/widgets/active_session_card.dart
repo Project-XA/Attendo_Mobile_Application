@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_app/core/current_user/presentation/cubits/current_user_cubit.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/core/services/location/location_helper.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/core/widgets/custom_app_button.dart';
+import 'package:mobile_app/features/attendance/data/services/check_in_handler.dart';
 import 'package:mobile_app/features/attendance/domain/entities/nearby_session.dart';
-import 'package:mobile_app/features/attendance/presentation/logic/user_cubit.dart';
-import 'package:mobile_app/core/services/auth/authentication_manager.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class ActiveSessionCard extends StatelessWidget {
   final NearbySession session;
+  final CheckInHandler checkInHandler;
 
-  const ActiveSessionCard({super.key, required this.session});
+  const ActiveSessionCard({
+    super.key,
+    required this.session,
+    required this.checkInHandler,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +166,7 @@ class ActiveSessionCard extends StatelessWidget {
 
   Widget _buildCheckInButton(BuildContext context) {
     return CustomAppButton(
-      onPressed: () => _handleCheckIn(context),
+      onPressed: () => checkInHandler.handle(context, session),
       backgroundColor: AppColors.backGroundColorWhite,
       borderRadius: 20.r,
       width: double.infinity,
@@ -188,150 +187,6 @@ class ActiveSessionCard extends StatelessWidget {
               fontWeight: FontWeightHelper.bold,
               fontSize: 16.sp,
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _handleCheckIn(BuildContext context) async {
-    final locationStatus = await LocationHelper.check();
-
-    if (locationStatus == LocationStatus.serviceDisabled) {
-      // ignore: use_build_context_synchronously
-      _showLocationSettingsDialog(context);
-      return;
-    }
-
-    if (locationStatus == LocationStatus.deniedForever) {
-      // ignore: use_build_context_synchronously
-      _showAppSettingsDialog(context);
-      return;
-    }
-
-    if (!context.mounted) return;
-
-    final authManager = AuthenticationManager();
-
-    final isAuthenticated = await authManager.authenticate(context);
-
-    if (!isAuthenticated) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Authentication required to check in'),
-            backgroundColor: Colors.orange,
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
-      return;
-    }
-
-    if (!context.mounted) return;
-    _showLoadingDialog(context);
-
-    final user = context.read<CurrentUserCubit>().currentUser;
-    if (user != null) {
-      context.read<UserCubit>().checkIn(
-        session,
-        userId: user.id!,
-        userName: user.fullNameEn,
-      );
-    }
-
-    if (context.mounted) {
-      Navigator.of(context, rootNavigator: true).pop();
-    }
-  }
-
-  void _showLoadingDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      useRootNavigator: true,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(color: AppColors.backGroundColorWhite),
-      ),
-    );
-  }
-
-  void _showLocationSettingsDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.backGroundColorWhite,
-        title: const Text(
-          'Location Services Disabled',
-          style: TextStyle(
-            color: AppColors.mainTextColorBlack,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        content: const Text(
-          'Location services are required for check-in. Please enable location services in your device settings.',
-          style: TextStyle(color: AppColors.subTextColorGrey),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.subTextColorGrey),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.mainTextColorBlack,
-              foregroundColor: AppColors.backGroundColorWhite,
-              elevation: 0,
-            ),
-            onPressed: () async {
-              Navigator.pop(context);
-              await Geolocator.openLocationSettings();
-            },
-            child: const Text('Open Settings'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showAppSettingsDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.backGroundColorWhite,
-        title: const Text(
-          'Location Permission Required',
-          style: TextStyle(
-            color: AppColors.mainTextColorBlack,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        content: const Text(
-          'Location permission is permanently denied. Please enable it in app settings to check in.',
-          style: TextStyle(color: AppColors.subTextColorGrey),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.subTextColorGrey),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.mainTextColorBlack,
-              foregroundColor: AppColors.backGroundColorWhite,
-              elevation: 0,
-            ),
-            onPressed: () async {
-              Navigator.pop(context);
-              await openAppSettings();
-            },
-            child: const Text('Open Settings'),
           ),
         ],
       ),

@@ -41,10 +41,6 @@ class UserCubit extends Cubit<UserState> {
     searchTimeout = duration;
   }
 
-  // ---------------------------------------------------------------------------
-  // Stats
-  // ---------------------------------------------------------------------------
-
   Future<void> loadStats() async {
     try {
       final cachedStats = await getAttendanceStatsUseCase.callFromCache();
@@ -79,9 +75,7 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
-  
   // Discovery
-  
 
   Future<void> startSessionDiscovery() async {
     try {
@@ -143,9 +137,7 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
-  
   // Check In
-  
 
   Future<void> checkIn(
     NearbySession session, {
@@ -317,6 +309,10 @@ class UserCubit extends Cubit<UserState> {
     if (!isClosed) await startSessionDiscovery();
   }
 
+  Future<void> stopSearch() async {
+    await stopSessionDiscovery();
+  }
+
   Future<void> _cancelDiscovery() async {
     await _discoverySubscription?.cancel();
     _discoverySubscription = null;
@@ -325,19 +321,15 @@ class UserCubit extends Cubit<UserState> {
   }
 
   AttendanceStats? get _currentStats {
-    final s = state;
-    if (s is UserIdle) return s.stats;
-    if (s is SessionDiscoveryActive) return s.stats;
-    if (s is CheckInState) return s.stats;
-    if (s is AttendanceHistoryState) return s.stats;
-    return _cachedStats;
+    return state is UserStateWithStats
+        ? (state as UserStateWithStats).stats
+        : _cachedStats;
   }
 
   bool get _currentHasError {
-    final s = state;
-    if (s is UserIdle) return s.hasStatsError;
-    if (s is SessionDiscoveryActive) return s.hasStatsError;
-    return false;
+    return state is UserStateWithStats
+        ? (state as UserStateWithStats).hasStatsError
+        : false;
   }
 
   @override

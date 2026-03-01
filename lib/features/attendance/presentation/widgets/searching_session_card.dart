@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
@@ -5,15 +6,50 @@ import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
 
-class SearchingSessionsCard extends StatelessWidget {
-  final int searchSecondsRemaining;
+class SearchingSessionsCard extends StatefulWidget {
   final int totalSearchDuration;
+  final VoidCallback? onTimeout;
 
   const SearchingSessionsCard({
     super.key,
-    required this.searchSecondsRemaining,
     required this.totalSearchDuration,
+    this.onTimeout,
   });
+
+  @override
+  State<SearchingSessionsCard> createState() => _SearchingSessionsCardState();
+}
+
+class _SearchingSessionsCardState extends State<SearchingSessionsCard> {
+  late int _secondsRemaining;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _secondsRemaining = widget.totalSearchDuration;
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      setState(() {
+        if (_secondsRemaining > 0) {
+          _secondsRemaining--;
+        } else {
+          timer.cancel();
+          widget.onTimeout?.call();
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,15 +60,12 @@ class SearchingSessionsCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            // ignore: deprecated_member_use
             AppColors.mainTextColorBlack.withOpacity(0.05),
-            // ignore: deprecated_member_use
             AppColors.mainTextColorBlack.withOpacity(0.02),
           ],
         ),
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(
-          // ignore: deprecated_member_use
           color: AppColors.mainTextColorBlack.withOpacity(0.1),
           width: 1.5,
         ),
@@ -64,7 +97,7 @@ class SearchingSessionsCard extends StatelessWidget {
           height: 60.w,
           child: CircularProgressIndicator(
             strokeWidth: 3,
-            value: searchSecondsRemaining / totalSearchDuration,
+            value: _secondsRemaining / widget.totalSearchDuration,
             valueColor: const AlwaysStoppedAnimation<Color>(
               AppColors.mainTextColorBlack,
             ),
@@ -72,7 +105,7 @@ class SearchingSessionsCard extends StatelessWidget {
           ),
         ),
         Text(
-          '$searchSecondsRemaining',
+          '$_secondsRemaining',
           style: AppTextStyle.font14MediamGrey.copyWith(
             fontSize: 18.sp,
             fontWeight: FontWeightHelper.bold,
@@ -108,7 +141,7 @@ class SearchingSessionsCard extends StatelessWidget {
 
   Widget _buildTimeoutText() {
     return Text(
-      'Timeout in ${searchSecondsRemaining}s',
+      'Timeout in ${_secondsRemaining}s',
       style: AppTextStyle.font14MediamGrey.copyWith(
         fontSize: 12.sp,
         color: Colors.grey.shade500,

@@ -1,6 +1,5 @@
 // ignore_for_file: deprecated_member_use
 
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,10 +7,12 @@ import 'package:mobile_app/core/DI/get_it.dart';
 import 'package:mobile_app/core/current_user/presentation/cubits/current_user_cubit.dart';
 import 'package:mobile_app/core/current_user/presentation/cubits/current_user_state.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
+import 'package:mobile_app/core/services/auth/authentication_manager.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/core/utils/app_assets.dart';
+import 'package:mobile_app/features/attendance/data/services/check_in_handler.dart';
 import 'package:mobile_app/features/attendance/domain/entities/attendency_state.dart';
 import 'package:mobile_app/features/attendance/presentation/logic/user_cubit.dart';
 import 'package:mobile_app/features/attendance/presentation/logic/user_state.dart';
@@ -32,38 +33,14 @@ class UserDashboardScreen extends StatefulWidget {
 }
 
 class _UserDashboardState extends State<UserDashboardScreen> {
-  Timer? _searchTimer;
-  int _searchSecondsRemaining = 30;
-  final int _totalSearchDuration = 30;
+  late final CheckInHandler _checkInHandler;
 
   @override
-  void dispose() {
-    _searchTimer?.cancel();
-    super.dispose();
-  }
-
-  void _startSearchTimer() {
-    _searchTimer?.cancel();
-    setState(() => _searchSecondsRemaining = _totalSearchDuration);
-
-    _searchTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) {
-        setState(() {
-          if (_searchSecondsRemaining > 0) {
-            _searchSecondsRemaining--;
-          } else {
-            timer.cancel();
-          }
-        });
-      }
-    });
-  }
-
-  void _stopSearchTimer() {
-    _searchTimer?.cancel();
-    if (mounted) {
-      setState(() => _searchSecondsRemaining = _totalSearchDuration);
-    }
+  void initState() {
+    super.initState();
+    _checkInHandler = CheckInHandler(
+      authManager: getIt<AuthenticationManager>(),
+    );
   }
 
   @override
@@ -75,66 +52,55 @@ class _UserDashboardState extends State<UserDashboardScreen> {
       create: (context) => getIt<UserCubit>()..loadStats(),
       child: Scaffold(
         backgroundColor: AppColors.backGroundColorWhite,
-        body: BlocListener<UserCubit, UserState>(
-          listener: (context, state) {
-            if (state is SessionDiscoveryActive && state.isSearching) {
-              _startSearchTimer();
-            } else {
-              _stopSearchTimer();
+        body: BlocBuilder<UserCubit, UserState>(
+          builder: (context, attendanceState) {
+            final currentUserCubit = context.read<CurrentUserCubit>();
+            final user = currentUserCubit.currentUser;
+
+            if (attendanceState is UserLoading ||
+                attendanceState is UserInitial ||
+                user == null) {
+              return const UserDashboardShimmer();
             }
+
+            if (attendanceState is UserError) {
+              return _buildErrorView(context, attendanceState.message);
+            }
+
+            return SafeArea(
+              child: Column(
+                children: [
+                  BlocBuilder<CurrentUserCubit, CurrentUserState>(
+                    builder: (context, userState) {
+                      final latestUser = currentUserCubit.currentUser;
+                      return UserHeader(
+                        userName: latestUser?.fullNameEn ?? '',
+                        userRole:
+                            latestUser?.organizations?.first.role ?? 'Student',
+                        userImage:
+                            latestUser?.profileImage ?? Assets.assetsImagesUser,
+                      );
+                    },
+                  ),
+                  verticalSpace(20),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isSmallScreen ? 12.w : 20.w,
+                      vertical: 8.h,
+                    ),
+                    child: InfoCard(
+                      title: 'Welcome Back!',
+                      subtitle:
+                          user.organizations?.first.organizationName ?? '',
+                      description: 'Check attendance and active sessions',
+                    ),
+                  ),
+                  verticalSpace(20.h),
+                  Expanded(child: _buildContent(context, attendanceState)),
+                ],
+              ),
+            );
           },
-          child: BlocBuilder<UserCubit, UserState>(
-            builder: (context, attendanceState) {
-              final currentUserCubit = context.read<CurrentUserCubit>();
-              final user = currentUserCubit.currentUser;
-
-              if (attendanceState is UserLoading ||
-                  attendanceState is UserInitial ||
-                  user == null) {
-                return const UserDashboardShimmer();
-              }
-
-              if (attendanceState is UserError) {
-                return _buildErrorView(context, attendanceState.message);
-              }
-
-              return SafeArea(
-                child: Column(
-                  children: [
-                    BlocBuilder<CurrentUserCubit, CurrentUserState>(
-                      builder: (context, userState) {
-                        final latestUser = currentUserCubit.currentUser;
-                        return UserHeader(
-                          userName: latestUser?.fullNameEn ?? '',
-                          userRole:
-                              latestUser?.organizations?.first.role ??
-                              'Student',
-                          userImage:
-                              latestUser?.profileImage ??
-                              Assets.assetsImagesUser,
-                        );
-                      },
-                    ),
-                    verticalSpace(20),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isSmallScreen ? 12.w : 20.w,
-                        vertical: 8.h,
-                      ),
-                      child: InfoCard(
-                        title: 'Welcome Back!',
-                        subtitle:
-                            user.organizations?.first.organizationName ?? '',
-                        description: 'Check attendance and active sessions',
-                      ),
-                    ),
-                    verticalSpace(20.h),
-                    Expanded(child: _buildContent(context, attendanceState)),
-                  ],
-                ),
-              );
-            },
-          ),
         ),
       ),
     );
@@ -194,16 +160,17 @@ class _UserDashboardState extends State<UserDashboardScreen> {
 
     if (isSearching) {
       return SearchingSessionsCard(
-        searchSecondsRemaining: _searchSecondsRemaining,
-        totalSearchDuration: _totalSearchDuration,
+        totalSearchDuration: 30,
+        onTimeout: () => context.read<UserCubit>().stopSearch(),
       );
     }
 
     if (hasActiveSession) {
-      final sessionState = state;
-      final session =
-          sessionState.activeSession ?? sessionState.discoveredSessions.first;
-      return ActiveSessionCard(session: session);
+      final session = state.activeSession ?? state.discoveredSessions.first;
+      return ActiveSessionCard(
+        session: session,
+        checkInHandler: _checkInHandler,
+      );
     }
 
     return NoSessionsCard(
@@ -235,25 +202,17 @@ class _UserDashboardState extends State<UserDashboardScreen> {
         AttendanceStatsCard(
           stats: stats,
           hasError: hasError,
-          onRetry: () {
-            context.read<UserCubit>().loadStats();
-          },
+          onRetry: () => context.read<UserCubit>().loadStats(),
         ),
       ],
     );
   }
 
   AttendanceStats? _getStatsFromState(UserState state) {
-    if (state is UserIdle) return state.stats;
-    if (state is SessionDiscoveryActive) return state.stats;
-    if (state is CheckInState) return state.stats;
-    if (state is AttendanceHistoryState) return state.stats;
-    return null;
+    return state is UserStateWithStats ? state.stats : null;
   }
 
   bool _getErrorStateFromState(UserState state) {
-    if (state is UserIdle) return state.hasStatsError;
-    if (state is SessionDiscoveryActive) return state.hasStatsError;
-    return false;
+    return state is UserStateWithStats ? state.hasStatsError : false;
   }
 }

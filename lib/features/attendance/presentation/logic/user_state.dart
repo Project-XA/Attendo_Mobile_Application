@@ -21,12 +21,16 @@ final class UserError extends UserState {
 
 sealed class UserStateWithStats extends UserState {
   const UserStateWithStats();
+  AttendanceStats? get stats;
+  bool get hasStatsError => false;
 }
 
 final class UserIdle extends UserStateWithStats {
+  @override
   final AttendanceStats? stats;
+  @override
   final bool hasStatsError;
-  
+
   const UserIdle({
     this.stats,
     this.hasStatsError = false,
@@ -34,11 +38,11 @@ final class UserIdle extends UserStateWithStats {
 
   UserIdle copyWith({
     AttendanceStats? stats,
-    bool? hasStatsError,  
+    bool? hasStatsError,
   }) {
     return UserIdle(
       stats: stats ?? this.stats,
-      hasStatsError: hasStatsError?? this.hasStatsError,
+      hasStatsError: hasStatsError ?? this.hasStatsError,
     );
   }
 }
@@ -47,11 +51,12 @@ final class SessionDiscoveryActive extends UserStateWithStats {
   final NearbySession? activeSession;
   final List<NearbySession> discoveredSessions;
   final bool isSearching;
+  @override
   final AttendanceStats? stats;
+  @override
   final bool hasStatsError;
 
   const SessionDiscoveryActive({
-    
     this.activeSession,
     this.discoveredSessions = const [],
     this.isSearching = false,
@@ -82,7 +87,10 @@ final class CheckInState extends UserStateWithStats {
   final CheckInOperation operation;
   final String? errorMessage;
   final DateTime? checkInTime;
+  @override
   final AttendanceStats? stats;
+  @override
+  bool get hasStatsError => false;
 
   const CheckInState({
     required this.session,
@@ -117,8 +125,11 @@ enum CheckInOperation { idle, checkingIn, success, failed }
 
 final class AttendanceHistoryState extends UserStateWithStats {
   final List<AttendanceHistory> history;
+  @override
   final AttendanceStats stats;
   final bool isLoading;
+  @override
+  bool get hasStatsError => false;
 
   const AttendanceHistoryState({
     required this.history,
