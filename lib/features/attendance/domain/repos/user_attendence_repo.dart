@@ -10,9 +10,9 @@ abstract class UserAttendanceRepository {
     required String userName,
     String? location,
   });
-  
+
   Future<List<AttendanceHistory>> getAttendanceHistory();
   Future<AttendanceStats> getAttendanceStats();
-    Future<AttendanceStats?> getCachedStatsOnly();
-    Future<void> saveStatsToCache(AttendanceStats stats);
+  Future<AttendanceStats?> getCachedStatsOnly();
+  Future<void> saveStatsToCache(AttendanceStats stats);
 }

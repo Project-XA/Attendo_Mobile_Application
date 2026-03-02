@@ -1,12 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
+import 'package:mobile_app/features/session_mangement/data/helpers/location_validator.dart';
+import 'package:mobile_app/features/session_mangement/data/helpers/network_utils.dart';
+import 'package:mobile_app/features/session_mangement/data/helpers/session_response_builder.dart';
 import 'package:mobile_app/features/session_mangement/data/models/attendence_request.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/server_info.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/session.dart';
 import 'package:nsd/nsd.dart';
-
+/*
+this service is responsible for managing the HTTP server that listens for attendance requests from clients. It handles starting and stopping the server, processing incoming requests, validating user location, and broadcasting attendance events to the rest of the app.
+The service also registers itself on the local network using mDNS so that clients can discover it without needing to know the IP address in advance.
+By centralizing all server-related logic in this service, we can keep the rest of the app decoupled from the specifics of how attendance requests are received and processed.
+ */
 class HttpServerService {
   HttpServer? _server;
   Registration? _mdnsRegistration;
@@ -18,12 +24,9 @@ class HttpServerService {
 
   int? _currentSessionId;
   Session? _currentSession;
+  LocationValidator? _locationValidator;
+
   bool get isServerRunning => _server != null;
-
-  double? _sessionLatitude;
-  double? _sessionLongitude;
-  double? _allowedRadius;
-
 
   void updateSessionData(Session session) {
     _currentSession = session;
@@ -35,24 +38,26 @@ class HttpServerService {
     double? latitude,
     double? longitude,
     double? allowedRadius,
-    int? orgainzationId
+    int? orgainzationId,
   }) async {
     try {
       _server = await HttpServer.bind(InternetAddress.anyIPv4, 8080);
       _currentSessionId = sessionId;
       _currentSession = session;
 
-      _sessionLatitude = latitude;
-      _sessionLongitude = longitude;
-      _allowedRadius = allowedRadius;
+      if (latitude != null && longitude != null && allowedRadius != null) {
+        _locationValidator = LocationValidator(
+          sessionLatitude: latitude,
+          sessionLongitude: longitude,
+          allowedRadius: allowedRadius,
+        );
+      }
 
-      _server!.listen((HttpRequest request) {
-        _handleRequest(request);
-      });
+      _server!.listen(_handleRequest);
 
       await _registerMdnsService();
 
-      final localIp = await _getLocalIpAddress();
+      final localIp = await NetworkUtils.getLocalIpAddress();
 
       return ServerInfo(ipAddress: localIp, port: 8080, sessionId: sessionId);
     } catch (e) {
@@ -69,8 +74,7 @@ class HttpServerService {
         await _handleAttendanceRequest(request);
       } else if (request.method == 'GET' && request.uri.path == '/health') {
         _handleHealthCheck(request);
-      } else if (request.method == 'GET' &&
-          request.uri.path == '/session-info') {
+      } else if (request.method == 'GET' && request.uri.path == '/session-info') {
         _handleSessionInfo(request);
       } else {
         request.response
@@ -90,15 +94,12 @@ class HttpServerService {
     try {
       final body = await utf8.decoder.bind(request).join();
       final data = jsonDecode(body) as Map<String, dynamic>;
-
       final attendanceRequest = AttendanceRequest.fromJson(data);
 
       if (_currentSessionId == null || _currentSession == null) {
         request.response
           ..statusCode = HttpStatus.badRequest
-          ..write(
-            jsonEncode({'status': 'error', 'message': 'No active session'}),
-          );
+          ..write(jsonEncode(SessionResponseBuilder.error('No active session')));
         return;
       }
 
@@ -109,177 +110,72 @@ class HttpServerService {
       if (alreadyCheckedIn) {
         request.response
           ..statusCode = HttpStatus.conflict
-          ..write(
-            jsonEncode({
-              'status': 'error',
-              'message': 'Already checked in',
-              'code': 'ALREADY_CHECKED_IN',
-            }),
-          );
+          ..write(jsonEncode(SessionResponseBuilder.error(
+            'Already checked in',
+            code: 'ALREADY_CHECKED_IN',
+          )));
         return;
       }
 
-      if (attendanceRequest.location != null) {
-        final locationValid = _validateUserLocation(
-          attendanceRequest.location!,
-        );
-
-        if (!locationValid) {
-          request.response
-            ..statusCode = HttpStatus.forbidden
-            ..write(
-              jsonEncode({
-                'status': 'error',
-                'message': 'Out of zone',
-                'code': 'OUT_OF_ZONE',
-              }),
-            );
-          return;
-        }
-      } else {
+      if (attendanceRequest.location == null) {
         request.response
           ..statusCode = HttpStatus.badRequest
-          ..write(
-            jsonEncode({
-              'status': 'error',
-              'message': 'Location is required',
-              'code': 'LOCATION_REQUIRED',
-            }),
-          );
+          ..write(jsonEncode(SessionResponseBuilder.error(
+            'Location is required',
+            code: 'LOCATION_REQUIRED',
+          )));
+        return;
+      }
+
+      final locationValid = _locationValidator?.validate(attendanceRequest.location!) ?? false;
+
+      if (!locationValid) {
+        request.response
+          ..statusCode = HttpStatus.forbidden
+          ..write(jsonEncode(SessionResponseBuilder.error(
+            'Out of zone',
+            code: 'OUT_OF_ZONE',
+          )));
         return;
       }
 
       _attendanceController.add(attendanceRequest);
 
-      // Response
       request.response
         ..statusCode = HttpStatus.ok
-        ..write(
-          jsonEncode({
-            'status': 'success',
-            'message': 'Attendance recorded successfully',
-            'time': DateTime.now().toIso8601String(),
-            'sessionId': _currentSessionId.toString(), 
-          }),
-        );
+        ..write(jsonEncode(SessionResponseBuilder.success(_currentSessionId)));
     } catch (e) {
       request.response
         ..statusCode = HttpStatus.badRequest
-        ..write(
-          jsonEncode({'status': 'error', 'message': 'Invalid request format'}),
-        );
+        ..write(jsonEncode(SessionResponseBuilder.error('Invalid request format')));
     }
-  }
-
-  bool _validateUserLocation(String locationString) {
-    try {
-      if (_sessionLatitude == null ||
-          _sessionLongitude == null ||
-          _allowedRadius == null) {
-        return false;
-      }
-
-      final coords = locationString.split(',');
-      if (coords.length != 2) {
-        return false;
-      }
-
-      final userLat = double.parse(coords[0].trim());
-      final userLng = double.parse(coords[1].trim());
-
-      final distance = _calculateDistance(
-        userLat,
-        userLng,
-        _sessionLatitude!,
-        _sessionLongitude!,
-      );
-
-      return distance <= _allowedRadius!;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  double _calculateDistance(
-    double lat1,
-    double lon1,
-    double lat2,
-    double lon2,
-  ) {
-    const earthRadius = 6371000;
-
-    final dLat = _toRadians(lat2 - lat1);
-    final dLon = _toRadians(lon2 - lon1);
-
-    final a =
-        (sin(dLat / 2) * sin(dLat / 2)) +
-        cos(_toRadians(lat1)) *
-            cos(_toRadians(lat2)) *
-            (sin(dLon / 2) * sin(dLon / 2));
-
-    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
-
-    return earthRadius * c;
-  }
-
-  double _toRadians(double degrees) {
-    return degrees * pi / 180;
   }
 
   void _handleHealthCheck(HttpRequest request) {
     request.response
       ..statusCode = HttpStatus.ok
-      ..write(
-        jsonEncode({
-          'status': 'active',
-          'sessionId': _currentSessionId.toString(), 
-          'timestamp': DateTime.now().toIso8601String(),
-          'name': _currentSession?.name ?? 'Active Session',
-          'location': _currentSession?.location ?? 'Unknown',
-        }),
-      );
-  }
-void _handleSessionInfo(HttpRequest request) {
-  if (_currentSession == null) {
-    request.response
-      ..statusCode = HttpStatus.notFound
-      ..write(jsonEncode({'error': 'No active session'}));
-    return;
+      ..write(jsonEncode(SessionResponseBuilder.health(
+        sessionId: _currentSessionId,
+        session: _currentSession,
+      )));
   }
 
-  final sessionData = {
-    'sessionId': _currentSession!.id.toString(),
-    'name': _currentSession!.name,
-    'location': _currentSession!.location,
-    'connectionMethod': _currentSession!.connectionMethod,
-    'startTime': _currentSession!.startTime.toIso8601String(),
-    'durationMinutes': _currentSession!.durationMinutes,
-    'status': _statusToString(_currentSession!.status),
-    'attendeeCount': _currentSession!.attendanceList.length,
-    'connectedClients': _currentSession!.connectedClients,
-    'timestamp': DateTime.now().toIso8601String(),
-    'organizationId': _currentSession!.organizationId, 
-  };
-  request.response
-    ..statusCode = HttpStatus.ok
-    ..write(jsonEncode(sessionData));
-}
-
-  String _statusToString(SessionStatus status) {
-    switch (status) {
-      case SessionStatus.active:
-        return 'active';
-      case SessionStatus.inactive:
-        return 'inactive';
-      case SessionStatus.ended:
-        return 'ended';
+  void _handleSessionInfo(HttpRequest request) {
+    if (_currentSession == null) {
+      request.response
+        ..statusCode = HttpStatus.notFound
+        ..write(jsonEncode({'error': 'No active session'}));
+      return;
     }
+
+    request.response
+      ..statusCode = HttpStatus.ok
+      ..write(jsonEncode(SessionResponseBuilder.sessionInfo(_currentSession!)));
   }
 
-  // Register mDNS Service
   Future<void> _registerMdnsService() async {
     try {
-      final discovery = await startDiscovery('_http._tcp');
+      await startDiscovery('_http._tcp');
 
       const service = Service(
         name: 'attendance',
@@ -290,60 +186,6 @@ void _handleSessionInfo(HttpRequest request) {
       _mdnsRegistration = await register(service);
     } catch (e) {
       // mDNS registration failed
-    }
-  }
-
-  Future<String> _getLocalIpAddress() async {
-    try {
-      final interfaces = await NetworkInterface.list(
-        type: InternetAddressType.IPv4,
-      );
-
-      for (var interface in interfaces) {
-        for (var addr in interface.addresses) {
-          if (!addr.isLoopback && _isPrivateIP(addr.address)) {
-            return addr.address;
-          }
-        }
-      }
-
-      for (var interface in interfaces) {
-        for (var addr in interface.addresses) {
-          if (!addr.isLoopback) {
-            return addr.address;
-          }
-        }
-      }
-
-      return '0.0.0.0';
-    } catch (e) {
-      return '0.0.0.0';
-    }
-  }
-
-  bool _isPrivateIP(String ip) {
-    final parts = ip.split('.');
-    if (parts.length != 4) return false;
-
-    try {
-      final first = int.parse(parts[0]);
-      final second = int.parse(parts[1]);
-
-      if (first == 10) {
-        return true;
-      }
-
-      if (first == 172 && second >= 16 && second <= 31) {
-        return true;
-      }
-
-      if (first == 192 && second == 168) {
-        return true;
-      }
-
-      return false;
-    } catch (e) {
-      return false;
     }
   }
 
@@ -358,15 +200,12 @@ void _handleSessionInfo(HttpRequest request) {
       _server = null;
       _currentSessionId = null;
       _currentSession = null;
-      _sessionLatitude = null;
-      _sessionLongitude = null;
-      _allowedRadius = null;
+      _locationValidator = null;
     } catch (e) {
       // Error stopping server
     }
   }
 
-  // Cleanup
   void dispose() {
     _attendanceController.close();
     stopServer();
