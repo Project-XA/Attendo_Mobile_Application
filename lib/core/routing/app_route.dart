@@ -16,7 +16,6 @@ import 'package:mobile_app/features/navigation_screen/presentation/main_navigati
 import 'package:mobile_app/features/auth/register/presentation/register_screen.dart';
 import 'package:mobile_app/features/onboarding/start_page.dart';
 
-
 class AppRoute {
   Route generateRoute(RouteSettings settings) {
     Widget page;
@@ -25,8 +24,6 @@ class AppRoute {
       case Routes.startPage:
         page = const StartPage();
         break;
-
-    
 
       case Routes.registerScreen:
         initRegister();
@@ -40,7 +37,9 @@ class AppRoute {
 
       case Routes.verifyResetPasswordOtpScreen:
         initForgotPassword();
-        final email = (settings.arguments is String) ? settings.arguments as String : '';
+        final email = (settings.arguments is String)
+            ? settings.arguments as String
+            : '';
         page = VerifyResetPasswordOtpScreen(email: email);
         break;
 
@@ -49,7 +48,6 @@ class AppRoute {
         page = const MainNavigationScreen();
         break;
 
-    
       case Routes.homePage:
         initUserAttendace();
         page = const UserDashboardScreen();
