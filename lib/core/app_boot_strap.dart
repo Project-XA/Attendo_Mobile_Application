@@ -30,20 +30,13 @@ class _AppBootstrapState extends State<AppBootstrap> {
 
     final onboardingService = getIt<OnboardingService>();
 
-    final hasCompletedOCR = await onboardingService.hasCompletedOCR();
     final hasRegistered = await onboardingService.hasCompletedOnboarding();
     final isLoggedIn = await onboardingService.isLoggedIn();
-    final hasCompletedVerification = await onboardingService
-        .hasCompletedVerification();
-
+  
     String initialRoute;
     String? routeArgument;
 
-    if (!hasCompletedOCR) {
-      initialRoute = Routes.startPage;
-    } else if (!hasCompletedVerification) {
-      initialRoute = Routes.verficationScreen;
-    } else if (!hasRegistered) {
+    if (!hasRegistered) {
       initialRoute = Routes.registerScreen;
     } else if (!isLoggedIn) {
       initialRoute = Routes.registerScreen;
