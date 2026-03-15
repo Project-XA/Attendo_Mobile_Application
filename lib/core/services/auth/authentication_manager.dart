@@ -3,7 +3,6 @@ import 'package:mobile_app/core/services/auth/authentication_service.dart';
 import 'package:mobile_app/core/services/auth/strategies/auth_strategy.dart';
 import 'package:mobile_app/core/services/auth/strategies/face_id_strategy.dart';
 import 'package:mobile_app/core/services/auth/strategies/fingerprint_strategy.dart';
-import 'package:mobile_app/core/services/auth/strategies/pin_strategy.dart';
 
 /*
 this class is responsible for managing the authentication process. It holds a list of authentication strategies and tries each one in order until one succeeds or all fail.
@@ -19,7 +18,7 @@ class AuthenticationManager {
     _strategies = [
       FaceIdStrategy(biometricService),
       FingerprintStrategy(biometricService),
-      PinStrategy(pinService),
+     // PinStrategy(pinService),
     ];
   }
   Future<bool> authenticate(BuildContext context) async {
