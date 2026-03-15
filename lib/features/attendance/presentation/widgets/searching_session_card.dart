@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
@@ -118,7 +119,7 @@ class _SearchingSessionsCardState extends State<SearchingSessionsCard> {
 
   Widget _buildTitle() {
     return Text(
-      'Searching for Sessions',
+      'searching_for_sessions'.tr(),
       style: AppTextStyle.font14MediamGrey.copyWith(
         fontSize: 20.sp,
         fontWeight: FontWeightHelper.bold,
@@ -129,7 +130,7 @@ class _SearchingSessionsCardState extends State<SearchingSessionsCard> {
 
   Widget _buildDescription() {
     return Text(
-      'Scanning nearby locations for\nactive attendance sessions',
+      'scanning_nearby'.tr(),
       textAlign: TextAlign.center,
       style: AppTextStyle.font14MediamGrey.copyWith(
         fontSize: 14.sp,
@@ -141,7 +142,7 @@ class _SearchingSessionsCardState extends State<SearchingSessionsCard> {
 
   Widget _buildTimeoutText() {
     return Text(
-      'Timeout in ${_secondsRemaining}s',
+      'timeout_in'.tr(args: ['$_secondsRemaining']),
       style: AppTextStyle.font14MediamGrey.copyWith(
         fontSize: 12.sp,
         color: Colors.grey.shade500,

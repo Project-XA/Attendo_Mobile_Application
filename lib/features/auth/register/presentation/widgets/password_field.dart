@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
@@ -7,10 +8,7 @@ import 'package:mobile_app/features/auth/register/presentation/widgets/field_lab
 class PasswordField extends StatefulWidget {
   final TextEditingController controller;
 
-  const PasswordField({
-    super.key,
-    required this.controller,
-  });
+  const PasswordField({super.key, required this.controller});
 
   @override
   State<PasswordField> createState() => _PasswordFieldState();
@@ -24,14 +22,11 @@ class _PasswordFieldState extends State<PasswordField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const FieldLabel(
-          label: 'Password',
-          icon: Icons.lock_rounded,
-        ),
+        FieldLabel(label: 'password_label'.tr(), icon: Icons.lock_rounded),
         verticalSpace(8.h),
         CustomTextField(
           controller: widget.controller,
-          hintText: 'Enter your password',
+          hintText: 'password_hint'.tr(),
           obscureText: !_isPasswordVisible,
           suffixIcon: IconButton(
             onPressed: () {
@@ -49,7 +44,7 @@ class _PasswordFieldState extends State<PasswordField> {
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Password is required';
+              return 'password_required'.tr();
             }
             return null;
           },

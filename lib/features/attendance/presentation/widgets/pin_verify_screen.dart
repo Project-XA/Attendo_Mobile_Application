@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
@@ -46,10 +47,7 @@ class _PinVerifyScreenState extends State<PinVerifyScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
-            Icons.close,
-            color: AppColors.mainTextColorBlack,
-          ),
+          icon: const Icon(Icons.close, color: AppColors.mainTextColorBlack),
           onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
         ),
       ),
@@ -58,7 +56,7 @@ class _PinVerifyScreenState extends State<PinVerifyScreen> {
           children: [
             const Spacer(),
             Text(
-              'Enter your PIN',
+              'enter_pin'.tr(),
               style: TextStyle(
                 color: AppColors.mainTextColorBlack,
                 fontSize: 24.sp,
@@ -67,7 +65,7 @@ class _PinVerifyScreenState extends State<PinVerifyScreen> {
             ),
             verticalSpace(8),
             Text(
-              'Enter your 4-digit PIN to check in',
+              'enter_pin_subtitle'.tr(),
               style: TextStyle(
                 color: AppColors.mainTextColorBlack.withOpacity(0.7),
                 fontSize: 14.sp,

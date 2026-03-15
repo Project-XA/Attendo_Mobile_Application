@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -70,7 +71,7 @@ class NoSessionsCard extends StatelessWidget {
 
   Widget _buildTitle() {
     return Text(
-      isIdle ? 'Ready to Search' : 'No Sessions Found',
+      isIdle ? 'ready_to_search'.tr() : 'no_sessions_found'.tr(),
       style: AppTextStyle.font14MediamGrey.copyWith(
         fontSize: 22.sp,
         fontWeight: FontWeightHelper.bold,
@@ -84,8 +85,8 @@ class NoSessionsCard extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Text(
         isIdle
-            ? 'Start searching to discover active\nattendance sessions nearby'
-            : 'No active sessions were found in your area.\nSessions may have ended or moved.',
+            ? 'start_search_description'.tr()
+            : 'no_sessions_description'.tr(),
         textAlign: TextAlign.center,
         style: AppTextStyle.font14MediamGrey.copyWith(
           fontSize: 14.sp,
@@ -119,7 +120,7 @@ class NoSessionsCard extends StatelessWidget {
           ),
           horizontalSpace(10.w),
           Text(
-            isIdle ? 'Start Search' : 'Search Again',
+            isIdle ? 'start_search'.tr() : 'search_again'.tr(),
             style: AppTextStyle.font14MediamGrey.copyWith(
               color: AppColors.backGroundColorWhite,
               fontSize: 15.sp,
@@ -145,7 +146,7 @@ class NoSessionsCard extends StatelessWidget {
           Icon(Icons.info_outline, size: 16.sp, color: Colors.orange.shade700),
           horizontalSpace(8.w),
           Text(
-            'Make sure you\'re close to the venue',
+            'close_to_venue'.tr(),
             style: AppTextStyle.font14MediamGrey.copyWith(
               fontSize: 12.sp,
               color: Colors.orange.shade700,

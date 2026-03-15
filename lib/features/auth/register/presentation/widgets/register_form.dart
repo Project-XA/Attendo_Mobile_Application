@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -39,14 +40,6 @@ class _RegisterFormState extends State<RegisterForm> {
       try {
         final localDataSource = getIt<UserLocalDataSource>();
         final localUserData = await localDataSource.getCurrentUser();
-       //  final user = UserModel(
-        //    nationalId: '123456667',
-        //   firstNameAr: 'عادل',
-        //  lastNameAr: 'محمد',
-        //  address: 'أسيوط - مصر',
-        //  birthDate: '1999-05-10',
-        //     profileImage: null,
-        //     );
 
         if (!mounted) return;
 
@@ -61,7 +54,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to get user data: ${e.toString()}'),
+            content: Text('failed_to_get_user_data'.tr(args: [e.toString()])),
             backgroundColor: Colors.red,
           ),
         );
@@ -84,7 +77,9 @@ class _RegisterFormState extends State<RegisterForm> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Registered successfully as ${state.user.organizations?.first.role}',
+          'registered_successfully'.tr(
+            args: [state.user.organizations?.first.role ?? ''],
+          ),
         ),
         backgroundColor: Colors.green,
         duration: const Duration(seconds: 2),

@@ -1,4 +1,4 @@
-// widgets/register_submit_button.dart
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
@@ -10,19 +10,20 @@ import 'package:mobile_app/core/widgets/custom_app_button.dart';
 class RegisterSubmitButton extends StatelessWidget {
   final bool isLoading;
   final VoidCallback onPressed;
-  final String text;
+  final String? text;
   final IconData icon;
 
   const RegisterSubmitButton({
     super.key,
     required this.isLoading,
     required this.onPressed,
-    this.text = 'Add Account',
+    this.text,
     this.icon = Icons.arrow_forward_rounded,
   });
 
   @override
   Widget build(BuildContext context) {
+    final label = text ?? 'add_account'.tr();
     return CustomAppButton(
       onPressed: isLoading ? null : onPressed,
       backgroundColor: AppColors.mainTextColorBlack,
@@ -42,7 +43,7 @@ class RegisterSubmitButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  text,
+                  label,
                   style: AppTextStyle.font14MediamGrey.copyWith(
                     color: AppColors.backGroundColorWhite,
                     fontWeight: FontWeightHelper.semiBold,
@@ -51,11 +52,7 @@ class RegisterSubmitButton extends StatelessWidget {
                   ),
                 ),
                 horizontalSpace(8.w),
-                Icon(
-                  icon,
-                  color: AppColors.backGroundColorWhite,
-                  size: 20.sp,
-                ),
+                Icon(icon, color: AppColors.backGroundColorWhite, size: 20.sp),
               ],
             ),
     );

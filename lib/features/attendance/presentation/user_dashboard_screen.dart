@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -89,10 +90,10 @@ class _UserDashboardState extends State<UserDashboardScreen> {
                       vertical: 8.h,
                     ),
                     child: InfoCard(
-                      title: 'Welcome Back!',
+                      title: 'welcome_back'.tr(),
                       subtitle:
                           user.organizations?.first.organizationName ?? '',
-                      description: 'Check attendance and active sessions',
+                      description: 'check_attendance_subtitle'.tr(),
                     ),
                   ),
                   verticalSpace(20.h),
@@ -124,7 +125,7 @@ class _UserDashboardState extends State<UserDashboardScreen> {
           verticalSpace(16.h),
           ElevatedButton(
             onPressed: () => context.read<UserCubit>().loadStats(),
-            child: const Text('Retry'),
+            child: Text('retry'.tr()),
           ),
         ],
       ),
@@ -190,7 +191,7 @@ class _UserDashboardState extends State<UserDashboardScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'My Attendance',
+              'my_attendance'.tr(),
               style: AppTextStyle.font14MediamGrey.copyWith(
                 fontSize: 18.sp,
                 fontWeight: FontWeightHelper.bold,

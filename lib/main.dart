@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mobile_app/core/current_user/data/Auth_services/auth_state_model.dart';
@@ -10,6 +11,7 @@ import 'package:mobile_app/features/session_mangement/data/models/local_models/h
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
 
   await Hive.initFlutter();
   Hive.registerAdapter(AuthStateModelAdapter());
@@ -19,5 +21,12 @@ Future<void> main() async {
   Hive.registerAdapter(CacheHallsDataAdapter());
   Hive.registerAdapter(AttendanceStatsModelAdapter());
 
-  runApp(const AppBootstrap());
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('ar')],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en'),
+      child: const AppBootstrap(),
+    ),
+  );
 }

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
@@ -44,7 +45,7 @@ class AttendanceStatsCard extends StatelessWidget {
           Icon(Icons.error_outline, color: Colors.red, size: 40.sp),
           verticalSpace(8.h),
           Text(
-            'Failed to load stats',
+            'failed_to_load_stats'.tr(),
             style: AppTextStyle.font14MediamGrey.copyWith(
               fontSize: 14.sp,
               fontWeight: FontWeightHelper.medium,
@@ -57,7 +58,7 @@ class AttendanceStatsCard extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh, size: 18),
-              label: const Text('Retry'),
+              label: Text('retry'.tr()),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 foregroundColor: AppColors.backGroundColorWhite,
@@ -104,7 +105,7 @@ class AttendanceStatsCard extends StatelessWidget {
         children: [
           Expanded(
             child: _buildStatItem(
-              'Total',
+              'total'.tr(),
               '${stats!.totalSessions}',
               Icons.event,
               Colors.blue,
@@ -113,7 +114,7 @@ class AttendanceStatsCard extends StatelessWidget {
           Container(width: 1, height: 50.h, color: Colors.grey.shade200),
           Expanded(
             child: _buildStatItem(
-              'Attended',
+              'attended'.tr(),
               '${stats!.attendedSessions}',
               Icons.check_circle,
               Colors.green,
@@ -122,7 +123,7 @@ class AttendanceStatsCard extends StatelessWidget {
           Container(width: 1, height: 50.h, color: Colors.grey.shade200),
           Expanded(
             child: _buildStatItem(
-              'Rate',
+              'rate'.tr(),
               '${stats!.attendancePercentage.toStringAsFixed(0)}%',
               Icons.percent,
               Colors.orange,

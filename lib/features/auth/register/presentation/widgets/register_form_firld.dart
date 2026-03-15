@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/routing/routes.dart';
@@ -26,7 +27,7 @@ class RegisterFormFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionTitle(title: 'Account Information'),
+        SectionTitle(title: 'account_information'.tr()),
         verticalSpace(15.h),
         _buildOrgIdField(),
         verticalSpace(15.h),
@@ -43,17 +44,14 @@ class RegisterFormFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const FieldLabel(
-          label: 'Organization ID',
-          icon: Icons.business_rounded,
-        ),
+        FieldLabel(label: 'org_id_label'.tr(), icon: Icons.business_rounded),
         verticalSpace(8.h),
         CustomTextField(
           controller: orgIdController,
-          hintText: 'Enter your organization ID',
+          hintText: 'org_id_hint'.tr(),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Organization ID is required';
+              return 'org_id_required'.tr();
             }
             return null;
           },
@@ -66,21 +64,18 @@ class RegisterFormFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const FieldLabel(
-          label: 'Email Address',
-          icon: Icons.email_rounded,
-        ),
+        FieldLabel(label: 'email_label'.tr(), icon: Icons.email_rounded),
         verticalSpace(8.h),
         CustomTextField(
           controller: emailController,
           keyboardType: TextInputType.emailAddress,
-          hintText: 'example@email.com',
+          hintText: 'email_hint'.tr(),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Email is required';
+              return 'email_required'.tr();
             }
             if (!_isEmailValid(value)) {
-              return 'Please enter a valid email';
+              return 'email_invalid'.tr();
             }
             return null;
           },
@@ -97,7 +92,7 @@ class RegisterFormFields extends StatelessWidget {
           context.pushNamed(Routes.forgotPasswordScreen);
         },
         child: Text(
-          'Forgot Password?',
+          'forgot_password'.tr(),
           style: TextStyle(
             fontSize: 13.sp,
             fontWeight: FontWeight.w500,

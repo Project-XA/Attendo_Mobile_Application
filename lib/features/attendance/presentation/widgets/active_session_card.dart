@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -73,7 +74,7 @@ class ActiveSessionCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Active Session Nearby',
+                'active_session_nearby'.tr(),
                 style: AppTextStyle.font14MediamGrey.copyWith(
                   fontSize: 18.sp,
                   fontWeight: FontWeightHelper.bold,
@@ -86,7 +87,7 @@ class ActiveSessionCard extends StatelessWidget {
                   Icon(Icons.circle, color: Colors.green, size: 8.sp),
                   horizontalSpace(6.w),
                   Text(
-                    'Live Now',
+                    'live_now'.tr(),
                     style: AppTextStyle.font14MediamGrey.copyWith(
                       fontSize: 12.sp,
                       color: AppColors.backGroundColorWhite.withOpacity(0.8),
@@ -110,20 +111,24 @@ class ActiveSessionCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildInfoRow(Icons.event_note, 'Session:', session.name),
+          _buildInfoRow(Icons.event_note, 'session_label'.tr(), session.name),
           verticalSpace(8.h),
-          _buildInfoRow(Icons.location_on, 'Location:', session.location),
+          _buildInfoRow(
+            Icons.location_on,
+            'location_label'.tr(),
+            session.location,
+          ),
           verticalSpace(8.h),
           _buildInfoRow(
             Icons.access_time,
-            'Time:',
+            'time_label'.tr(),
             '${DateFormat('hh:mm a').format(session.startTime)} - ${DateFormat('hh:mm a').format(session.endTime)}',
           ),
           verticalSpace(8.h),
           _buildInfoRow(
             Icons.people,
-            'Attendees:',
-            '${session.attendeeCount} Students',
+            'attendees_label'.tr(),
+            'students'.tr(args: ['${session.attendeeCount}']),
           ),
         ],
       ),
@@ -181,7 +186,7 @@ class ActiveSessionCard extends StatelessWidget {
           ),
           horizontalSpace(8.w),
           Text(
-            'Check In Now',
+            'check_in_now'.tr(),
             style: AppTextStyle.font14MediamGrey.copyWith(
               color: AppColors.mainTextColorBlack,
               fontWeight: FontWeightHelper.bold,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -33,7 +34,7 @@ class CheckInView extends StatelessWidget {
       const CircularProgressIndicator(),
       verticalSpace(24.h),
       Text(
-        'Checking In...',
+        'checking_in'.tr(),
         style: AppTextStyle.font14MediamGrey.copyWith(
           fontSize: 20.sp,
           fontWeight: FontWeightHelper.semiBold,
@@ -41,7 +42,7 @@ class CheckInView extends StatelessWidget {
       ),
       verticalSpace(12.h),
       Text(
-        'Please wait',
+        'please_wait'.tr(),
         style: AppTextStyle.font14MediamGrey.copyWith(
           fontSize: 14.sp,
           color: Colors.grey.shade600,
@@ -55,7 +56,7 @@ class CheckInView extends StatelessWidget {
       Icon(Icons.check_circle, color: Colors.green, size: 100.sp),
       verticalSpace(24.h),
       Text(
-        'Check-In Successful!',
+        'check_in_successful'.tr(),
         style: AppTextStyle.font14MediamGrey.copyWith(
           fontSize: 24.sp,
           fontWeight: FontWeightHelper.bold,
@@ -74,21 +75,21 @@ class CheckInView extends StatelessWidget {
           children: [
             _buildInfoRow(
               Icons.event,
-              'Session',
+              'session_info'.tr(),
               state.session.name,
               Colors.green.shade700,
             ),
             verticalSpace(8.h),
             _buildInfoRow(
               Icons.location_on,
-              'Location',
+              'location_info'.tr(),
               state.session.location,
               Colors.green.shade700,
             ),
             verticalSpace(8.h),
             _buildInfoRow(
               Icons.access_time,
-              'Time',
+              'time_info'.tr(),
               DateFormat('hh:mm a').format(state.checkInTime!),
               Colors.green.shade700,
             ),
@@ -119,7 +120,7 @@ class CheckInView extends StatelessWidget {
           border: Border.all(color: _getErrorColor().withOpacity(0.3)),
         ),
         child: Text(
-          state.errorMessage ?? 'Please try again',
+          state.errorMessage ?? 'please_try_again'.tr(),
           style: AppTextStyle.font14MediamGrey.copyWith(
             fontSize: 14.sp,
             color: _getErrorColor(),
@@ -150,11 +151,11 @@ class CheckInView extends StatelessWidget {
 
   String _getErrorTitle() {
     final message = state.errorMessage?.toLowerCase() ?? '';
-    if (message.contains('already')) return 'Already Checked In';
+    if (message.contains('already')) return 'already_checked_in'.tr();
     if (message.contains('zone') || message.contains('outside')) {
-      return 'Out of Zone';
+      return 'out_of_zone'.tr();
     }
-    return 'Check-In Failed';
+    return 'check_in_failed'.tr();
   }
 
   Widget _buildInfoRow(

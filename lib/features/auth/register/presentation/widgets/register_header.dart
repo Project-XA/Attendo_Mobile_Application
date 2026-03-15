@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
@@ -28,10 +29,9 @@ class RegisterHeader extends StatelessWidget {
               color: AppColors.backGroundColorWhite,
             ),
           ),
-
           verticalSpace(15.h),
           Text(
-            'Create Account',
+            'register_header_title'.tr(),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 32.sp,
@@ -40,11 +40,9 @@ class RegisterHeader extends StatelessWidget {
               letterSpacing: -0.5,
             ),
           ),
-
           verticalSpace(10.h),
-
           Text(
-            'Sign up to get started with us',
+            'register_header_subtitle'.tr(),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 15.sp,

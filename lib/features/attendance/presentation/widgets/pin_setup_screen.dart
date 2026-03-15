@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
@@ -38,18 +39,16 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
 
   void _verifyPins() {
     if (_pin == _confirmPin) {
-      // ⭐ استخدم pop مع الـ dialog
       Navigator.of(context, rootNavigator: true).pop(_pin);
     } else {
-      // Reset and show error
       setState(() {
         _pin = '';
         _confirmPin = '';
         _isConfirming = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('PINs do not match. Please try again.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('pins_do_not_match'.tr())));
     }
   }
 
@@ -79,11 +78,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
-            Icons.close,
-            color: AppColors.mainTextColorBlack,
-          ),
-          // ⭐ استخدم rootNavigator
+          icon: const Icon(Icons.close, color: AppColors.mainTextColorBlack),
           onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
         ),
       ),
@@ -92,7 +87,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
           children: [
             const Spacer(),
             Text(
-              _isConfirming ? 'Confirm your PIN' : 'Create your PIN',
+              _isConfirming ? 'confirm_pin'.tr() : 'create_pin'.tr(),
               style: TextStyle(
                 color: AppColors.mainTextColorBlack,
                 fontSize: 20.sp,
