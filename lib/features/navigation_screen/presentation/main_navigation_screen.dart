@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,24 +15,37 @@ import 'package:mobile_app/features/session_mangement/presentation/admin_dashboa
 import 'package:mobile_app/features/profile/presentation/profile_screen.dart';
 import 'package:mobile_app/features/attendance/presentation/user_dashboard_screen.dart';
 
-class MainNavigationScreen extends StatelessWidget {
+class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
+
+  @override
+  State<MainNavigationScreen> createState() => _MainNavigationScreenState();
+}
+
+class _MainNavigationScreenState extends State<MainNavigationScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      context.read<CurrentUserCubit>().loadUser();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: getIt<CurrentUserCubit>()..loadUser(),
+      value: getIt<CurrentUserCubit>(),
       child: BlocBuilder<CurrentUserCubit, CurrentUserState>(
         builder: (context, state) {
-          // Loading State
-          if (state is CurrentUserLoading || state is CurrentUserInitial) {
+          // Loading
+          if (state.isLoading) {
             return const Scaffold(
               body: Center(child: CircularProgressIndicator()),
             );
           }
 
-          // Error State
-          if (state is CurrentUserError) {
+          // Error
+          if (state.error != null) {
             return Scaffold(
               body: Center(
                 child: Column(
@@ -47,7 +62,7 @@ class MainNavigationScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     verticalSpace(8),
-                    Text(state.message),
+                    Text(state.error!),
                     verticalSpace(16),
                     ElevatedButton(
                       onPressed: () =>
@@ -60,31 +75,35 @@ class MainNavigationScreen extends StatelessWidget {
             );
           }
 
-          final cubit = context.read<CurrentUserCubit>();
-          final role = cubit.role;
+          final user = state.user;
+
+          if (user == null) {
+            return const Scaffold(body: Center(child: Text("No user found")));
+          }
+
+          final role = user.organizations?.isNotEmpty == true
+              ? user.organizations!.first.role
+              : null;
+
           if (role == null) {
-            return Scaffold(
+            return const Scaffold(
               body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.warning_amber_rounded,
-                      size: 60,
-                      color: Colors.orange,
-                    ),
-                    verticalSpace(16),
-                  ],
+                child: Icon(
+                  Icons.warning_amber_rounded,
+                  size: 60,
+                  color: Colors.orange,
                 ),
               ),
             );
           }
 
+          // DI init (once)
           if (role.toLowerCase() == 'admin') {
             initSessionManagement();
           } else {
             initUserAttendace();
           }
+
           return _MainNavigationContent(isAdmin: role.toLowerCase() == 'admin');
         },
       ),
@@ -106,7 +125,7 @@ class _MainNavigationContentState extends State<_MainNavigationContent> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> screens = <Widget>[
+    final screens = <Widget>[
       widget.isAdmin ? const AdminDashboard() : const UserDashboardScreen(),
       const ProfileScreen(),
     ];
@@ -170,3 +189,5 @@ class _MainNavigationContentState extends State<_MainNavigationContent> {
     );
   }
 }
+
+

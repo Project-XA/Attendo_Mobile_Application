@@ -19,24 +19,14 @@ class ProfileScreenBody extends StatelessWidget {
       backgroundColor: AppColors.backGroundColorWhite,
       body: BlocListener<CurrentUserCubit, CurrentUserState>(
         listener: (context, state) {
-          if (state is CurrentUserError) {
-            showToast(message: state.message, type: ToastType.error);
-          } else if (state is CurrentUserImageUpdated) {
-            showToast(
-              message: 'Profile image updated successfully',
-              type: ToastType.success,
-            );
-          } else if (state is CurrentUserUpdated) {
-            Navigator.pop(context);
-            showToast(
-              message: 'Profile updated successfully',
-              type: ToastType.success,
-            );
+          if (state.error != null) {
+            showToast(message: state.error!, type: ToastType.error);
           }
         },
         child: BlocBuilder<CurrentUserCubit, CurrentUserState>(
           builder: (context, state) {
-            if (state is CurrentUserLoading) {
+            // Loading
+            if (state.isLoading) {
               return const Center(
                 child: CircularProgressIndicator(
                   color: AppColors.mainTextColorBlack,
@@ -44,31 +34,29 @@ class ProfileScreenBody extends StatelessWidget {
               );
             }
 
-            if (state is CurrentUserLoaded ||
-                state is CurrentUserUpdating ||
-                state is CurrentUserUpdatingImage ||
-                state is CurrentUserImageUpdated ||
-                state is CurrentUserUpdated) {
-              return const Column(
-                children: [
-                  TopSection(),
-                  Expanded(child: ProfileBody()),
-                ],
+            final user = state.user;
+
+            if (user == null) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, size: 60.sp, color: Colors.grey),
+                    verticalSpace(20.h),
+                    Text(
+                      'No user data found',
+                      style: AppTextStyle.font14MediamGrey,
+                    ),
+                  ],
+                ),
               );
             }
 
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error_outline, size: 60.sp, color: Colors.grey),
-                  verticalSpace(20.h),
-                  Text(
-                    'No user data found',
-                    style: AppTextStyle.font14MediamGrey,
-                  ),
-                ],
-              ),
+            return const Column(
+              children: [
+                TopSection(),
+                Expanded(child: ProfileBody()),
+              ],
             );
           },
         ),
