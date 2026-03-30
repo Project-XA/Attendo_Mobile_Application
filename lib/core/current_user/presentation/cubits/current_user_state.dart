@@ -1,58 +1,43 @@
 import 'package:equatable/equatable.dart';
 import 'package:mobile_app/core/current_user/domain/entities/user.dart';
 
-sealed class CurrentUserState extends Equatable {
-  const CurrentUserState();
+class CurrentUserState extends Equatable {
+  final User? user;
+  final bool isLoading;
+  final bool isUpdating;
+  final bool isUpdatingImage;
+  final String? error;
+
+  const CurrentUserState({
+    this.user,
+    this.isLoading = false,
+    this.isUpdating = false,
+    this.isUpdatingImage = false,
+    this.error,
+  });
+
+  CurrentUserState copyWith({
+    User? user,
+    bool? isLoading,
+    bool? isUpdating,
+    bool? isUpdatingImage,
+    String? error,
+  }) {
+    return CurrentUserState(
+      user: user ?? this.user,
+      isLoading: isLoading ?? this.isLoading,
+      isUpdating: isUpdating ?? this.isUpdating,
+      isUpdatingImage: isUpdatingImage ?? this.isUpdatingImage,
+      error: error,
+    );
+  }
+
   @override
-  List<Object?> get props => [];
-}
-
-final class CurrentUserInitial extends CurrentUserState {
-  const CurrentUserInitial();
-}
-
-final class CurrentUserLoading extends CurrentUserState {
-  const CurrentUserLoading();
-}
-
-final class CurrentUserLoaded extends CurrentUserState {
-  final User user;
-  const CurrentUserLoaded(this.user);
-  @override
-  List<Object?> get props => [user];
-}
-
-final class CurrentUserUpdating extends CurrentUserState {
-  final User user;
-  const CurrentUserUpdating(this.user);
-  @override
-  List<Object?> get props => [user];
-}
-
-final class CurrentUserUpdatingImage extends CurrentUserState {
-  final User user;
-  const CurrentUserUpdatingImage(this.user);
-  @override
-  List<Object?> get props => [user];
-}
-
-final class CurrentUserUpdated extends CurrentUserState {
-  final User user;
-  const CurrentUserUpdated(this.user);
-  @override
-  List<Object?> get props => [user];
-}
-
-final class CurrentUserImageUpdated extends CurrentUserState {
-  final User user;
-  const CurrentUserImageUpdated(this.user);
-  @override
-  List<Object?> get props => [user];
-}
-
-final class CurrentUserError extends CurrentUserState {
-  final String message;
-  const CurrentUserError(this.message);
-  @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [
+        user,
+        isLoading,
+        isUpdating,
+        isUpdatingImage,
+        error,
+      ];
 }
