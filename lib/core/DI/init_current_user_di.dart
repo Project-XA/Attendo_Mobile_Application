@@ -2,7 +2,6 @@ import 'package:mobile_app/core/DI/get_it.dart';
 import 'package:mobile_app/core/current_user/data/repo_imp/current_user_repo_imp.dart';
 import 'package:mobile_app/core/current_user/domain/repo/current_user_repo.dart';
 import 'package:mobile_app/core/current_user/domain/use_case/get_current_user_use_case.dart';
-import 'package:mobile_app/core/current_user/domain/use_case/update_profile_image_use_case.dart';
 import 'package:mobile_app/core/current_user/domain/use_case/update_user_use_case.dart';
 import 'package:mobile_app/core/current_user/presentation/cubits/current_user_cubit.dart';
 import 'package:mobile_app/core/utils/register_lazy_if_not_registered.dart';
@@ -17,9 +16,7 @@ void initCurrentUserDi() {
   registerLazyIfNotRegistered<GetCurrentUserUseCase>(
     () => GetCurrentUserUseCase(getIt()),
   );
-  registerLazyIfNotRegistered<UpdateProfileImageUseCase>(
-    () => UpdateProfileImageUseCase(getIt()),
-  );
+
   registerLazyIfNotRegistered<UpdateUserUseCase>(
     () => UpdateUserUseCase(getIt()),
   );
@@ -27,7 +24,6 @@ void initCurrentUserDi() {
   registerLazyIfNotRegistered<CurrentUserCubit>(
     () => CurrentUserCubit(
       getCurrentUserUseCase: getIt(),
-      updateProfileImageUseCase: getIt(),
       updateUserUseCase: getIt(),
     ),
   );

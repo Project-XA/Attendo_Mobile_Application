@@ -52,7 +52,6 @@ class User {
     String? id,
     String? loginToken,
     String? username,
-    String? pinCode,
   }) {
     return User(
       id: id ?? this.id,

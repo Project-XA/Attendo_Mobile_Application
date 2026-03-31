@@ -17,15 +17,23 @@ class CurrentUserRepositoryImpl implements CurrentUserRepository {
     return userModel.toEntity();
   }
 
+ 
   @override
-  Future<void> updateProfileImage(File imageFile) async {
-    final imagePath = await _localDataSource.saveImageLocally(imageFile);
-    await _localDataSource.updateProfileImage(imagePath);
+Future<void> updateUser(User user, {File? imageFile}) async {
+  String? newImagePath;
+
+  if (imageFile != null) {
+    newImagePath = await _localDataSource.saveImageLocally(imageFile);
   }
 
-  @override
-  Future<void> updateUser(User user) async {
-    final userModel = UserModel.fromEntity(user);
-    await _localDataSource.updateUser(userModel);
+  final userModel = UserModel.fromEntity(
+    newImagePath != null ? user.copyWith(profileImage: newImagePath) : user,
+  );
+
+  await _localDataSource.updateUser(userModel);
+
+  if (newImagePath != null && user.profileImage != null) {
+    await _localDataSource.deleteOldProfileImage(user.profileImage!);
   }
+}
 }

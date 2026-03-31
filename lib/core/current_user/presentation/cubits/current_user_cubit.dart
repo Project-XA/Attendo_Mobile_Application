@@ -3,24 +3,19 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_app/core/current_user/domain/entities/user.dart';
 import 'package:mobile_app/core/current_user/domain/use_case/get_current_user_use_case.dart';
-import 'package:mobile_app/core/current_user/domain/use_case/update_profile_image_use_case.dart';
 import 'package:mobile_app/core/current_user/domain/use_case/update_user_use_case.dart';
 import 'package:mobile_app/core/current_user/presentation/cubits/current_user_state.dart';
 
 class CurrentUserCubit extends Cubit<CurrentUserState> {
   final GetCurrentUserUseCase _getCurrentUserUseCase;
-  final UpdateProfileImageUseCase _updateProfileImageUseCase;
   final UpdateUserUseCase _updateUserUseCase;
 
   CurrentUserCubit({
     required GetCurrentUserUseCase getCurrentUserUseCase,
-    required UpdateProfileImageUseCase updateProfileImageUseCase,
     required UpdateUserUseCase updateUserUseCase,
-  })  : _getCurrentUserUseCase = getCurrentUserUseCase,
-        _updateProfileImageUseCase = updateProfileImageUseCase,
-        _updateUserUseCase = updateUserUseCase,
-        super(const CurrentUserState());
-
+  }) : _getCurrentUserUseCase = getCurrentUserUseCase,
+       _updateUserUseCase = updateUserUseCase,
+       super(const CurrentUserState());
 
   Future<void> loadUser() async {
     emit(state.copyWith(isLoading: true, error: null));
@@ -28,43 +23,22 @@ class CurrentUserCubit extends Cubit<CurrentUserState> {
     try {
       final user = await _getCurrentUserUseCase();
 
-      emit(
-        state.copyWith(
-          user: user,
-          isLoading: false,
-          error: null,
-        ),
-      );
+      emit(state.copyWith(user: user, isLoading: false, error: null));
     } catch (e) {
-      emit(
-        state.copyWith(
-          isLoading: false,
-          error: 'Failed to load user: $e',
-        ),
-      );
+      emit(state.copyWith(isLoading: false, error: 'Failed to load user: $e'));
     }
   }
-
 
   Future<void> updateProfileImage(File imageFile) async {
     if (state.user == null) {
       emit(state.copyWith(error: 'No user loaded'));
       return;
     }
-
     emit(state.copyWith(isUpdatingImage: true, error: null));
-
     try {
-      await _updateProfileImageUseCase(imageFile);
-
+      await _updateUserUseCase(state.user!, imageFile: imageFile);
       final updatedUser = await _getCurrentUserUseCase();
-
-      emit(
-        state.copyWith(
-          user: updatedUser,
-          isUpdatingImage: false,
-        ),
-      );
+      emit(state.copyWith(user: updatedUser, isUpdatingImage: false));
     } catch (e) {
       emit(
         state.copyWith(
@@ -80,14 +54,13 @@ class CurrentUserCubit extends Cubit<CurrentUserState> {
     String? lastNameAr,
     String? address,
     String? email,
+    File? imageFile,
   }) async {
     if (state.user == null) {
       emit(state.copyWith(error: 'No user loaded'));
       return;
     }
-
     emit(state.copyWith(isUpdating: true, error: null));
-
     try {
       final updatedUser = state.user!.copyWith(
         firstNameAr: firstNameAr,
@@ -95,27 +68,15 @@ class CurrentUserCubit extends Cubit<CurrentUserState> {
         address: address,
         email: email,
       );
-
-      await _updateUserUseCase(updatedUser);
-
-      emit(
-        state.copyWith(
-          user: updatedUser,
-          isUpdating: false,
-        ),
-      );
+      await _updateUserUseCase(updatedUser, imageFile: imageFile);
+      final refreshedUser = await _getCurrentUserUseCase();
+      emit(state.copyWith(user: refreshedUser, isUpdating: false));
     } catch (e) {
       emit(
-        state.copyWith(
-          isUpdating: false,
-          error: 'Failed to update user: $e',
-        ),
+        state.copyWith(isUpdating: false, error: 'Failed to update user: $e'),
       );
     }
   }
-
- 
-
 
   User? get currentUser => state.user;
 

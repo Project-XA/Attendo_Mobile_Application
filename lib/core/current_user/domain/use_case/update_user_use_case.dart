@@ -1,10 +1,12 @@
+import 'dart:io';
 import 'package:mobile_app/core/current_user/domain/repo/current_user_repo.dart';
 import 'package:mobile_app/core/current_user/domain/entities/user.dart';
 
 class UpdateUserUseCase {
   final CurrentUserRepository _repository;
   UpdateUserUseCase(this._repository);
-  Future<void> call(User user) async {
-    return await _repository.updateUser(user);
+
+  Future<void> call(User user, {File? imageFile}) async {
+    return await _repository.updateUser(user, imageFile: imageFile);
   }
 }
