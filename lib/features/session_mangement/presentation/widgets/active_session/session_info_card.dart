@@ -121,7 +121,7 @@ class _SessionInfoCardState extends State<SessionInfoCard> {
                         : isWarning
                         ? 'Session Ending Soon'
                         : 'Session Active',
-                    style: AppTextStyle.font14MediamGrey.copyWith(
+                    style: AppTextStyle.font14GreyMedium.copyWith(
                       fontSize: 18.sp,
                       fontWeight: FontWeightHelper.bold,
                       color: isExpired
@@ -186,14 +186,7 @@ class _SessionInfoCardState extends State<SessionInfoCard> {
           children: [
             Icon(Icons.timer_off, color: Colors.red, size: 20.sp),
             horizontalSpace(8.w),
-            Text(
-              'Session Time Expired',
-              style: AppTextStyle.font14MediamGrey.copyWith(
-                fontSize: 14.sp,
-                fontWeight: FontWeightHelper.bold,
-                color: Colors.red.shade900,
-              ),
-            ),
+            Text('Session Time Expired', style: AppTextStyle.font14Red900Bold),
           ],
         ),
       );
@@ -224,7 +217,7 @@ class _SessionInfoCardState extends State<SessionInfoCard> {
           horizontalSpace(8.w),
           Text(
             timeString,
-            style: AppTextStyle.font14MediamGrey.copyWith(
+            style: AppTextStyle.font14GreyMedium.copyWith(
               fontSize: 18.sp,
               fontWeight: FontWeightHelper.bold,
               color: isWarning ? Colors.orange.shade900 : Colors.blue.shade900,
@@ -233,7 +226,7 @@ class _SessionInfoCardState extends State<SessionInfoCard> {
           horizontalSpace(6.w),
           Text(
             "remaining",
-            style: AppTextStyle.font14MediamGrey.copyWith(
+            style: AppTextStyle.font14GreyMedium.copyWith(
               fontSize: 13.sp,
               color: isWarning ? Colors.orange.shade700 : Colors.blue.shade700,
             ),
@@ -250,16 +243,10 @@ class _SessionInfoCardState extends State<SessionInfoCard> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              "Session Progress",
-              style: AppTextStyle.font14MediamGrey.copyWith(
-                fontSize: 12.sp,
-                color: Colors.grey.shade600,
-              ),
-            ),
+            Text("Session Progress", style: AppTextStyle.font12Grey600Medium),
             Text(
               "${(progress * 100).toInt()}%",
-              style: AppTextStyle.font14MediamGrey.copyWith(
+              style: AppTextStyle.font14GreyMedium.copyWith(
                 fontSize: 12.sp,
                 fontWeight: FontWeightHelper.bold,
                 color: isExpired

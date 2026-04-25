@@ -41,9 +41,12 @@ class SessionResponseBuilder {
 
   static String _statusToString(SessionStatus status) {
     switch (status) {
-      case SessionStatus.active: return 'active';
-      case SessionStatus.inactive: return 'inactive';
-      case SessionStatus.ended: return 'ended';
+      case SessionStatus.active:
+        return 'active';
+      case SessionStatus.inactive:
+        return 'inactive';
+      case SessionStatus.ended:
+        return 'ended';
     }
   }
 }

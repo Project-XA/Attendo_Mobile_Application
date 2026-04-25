@@ -12,7 +12,6 @@ import 'package:mobile_app/features/session_mangement/domain/use_cases/listen_at
 import 'package:mobile_app/features/session_mangement/domain/use_cases/start_session_server_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/delete_current_session_use_case.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_state.dart';
-import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
 
 class SessionManagementCubit extends Cubit<SessionManagementState> {
   final CreateSessionUseCase createSessionUseCase;
@@ -25,8 +24,6 @@ class SessionManagementCubit extends Cubit<SessionManagementState> {
 
   StreamSubscription<AttendanceRecord>? _attendanceSubscription;
 
-  List<HallInfo>? _cachedHalls;
-
   SessionManagementCubit({
     required this.createSessionUseCase,
     required this.startSessionServerUseCase,
@@ -35,42 +32,33 @@ class SessionManagementCubit extends Cubit<SessionManagementState> {
     required this.getAllHallsUseCase,
     required this.deleteCurrentSessionUseCase,
     SessionTimerService? timerService,
-  })  : _timerService = timerService ?? SessionTimerService(),
-        super(const SessionManagementInitial());
+  }) : _timerService = timerService ?? SessionTimerService(),
+       super(const SessionManagementInitial());
 
-  
-  // Halls
 
   Future<void> loadHalls() async {
-    final currentSelectedTab = _currentTabIndex;
+    final tabIndex = _currentTabIndex;
+    final currentIdle = state is SessionManagementIdle
+        ? state as SessionManagementIdle
+        : null;
 
-    // First load (no cache) → show full-screen shimmer, same as old loadStats()
-    if (_cachedHalls == null) {
+    if (currentIdle == null) {
       emit(const SessionManagementLoading());
     } else {
-      // Subsequent loads → keep existing content, just show inline loader
-      emit(
-        SessionManagementIdle(
-          selectedTabIndex: currentSelectedTab,
-          halls: _cachedHalls,
-          isLoadingHalls: true,
-        ),
-      );
+      emit(currentIdle.copyWith(isLoadingHalls: true));
     }
 
     try {
-      final halls = await getAllHallsUseCase();
-      _cachedHalls = halls.halls;
-
+      final halls = (await getAllHallsUseCase()).halls;
       emit(
         SessionManagementIdle(
-          selectedTabIndex: currentSelectedTab,
-          halls: _cachedHalls,
+          selectedTabIndex: tabIndex,
+          halls: halls,
           isLoadingHalls: false,
         ),
       );
     } on ApiErrorModel catch (error) {
-      emit(SessionError(error: error, selectedTabIndex: currentSelectedTab));
+      emit(SessionError(error: error, selectedTabIndex: tabIndex));
     } catch (_) {
       emit(
         SessionError(
@@ -79,25 +67,21 @@ class SessionManagementCubit extends Cubit<SessionManagementState> {
             type: ApiErrorType.connectionError,
             statusCode: 0,
           ),
-          selectedTabIndex: currentSelectedTab,
+          selectedTabIndex: tabIndex,
         ),
       );
     }
   }
 
-  // Tab
+  // ─── Tab ───────────────────────────────────────────────────
 
   void changeTab(int index) {
-    final currentState = state;
-    if (currentState is SessionManagementIdle) {
-      emit(currentState.copyWith(selectedTabIndex: index));
-    } else if (currentState is SessionState) {
-      emit(currentState.copyWith(selectedTabIndex: index));
-    }
+    final s = state;
+    if (s is SessionManagementIdle) emit(s.copyWith(selectedTabIndex: index));
+    if (s is SessionState) emit(s.copyWith(selectedTabIndex: index));
   }
 
-  // Session Lifecycle
-  
+  // ─── Session Lifecycle ─────────────────────────────────────
 
   Future<void> createAndStartSession({
     required String name,
@@ -122,7 +106,6 @@ class SessionManagementCubit extends Cubit<SessionManagementState> {
         selectedTabIndex: currentState.selectedTabIndex,
         hallId: hallId,
       );
-
       await _startServer(currentState.selectedTabIndex);
     } on ApiErrorModel catch (error) {
       _handleSessionError(error, currentState.selectedTabIndex);
@@ -144,7 +127,6 @@ class SessionManagementCubit extends Cubit<SessionManagementState> {
 
     try {
       emit(currentState.copyWith(operation: SessionOperation.ending));
-
       _timerService.cancel();
       await _cancelAttendanceSubscription();
 
@@ -179,7 +161,6 @@ class SessionManagementCubit extends Cubit<SessionManagementState> {
 
     try {
       emit(currentState.copyWith(operation: SessionOperation.deleting));
-
       _timerService.cancel();
       await _cancelAttendanceSubscription();
 
@@ -210,7 +191,7 @@ class SessionManagementCubit extends Cubit<SessionManagementState> {
     }
   }
 
-  // Private helpers
+  // ─── Private: Session Creation ─────────────────────────────
 
   Future<void> _createSession({
     required String name,
@@ -231,7 +212,6 @@ class SessionManagementCubit extends Cubit<SessionManagementState> {
       startTime.minute,
     );
 
-    // Show optimistic placeholder while creating
     emit(
       SessionState(
         session: Session(
@@ -275,10 +255,7 @@ class SessionManagementCubit extends Cubit<SessionManagementState> {
     final currentState = state;
     if (currentState is! SessionState) return;
 
-    final serverInfo = await startSessionServerUseCase(
-      currentState.session.id,
-    );
-
+    final serverInfo = await startSessionServerUseCase(currentState.session.id);
     final activeSession = currentState.session.copyWith(
       status: SessionStatus.active,
     );
@@ -294,7 +271,6 @@ class SessionManagementCubit extends Cubit<SessionManagementState> {
       ),
     );
 
-    // Delegate timer logic to the dedicated service
     _timerService.start(
       session: activeSession,
       onExpired: _onSessionExpired,
@@ -304,38 +280,31 @@ class SessionManagementCubit extends Cubit<SessionManagementState> {
 
   void _listenToAttendance() {
     _attendanceSubscription?.cancel();
-    _attendanceSubscription = listenAttendanceUseCase().listen(
-      (record) {
-        final currentState = state;
-        if (currentState is! SessionState) return;
+    _attendanceSubscription = listenAttendanceUseCase().listen((record) {
+      final currentState = state;
+      if (currentState is! SessionState) return;
 
-        final updatedAttendance = List<AttendanceRecord>.from(
-          currentState.session.attendanceList,
-        )..add(record);
+      final updatedAttendance = List<AttendanceRecord>.from(
+        currentState.session.attendanceList,
+      )..add(record);
 
-        emit(
-          currentState.copyWith(
-            session: currentState.session.copyWith(
-              attendanceList: updatedAttendance,
-              connectedClients: updatedAttendance.length,
-            ),
-            latestRecord: record,
+      emit(
+        currentState.copyWith(
+          session: currentState.session.copyWith(
+            attendanceList: updatedAttendance,
+            connectedClients: updatedAttendance.length,
           ),
-        );
+          latestRecord: record,
+        ),
+      );
 
-        // Clear the latest record badge after a short delay
-        Future.delayed(const Duration(milliseconds: 100), () {
-          final s = state;
-          if (s is SessionState && s.latestRecord != null) {
-            emit(s.copyWith(clearLatestRecord: true));
-          }
-        });
-      },
-      onError: (_) {},
-    );
+      _clearFlagAfterDelay(
+        const Duration(milliseconds: 100),
+        (s) => s.latestRecord != null,
+        (s) => s.copyWith(clearLatestRecord: true),
+      );
+    }, onError: (_) {});
   }
-
-  // --- Timer callbacks (called by SessionTimerService) ---
 
   void _onSessionExpired() {
     if (state is! SessionState) return;
@@ -348,27 +317,35 @@ class SessionManagementCubit extends Cubit<SessionManagementState> {
 
     emit(currentState.copyWith(showWarning: true));
 
-    Future.delayed(const Duration(seconds: 5), () {
+    _clearFlagAfterDelay(
+      const Duration(seconds: 5),
+      (s) => s.showWarning,
+      (s) => s.copyWith(showWarning: false),
+    );
+  }
+
+  /// Emits a cleared state after [delay] if [check] is still true.
+  void _clearFlagAfterDelay(
+    Duration delay,
+    bool Function(SessionState) check,
+    SessionState Function(SessionState) clear,
+  ) {
+    Future.delayed(delay, () {
       final s = state;
-      if (s is SessionState && s.showWarning) {
-        emit(s.copyWith(showWarning: false));
-      }
+      if (s is SessionState && check(s)) emit(clear(s));
     });
   }
 
-
   void _handleSessionError(ApiErrorModel error, int selectedTabIndex) {
     emit(SessionError(error: error, selectedTabIndex: selectedTabIndex));
-
     Future.delayed(const Duration(seconds: 3), () {
-      if (state is SessionError) {
-        _goIdle(selectedTabIndex);
-      }
+      if (state is SessionError) _goIdle(selectedTabIndex);
     });
   }
 
   void _goIdle(int tabIndex) {
-    emit(SessionManagementIdle(selectedTabIndex: tabIndex, halls: _cachedHalls));
+    // halls list is now owned by the repository/use-case layer
+    emit(SessionManagementIdle(selectedTabIndex: tabIndex));
   }
 
   Future<void> _cancelAttendanceSubscription() async {
@@ -379,8 +356,6 @@ class SessionManagementCubit extends Cubit<SessionManagementState> {
   int get _currentTabIndex => state is SessionManagementStateWithTab
       ? (state as SessionManagementStateWithTab).selectedTabIndex
       : 0;
-
-  
 
   @override
   Future<void> close() {

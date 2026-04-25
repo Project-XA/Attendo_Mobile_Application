@@ -25,7 +25,7 @@ class UserAttendanceView extends StatelessWidget {
           );
         }
 
-        if (state is SessionState && 
+        if (state is SessionState &&
             state.operation == SessionOperation.ended) {
           return _buildAttendanceList(
             context,
@@ -55,7 +55,7 @@ class UserAttendanceView extends StatelessWidget {
           totalCount: attendanceList.length,
           isActive: isActive,
         ),
-        
+
         verticalSpace(16.h),
 
         Expanded(
@@ -64,10 +64,11 @@ class UserAttendanceView extends StatelessWidget {
             itemCount: attendanceList.length,
             itemBuilder: (context, index) {
               final record = attendanceList[index];
-              final isLatest = latestRecord != null && 
-                              record.userId == latestRecord.userId &&
-                              record.checkInTime == latestRecord.checkInTime;
-              
+              final isLatest =
+                  latestRecord != null &&
+                  record.userId == latestRecord.userId &&
+                  record.checkInTime == latestRecord.checkInTime;
+
               return AttendanceCardWidget(
                 record: record,
                 number: index + 1,

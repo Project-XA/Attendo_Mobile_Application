@@ -25,14 +25,14 @@ class VerificationSuccessState extends StatelessWidget {
               style: TextStyle(
                 fontSize: 28.sp,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               textAlign: TextAlign.center,
             ),
             verticalSpace(12),
             Text(
               'Your identity has been successfully verified',
-              style: TextStyle(fontSize: 16.sp, color: Colors.black54),
+              style: TextStyle(fontSize: 16.sp, color: Theme.of(context).colorScheme.outline),
               textAlign: TextAlign.center,
             ),
             verticalSpace(24),
@@ -45,7 +45,7 @@ class VerificationSuccessState extends StatelessWidget {
               'Redirecting to registration...',
               style: TextStyle(
                 fontSize: 14.sp,
-                color: Colors.black45,
+                color: Theme.of(context).colorScheme.outline,
                 fontStyle: FontStyle.italic,
               ),
             ),

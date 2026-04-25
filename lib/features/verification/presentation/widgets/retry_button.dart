@@ -16,7 +16,7 @@ class RetryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.mainTextColorBlack,
+          backgroundColor: AppColors.mainTextBlackColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.r),
           ),
@@ -27,7 +27,7 @@ class RetryButton extends StatelessWidget {
           children: [
             Icon(
               Icons.refresh,
-              color: AppColors.backGroundColorWhite,
+              color: AppColors.mainBackgroundWhiteColor,
               size: 24.sp,
             ),
             horizontalSpace(12),
@@ -36,7 +36,7 @@ class RetryButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
-                color: AppColors.backGroundColorWhite,
+                color: AppColors.mainBackgroundWhiteColor,
               ),
             ),
           ],

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,11 +7,8 @@ import 'package:mobile_app/core/networking/api_error_model.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/services/UI/toast_service.dart';
 import 'package:mobile_app/core/services/location/location_helper.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
-import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/core/widgets/custom_app_button.dart';
-import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_cubit.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_state.dart';
 import 'package:mobile_app/features/session_mangement/presentation/widgets/session_form_field.dart';
@@ -26,18 +24,17 @@ class CreateSessionForm extends StatefulWidget {
 class _CreateSessionFormState extends State<CreateSessionForm> {
   final _formKey = GlobalKey<FormState>();
   final _sessionNameController = TextEditingController();
-  final _locationController = TextEditingController();
   final _durationController = TextEditingController(text: '60');
   final _allowedRadiusController = TextEditingController(text: '50');
 
   TimeOfDay? _selectedTime;
   String? _selectedWifiOption = 'WiFi';
   int? _selectedHallId;
+  String? _selectedHallName;
 
   @override
   void dispose() {
     _sessionNameController.dispose();
-    _locationController.dispose();
     _durationController.dispose();
     _allowedRadiusController.dispose();
     super.dispose();
@@ -47,7 +44,10 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedTime == null) {
-      showToast(message: 'Please select a time', type: ToastType.error);
+      showToast(
+        message: 'sessions.select_time_toast'.tr(),
+        type: ToastType.error,
+      );
       return;
     }
 
@@ -104,7 +104,7 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.backGroundColorWhite,
+        backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
         title: Row(
           children: [
             Icon(
@@ -115,47 +115,40 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
             horizontalSpace(8.w),
             Flexible(
               child: Text(
-                'Past Time Selected',
-                style: TextStyle(
-                  color: AppColors.mainTextColorBlack,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18.sp,
-                ),
+                'sessions.past_time_title'.tr(),
+                style: AppTextStyle.font18BlackSemiBold,
               ),
             ),
           ],
         ),
         content: SingleChildScrollView(
           child: Text(
-            'The selected start time is more than 5 minutes in the past. Do you want to continue and start the session immediately?',
-            style: TextStyle(
-              color: AppColors.subTextColorGrey,
-              fontSize: 14.sp,
-            ),
+            'sessions.past_time_body'.tr(),
+            style: AppTextStyle.font14GreyRegular,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
             child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: AppColors.subTextColorGrey,
-                fontSize: 14.sp,
-              ),
+              'common.cancel'.tr(),
+              style: AppTextStyle.font14GreyRegular,
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.mainTextColorBlack,
-              foregroundColor: AppColors.backGroundColorWhite,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
               elevation: 0,
             ),
             onPressed: () {
               Navigator.pop(dialogContext);
               _startSession();
             },
-            child: Text('Continue', style: TextStyle(fontSize: 14.sp)),
+            child: Text(
+              'common.continue'.tr(),
+              style: TextStyle(fontSize: 14.sp),
+            ),
           ),
         ],
       ),
@@ -166,57 +159,47 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.backGroundColorWhite,
+        backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
         title: Row(
           children: [
             Icon(Icons.schedule, color: Colors.blue, size: 24.sp),
             horizontalSpace(8.w),
             Flexible(
               child: Text(
-                'Future Session Planned',
-                style: TextStyle(
-                  color: AppColors.mainTextColorBlack,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18.sp,
-                ),
+                'sessions.future_time_title'.tr(),
+                style: AppTextStyle.font18BlackSemiBold,
               ),
             ),
           ],
         ),
         content: SingleChildScrollView(
           child: Text(
-            'The session is scheduled to start more than 10 minutes from now. This session will be created as a future planned session.',
-            style: TextStyle(
-              color: AppColors.subTextColorGrey,
-              fontSize: 14.sp,
-            ),
+            'sessions.future_time_body'.tr(),
+            style: AppTextStyle.font14GreyRegular,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
             child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: AppColors.subTextColorGrey,
-                fontSize: 14.sp,
-              ),
+              'common.cancel'.tr(),
+              style: AppTextStyle.font14GreyRegular,
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
-              foregroundColor: AppColors.backGroundColorWhite,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
               elevation: 0,
             ),
             onPressed: () {
               Navigator.pop(dialogContext);
               showToast(
-                message: 'Future sessions are not supported yet',
+                message: 'sessions.future_not_supported_toast'.tr(),
                 type: ToastType.info,
               );
             },
-            child: Text('OK', style: TextStyle(fontSize: 14.sp)),
+            child: Text('common.ok'.tr(), style: TextStyle(fontSize: 14.sp)),
           ),
         ],
       ),
@@ -226,7 +209,7 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
   void _startSession() {
     context.read<SessionManagementCubit>().createAndStartSession(
       name: _sessionNameController.text.trim(),
-      location: _locationController.text.trim(),
+      location: _selectedHallName ?? '',
       connectionMethod: _selectedWifiOption ?? 'WiFi',
       startTime: _selectedTime!,
       durationMinutes: int.parse(_durationController.text.trim()),
@@ -239,48 +222,41 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.backGroundColorWhite,
+        backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
         title: Flexible(
           child: Text(
-            'Location Services Disabled',
-            style: TextStyle(
-              color: AppColors.mainTextColorBlack,
-              fontWeight: FontWeight.w600,
-              fontSize: 18.sp,
-            ),
+            'sessions.location_services_disabled_title'.tr(),
+            style: AppTextStyle.font18BlackSemiBold,
           ),
         ),
         content: SingleChildScrollView(
           child: Text(
-            'Location services are required to create a session. Please enable location services in your device settings.',
-            style: TextStyle(
-              color: AppColors.subTextColorGrey,
-              fontSize: 14.sp,
-            ),
+            'sessions.location_services_disabled_body'.tr(),
+            style: AppTextStyle.font14GreyRegular,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: AppColors.subTextColorGrey,
-                fontSize: 14.sp,
-              ),
+              'common.cancel'.tr(),
+              style: AppTextStyle.font14GreyRegular,
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.mainTextColorBlack,
-              foregroundColor: AppColors.backGroundColorWhite,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
               elevation: 0,
             ),
             onPressed: () async {
               Navigator.pop(context);
               await Geolocator.openLocationSettings();
             },
-            child: Text('Open Settings', style: TextStyle(fontSize: 14.sp)),
+            child: Text(
+              'common.open_settings'.tr(),
+              style: TextStyle(fontSize: 14.sp),
+            ),
           ),
         ],
       ),
@@ -291,48 +267,41 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.backGroundColorWhite,
+        backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
         title: Flexible(
           child: Text(
-            'Location Permission Required',
-            style: TextStyle(
-              color: AppColors.mainTextColorBlack,
-              fontWeight: FontWeight.w600,
-              fontSize: 18.sp,
-            ),
+            'sessions.location_permission_title'.tr(),
+            style: AppTextStyle.font18BlackSemiBold,
           ),
         ),
         content: SingleChildScrollView(
           child: Text(
-            'Location permission is permanently denied. Please enable it in app settings to create a session.',
-            style: TextStyle(
-              color: AppColors.subTextColorGrey,
-              fontSize: 14.sp,
-            ),
+            'sessions.location_permission_body'.tr(),
+            style: AppTextStyle.font14GreyRegular,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: AppColors.subTextColorGrey,
-                fontSize: 14.sp,
-              ),
+              'common.cancel'.tr(),
+              style: AppTextStyle.font14GreyRegular,
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.mainTextColorBlack,
-              foregroundColor: AppColors.backGroundColorWhite,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
               elevation: 0,
             ),
             onPressed: () async {
               Navigator.pop(context);
               await openAppSettings();
             },
-            child: Text('Open Settings', style: TextStyle(fontSize: 14.sp)),
+            child: Text(
+              'common.open_settings'.tr(),
+              style: TextStyle(fontSize: 14.sp),
+            ),
           ),
         ],
       ),
@@ -357,20 +326,13 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'No Internet Connection',
-                  style: AppTextStyle.font14MediamGrey.copyWith(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeightHelper.bold,
-                    color: Colors.red.shade900,
-                  ),
+                  'sessions.no_internet_title'.tr(),
+                  style: AppTextStyle.font16Red900Bold,
                 ),
                 verticalSpace(4.h),
                 Text(
-                  'Please check your internet connection and try again.',
-                  style: AppTextStyle.font14MediamGrey.copyWith(
-                    fontSize: 13.sp,
-                    color: Colors.red.shade700,
-                  ),
+                  'sessions.no_internet_body'.tr(),
+                  style: AppTextStyle.font13Red700Medium,
                 ),
               ],
             ),
@@ -398,11 +360,6 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
         final isLoading = state is SessionState && state.isLoading;
         final showNetworkError = state is SessionError && state.isNetworkError;
 
-        List<HallInfo>? halls;
-        if (state is SessionManagementIdle) {
-          halls = state.halls;
-        }
-
         return Form(
           key: _formKey,
           child: Padding(
@@ -416,12 +373,10 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
 
                 SessionFormFields(
                   sessionNameController: _sessionNameController,
-                  locationController: _locationController,
                   durationController: _durationController,
                   allowedRadiusController: _allowedRadiusController,
                   initialTime: _selectedTime,
                   initialWifiOption: _selectedWifiOption,
-                  halls: halls,
                   selectedHallId: _selectedHallId,
                   onTimeSelected: (time) {
                     setState(() => _selectedTime = time);
@@ -429,8 +384,11 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
                   onWifiOptionChanged: (option) {
                     setState(() => _selectedWifiOption = option);
                   },
-                  onHallSelected: (hallId) {
-                    setState(() => _selectedHallId = hallId);
+                  onHallSelected: (hallId, hallName) {
+                    setState(() {
+                      _selectedHallId = hallId;
+                      _selectedHallName = hallName;
+                    });
                   },
                   onRefreshHalls: () =>
                       context.read<SessionManagementCubit>().loadHalls(),
@@ -442,7 +400,7 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
                   onPressed: isLoading ? null : _handleStartSession,
                   backgroundColor: isLoading
                       ? Colors.grey
-                      : AppColors.mainTextColorBlack,
+                      : Theme.of(context).colorScheme.onSurface,
                   borderRadius: 20.r,
                   width: double.infinity,
                   height: 45.h,
@@ -450,18 +408,14 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
                       ? SizedBox(
                           height: 20.h,
                           width: 20.w,
-                          child: const CircularProgressIndicator(
-                            color: AppColors.backGroundColorWhite,
+                          child: CircularProgressIndicator(
+                            color: Theme.of(context).colorScheme.surface,
                             strokeWidth: 2,
                           ),
                         )
                       : Text(
-                          'Start Session',
-                          style: AppTextStyle.font14MediamGrey.copyWith(
-                            color: AppColors.backGroundColorWhite,
-                            fontWeight: FontWeightHelper.medium,
-                            fontSize: 16.sp,
-                          ),
+                          'sessions.start_session'.tr(),
+                          style: AppTextStyle.font16WhiteMedium,
                         ),
                 ),
 

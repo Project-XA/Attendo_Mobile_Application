@@ -13,7 +13,7 @@ class AdminHomeShimmer extends StatelessWidget {
     final isSmallScreen = width < 360;
 
     return Scaffold(
-      backgroundColor: AppColors.backGroundColorWhite,
+      backgroundColor: AppColors.mainBackgroundWhiteColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -53,16 +53,16 @@ class AdminHomeShimmer extends StatelessWidget {
           Shimmer(
             duration: const Duration(seconds: 3),
             color: Colors.grey[100]!,
-            colorOpacity: 0.3, 
+            colorOpacity: 0.3,
             child: Container(
               width: isSmallScreen ? 45.w : 50.w,
               height: isSmallScreen ? 45.w : 50.w,
               decoration: BoxDecoration(
-                color: Colors.grey[100], 
+                color: Colors.grey[100],
                 borderRadius: BorderRadius.circular(10.r),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05), 
+                    color: Colors.black.withOpacity(0.05),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -128,7 +128,7 @@ class AdminHomeShimmer extends StatelessWidget {
         width: double.infinity,
         padding: EdgeInsets.all(isSmallScreen ? 16.w : 20.w),
         decoration: BoxDecoration(
-          color: Colors.grey[50], 
+          color: Colors.grey[50],
           borderRadius: BorderRadius.circular(16.r),
         ),
         child: Column(
@@ -269,10 +269,7 @@ class AdminHomeShimmer extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.grey[50],
           borderRadius: BorderRadius.circular(28.r),
-          border: Border.all(
-            color: Colors.grey[200]!, 
-            width: 1,
-          ),
+          border: Border.all(color: Colors.grey[200]!, width: 1),
         ),
         padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: Row(

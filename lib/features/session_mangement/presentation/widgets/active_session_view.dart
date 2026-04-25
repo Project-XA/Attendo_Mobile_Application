@@ -1,11 +1,11 @@
 // ignore_for_file: deprecated_member_use
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
-import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/core/widgets/custom_app_button.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/server_info.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/session.dart';
@@ -39,14 +39,10 @@ class ActiveSessionView extends StatelessWidget {
                 children: [
                   const Icon(
                     Icons.delete_outline,
-                    color: AppColors.backGroundColorWhite,
+                    color: AppColors.mainBackgroundWhiteColor,
                   ),
                   horizontalSpace(12.w),
-                  const Expanded(
-                    child: Text(
-                      'Session deleted successfully without saving attendance',
-                    ),
-                  ),
+                  Expanded(child: Text('sessions.session_deleted_snack'.tr())),
                 ],
               ),
               backgroundColor: Colors.red,
@@ -99,20 +95,13 @@ class ActiveSessionView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '⏰ Session Ending Soon',
-                  style: AppTextStyle.font14MediamGrey.copyWith(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeightHelper.bold,
-                    color: Colors.orange.shade900,
-                  ),
+                  'sessions.session_ending_banner_title'.tr(),
+                  style: AppTextStyle.font16Orange900Bold,
                 ),
                 verticalSpace(4.h),
                 Text(
-                  'Only 5 minutes remaining until auto-close',
-                  style: AppTextStyle.font14MediamGrey.copyWith(
-                    fontSize: 13.sp,
-                    color: Colors.orange.shade700,
-                  ),
+                  'sessions.session_ending_banner_subtitle'.tr(),
+                  style: AppTextStyle.font13Orange700Medium,
                 ),
               ],
             ),
@@ -129,12 +118,12 @@ class ActiveSessionView extends StatelessWidget {
           children: [
             const Icon(
               Icons.warning_amber_rounded,
-              color: AppColors.backGroundColorWhite,
+              color: AppColors.mainBackgroundWhiteColor,
             ),
             horizontalSpace(12.w),
             Expanded(
               child: Text(
-                '⏰ Session will end in 5 minutes!',
+                'sessions.session_end_snack'.tr(),
                 style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
               ),
             ),
@@ -144,8 +133,8 @@ class ActiveSessionView extends StatelessWidget {
         duration: const Duration(seconds: 5),
         behavior: SnackBarBehavior.floating,
         action: SnackBarAction(
-          label: 'OK',
-          textColor: AppColors.backGroundColorWhite,
+          label: 'common.ok'.tr(),
+          textColor: AppColors.mainBackgroundWhiteColor,
           onPressed: () {},
         ),
       ),
@@ -161,16 +150,12 @@ class ActiveSessionView extends StatelessWidget {
           Expanded(
             child: CustomAppButton(
               onPressed: () => _showEndSessionDialog(context),
-              backgroundColor: AppColors.mainTextColorBlack,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               borderRadius: 20.r,
               height: 45.h,
               child: Text(
-                'End Session',
-                style: AppTextStyle.font14MediamGrey.copyWith(
-                  color: AppColors.backGroundColorWhite,
-                  fontWeight: FontWeightHelper.medium,
-                  fontSize: 16.sp,
-                ),
+                'sessions.end_session'.tr(),
+                style: AppTextStyle.font16WhiteMedium,
               ),
             ),
           ),
@@ -184,21 +169,17 @@ class ActiveSessionView extends StatelessWidget {
               child: Container(
                 height: 45.h,
                 decoration: BoxDecoration(
-                  color: AppColors.backGroundColorWhite,
+                  color: AppColors.mainBackgroundWhiteColor,
                   border: Border.all(
-                    color: AppColors.mainTextColorBlack,
+                    color: AppColors.mainTextBlackColor,
                     width: 2,
                   ),
                   borderRadius: BorderRadius.circular(20.r),
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  'Delete',
-                  style: AppTextStyle.font14MediamGrey.copyWith(
-                    color: AppColors.mainTextColorBlack,
-                    fontWeight: FontWeightHelper.medium,
-                    fontSize: 16.sp,
-                  ),
+                  'common.delete'.tr(),
+                  style: AppTextStyle.font16BlackMedium,
                 ),
               ),
             ),
@@ -212,56 +193,49 @@ class ActiveSessionView extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.backGroundColorWhite,
+        backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
         title: Row(
           children: [
             Icon(Icons.check_circle_outline, color: Colors.green, size: 24.sp),
             horizontalSpace(8.w),
             Flexible(
               child: Text(
-                'End Session',
-                style: TextStyle(
-                  color: AppColors.mainTextColorBlack,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18.sp,
-                ),
+                'sessions.end_session_title'.tr(),
+                style: AppTextStyle.font18BlackSemiBold,
               ),
             ),
           ],
         ),
         content: SingleChildScrollView(
           child: Text(
-            'Are you sure you want to end this session?\n\n'
-            '✓ ${session.attendanceList.length} attendees will be saved\n'
-            '✓ Attendance data will be recorded',
-            style: TextStyle(
-              color: AppColors.subTextColorGrey,
-              fontSize: 14.sp,
+            'sessions.end_session_confirm'.tr(
+              args: ['${session.attendanceList.length}'],
             ),
+            style: AppTextStyle.font14GreyRegular,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
             child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: AppColors.subTextColorGrey,
-                fontSize: 14.sp,
-              ),
+              'common.cancel'.tr(),
+              style: AppTextStyle.font14GreyRegular,
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
-              foregroundColor: AppColors.backGroundColorWhite,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
               elevation: 0,
             ),
             onPressed: () {
               Navigator.pop(dialogContext);
               context.read<SessionManagementCubit>().endSession();
             },
-            child: Text('End & Save', style: TextStyle(fontSize: 14.sp)),
+            child: Text(
+              'sessions.end_save'.tr(),
+              style: TextStyle(fontSize: 14.sp),
+            ),
           ),
         ],
       ),
@@ -272,14 +246,14 @@ class ActiveSessionView extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.backGroundColorWhite,
+        backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
         title: Row(
           children: [
             Icon(Icons.warning_amber_rounded, color: Colors.red, size: 24.sp),
             horizontalSpace(8.w),
             Flexible(
               child: Text(
-                'Delete Session',
+                'sessions.delete_session_title'.tr(),
                 style: TextStyle(
                   color: Colors.red,
                   fontWeight: FontWeight.w600,
@@ -291,38 +265,34 @@ class ActiveSessionView extends StatelessWidget {
         ),
         content: SingleChildScrollView(
           child: Text(
-            'Are you sure you want to delete this session?\n\n'
-            '⚠️ ${session.attendanceList.length} attendees will NOT be saved\n'
-            '⚠️ All attendance data will be lost\n'
-            '⚠️ This action cannot be undone',
-            style: TextStyle(
-              color: AppColors.subTextColorGrey,
-              fontSize: 14.sp,
+            'sessions.delete_session_confirm'.tr(
+              args: ['${session.attendanceList.length}'],
             ),
+            style: AppTextStyle.font14GreyRegular,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
             child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: AppColors.mainTextColorBlack,
-                fontSize: 14.sp,
-              ),
+              'common.cancel'.tr(),
+              style: AppTextStyle.font14BlackRegular,
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
-              foregroundColor: AppColors.backGroundColorWhite,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
               elevation: 0,
             ),
             onPressed: () {
               Navigator.pop(dialogContext);
               context.read<SessionManagementCubit>().deleteSession();
             },
-            child: Text('Delete', style: TextStyle(fontSize: 14.sp)),
+            child: Text(
+              'common.delete'.tr(),
+              style: TextStyle(fontSize: 14.sp),
+            ),
           ),
         ],
       ),

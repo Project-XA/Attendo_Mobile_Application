@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
+import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_cubit.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_state.dart';
 import 'package:mobile_app/features/session_mangement/presentation/widgets/create_session_form.dart';
@@ -65,7 +66,7 @@ class ManageSessionsView extends StatelessWidget {
           verticalSpace(8.h),
           Text(
             'Total attendance: ${state.session.attendanceList.length}',
-            style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+            style: AppTextStyle.font14GreyRegular,
           ),
         ],
       ),

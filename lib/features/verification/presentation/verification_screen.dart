@@ -25,7 +25,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backGroundColorWhite,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: BlocListener<VerificationCubit, VerificationState>(
         listener: (context, state) {
           if (state.isVerificationComplete && !state.hasError) {

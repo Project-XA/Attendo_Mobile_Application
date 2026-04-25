@@ -1,11 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:mobile_app/core/dependency_injection/get_it.dart';
 import 'package:mobile_app/core/current_user/presentation/cubits/current_user_cubit.dart';
 import 'package:mobile_app/core/current_user/presentation/cubits/current_user_state.dart';
+import 'package:mobile_app/core/dependency_injection/get_it.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/utils/app_assets.dart';
 import 'package:mobile_app/core/widgets/info_card.dart';
 import 'package:mobile_app/core/widgets/toggle_taps.dart';
@@ -27,7 +27,6 @@ class AdminDashboard extends StatelessWidget {
     return BlocProvider(
       create: (context) => getIt<SessionManagementCubit>()..loadHalls(),
       child: Scaffold(
-        backgroundColor: AppColors.backGroundColorWhite,
         body: BlocBuilder<SessionManagementCubit, SessionManagementState>(
           builder: (context, adminState) {
             // Loading state (first load / no cache)
@@ -73,11 +72,11 @@ class AdminDashboard extends StatelessWidget {
                     child: Column(
                       children: [
                         InfoCard(
-                          title: 'Admin Control Panel',
+                          title: 'admin.panel_title'.tr(),
                           subtitle:
                               user.organizations?.first.organizationName ??
-                              'Organization',
-                          description: 'Unique sessions and attendance',
+                              'admin.organization_placeholder'.tr(),
+                          description: 'admin.panel_description'.tr(),
                         ),
 
                         verticalSpace(16.h),
@@ -113,7 +112,7 @@ class AdminDashboard extends StatelessWidget {
           ElevatedButton(
             // Retry directly calls loadHalls()
             onPressed: () => context.read<SessionManagementCubit>().loadHalls(),
-            child: const Text('Retry'),
+            child: Text('common.retry'.tr()),
           ),
         ],
       ),
@@ -135,7 +134,10 @@ class AdminDashboard extends StatelessWidget {
       },
       builder: (context, state) {
         return ToggleTabs(
-          tabs: const ["Manage Sessions", "User Attendance"],
+          tabs: [
+            'admin.tab_manage_sessions'.tr(),
+            'admin.tab_user_attendance'.tr(),
+          ],
           selectedIndex: selectedIndex,
           onTabSelected: (index) =>
               context.read<SessionManagementCubit>().changeTab(index),

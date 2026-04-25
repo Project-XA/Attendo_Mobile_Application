@@ -27,7 +27,7 @@ class ProcessingOverlay extends StatelessWidget {
             'Verifying your face...',
             style: TextStyle(
               fontSize: 16.sp,
-              color: AppColors.backGroundColorWhite,
+              color: AppColors.mainBackgroundWhiteColor,
               fontWeight: FontWeightHelper.medium,
             ),
           ),

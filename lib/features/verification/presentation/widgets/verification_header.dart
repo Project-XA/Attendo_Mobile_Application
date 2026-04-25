@@ -16,7 +16,7 @@ class VerificationHeader extends StatelessWidget {
             style: TextStyle(
               fontSize: 32.sp,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: Theme.of(context).colorScheme.onSurface,
               height: 1.2,
             ),
             textAlign: TextAlign.center,
@@ -26,7 +26,7 @@ class VerificationHeader extends StatelessWidget {
             'Please align your face within the frame to verify your identity.',
             style: TextStyle(
               fontSize: 15.sp,
-              color: Colors.black54,
+              color: Theme.of(context).colorScheme.outline,
               fontWeight: FontWeight.w400,
             ),
             textAlign: TextAlign.center,

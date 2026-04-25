@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
-import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/server_info.dart';
 import 'package:mobile_app/features/session_mangement/presentation/widgets/active_session/copyable_info_row_widget.dart';
 import 'package:mobile_app/features/session_mangement/presentation/widgets/active_session/info_row_widget.dart';
@@ -10,10 +9,7 @@ import 'package:mobile_app/features/session_mangement/presentation/widgets/activ
 class ServerInfoCard extends StatelessWidget {
   final ServerInfo serverInfo;
 
-  const ServerInfoCard({
-    super.key,
-    required this.serverInfo,
-  });
+  const ServerInfoCard({super.key, required this.serverInfo});
 
   @override
   Widget build(BuildContext context) {
@@ -31,31 +27,15 @@ class ServerInfoCard extends StatelessWidget {
             children: [
               Icon(Icons.router, color: Colors.blue, size: 20.sp),
               horizontalSpace(8.w),
-              Text(
-                'Server Information',
-                style: AppTextStyle.font14MediamGrey.copyWith(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeightHelper.semiBold,
-                  color: Colors.blue.shade800,
-                ),
-              ),
+              Text('Server Information', style: AppTextStyle.font16Blue800Bold),
             ],
           ),
           verticalSpace(12.h),
-          CopyableInfoRow(
-            label: 'IP Address:',
-            value: serverInfo.ipAddress,
-          ),
+          CopyableInfoRow(label: 'IP Address:', value: serverInfo.ipAddress),
           verticalSpace(8.h),
-          InfoRow(
-            label: 'Port:',
-            value: serverInfo.port.toString(),
-          ),
+          InfoRow(label: 'Port:', value: serverInfo.port.toString()),
           verticalSpace(8.h),
-          const CopyableInfoRow(
-            label: 'mDNS:',
-            value: 'attendance.local',
-          ),
+          const CopyableInfoRow(label: 'mDNS:', value: 'attendance.local'),
         ],
       ),
     );

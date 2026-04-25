@@ -31,7 +31,7 @@ class VerificationFailedState extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -40,7 +40,7 @@ class VerificationFailedState extends StatelessWidget {
                 'The face in your selfie doesn\'t match the photo on your ID card.',
                 style: TextStyle(
                   fontSize: 15.sp,
-                  color: Colors.black54,
+                  color: Theme.of(context).colorScheme.outline,
                   height: 1.4,
                 ),
                 textAlign: TextAlign.center,

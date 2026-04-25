@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
-import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/features/session_mangement/data/models/attendency_record.dart';
 
 class AttendanceListWidget extends StatelessWidget {
@@ -41,9 +40,9 @@ class AttendanceListWidget extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.mainTextColorBlack,
+            AppColors.mainSurfaceBlackColor,
             // ignore: deprecated_member_use
-            AppColors.mainTextColorBlack.withOpacity(0.8),
+            AppColors.mainSurfaceBlackColor.withOpacity(0.8),
           ],
         ),
         borderRadius: BorderRadius.circular(16.r),
@@ -60,7 +59,7 @@ class AttendanceListWidget extends StatelessWidget {
             width: 1,
             height: 40.h,
             // ignore: deprecated_member_use
-            color: AppColors.backGroundColorWhite.withOpacity(0.3),
+            color: AppColors.mainBackgroundWhiteColor.withOpacity(0.3),
           ),
           _buildStatItem(
             'Unique Users',
@@ -75,25 +74,11 @@ class AttendanceListWidget extends StatelessWidget {
   Widget _buildStatItem(String label, String value, IconData icon) {
     return Column(
       children: [
-        Icon(icon, color: AppColors.backGroundColorWhite, size: 28.sp),
+        Icon(icon, color: AppColors.mainBackgroundWhiteColor, size: 28.sp),
         verticalSpace(8.h),
-        Text(
-          value,
-          style: AppTextStyle.font14MediamGrey.copyWith(
-            fontSize: 24.sp,
-            fontWeight: FontWeightHelper.bold,
-            color: AppColors.backGroundColorWhite,
-          ),
-        ),
+        Text(value, style: AppTextStyle.font24WhiteBold),
         verticalSpace(4.h),
-        Text(
-          label,
-          style: AppTextStyle.font14MediamGrey.copyWith(
-            fontSize: 12.sp,
-            // ignore: deprecated_member_use
-            color: AppColors.backGroundColorWhite.withOpacity(0.8),
-          ),
-        ),
+        Text(label, style: AppTextStyle.font12WhiteMedium),
       ],
     );
   }
@@ -114,10 +99,7 @@ class AttendanceListWidget extends StatelessWidget {
               verticalSpace(16.h),
               Text(
                 emptyMessage ?? 'No attendance records yet',
-                style: AppTextStyle.font14MediamGrey.copyWith(
-                  fontSize: 16.sp,
-                  color: Colors.grey.shade600,
-                ),
+                style: AppTextStyle.font16Grey600Medium,
               ),
             ],
           ),
@@ -146,7 +128,7 @@ class AttendanceListWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
       decoration: BoxDecoration(
-        color: AppColors.backGroundColorWhite,
+        color: AppColors.mainBackgroundWhiteColor,
         borderRadius: BorderRadius.circular(8.r),
       ),
       child: Row(
@@ -156,18 +138,11 @@ class AttendanceListWidget extends StatelessWidget {
             width: 32.w,
             height: 32.h,
             decoration: const BoxDecoration(
-              color: AppColors.mainTextColorBlack,
+              color: AppColors.mainTextBlackColor,
               shape: BoxShape.circle,
             ),
             child: Center(
-              child: Text(
-                '$number',
-                style: AppTextStyle.font14MediamGrey.copyWith(
-                  color: AppColors.backGroundColorWhite,
-                  fontWeight: FontWeightHelper.bold,
-                  fontSize: 12.sp,
-                ),
-              ),
+              child: Text('$number', style: AppTextStyle.font12WhiteBold),
             ),
           ),
           horizontalSpace(12.w),
@@ -177,20 +152,11 @@ class AttendanceListWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  record.userName,
-                  style: AppTextStyle.font14MediamGrey.copyWith(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeightHelper.semiBold,
-                  ),
-                ),
+                Text(record.userName, style: AppTextStyle.font14GreyBold),
                 verticalSpace(4.h),
                 Text(
                   'ID: ${record.userId}',
-                  style: AppTextStyle.font14MediamGrey.copyWith(
-                    fontSize: 12.sp,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: AppTextStyle.font12Grey600Medium,
                 ),
               ],
             ),
@@ -202,20 +168,11 @@ class AttendanceListWidget extends StatelessWidget {
             children: [
               Text(
                 DateFormat('hh:mm a').format(record.checkInTime),
-                style: AppTextStyle.font14MediamGrey.copyWith(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeightHelper.medium,
-                ),
+                style: AppTextStyle.font13GreyMedium,
               ),
               if (record.location != null) ...[
                 verticalSpace(4.h),
-                Text(
-                  record.location!,
-                  style: AppTextStyle.font14MediamGrey.copyWith(
-                    fontSize: 11.sp,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
+                Text(record.location!, style: AppTextStyle.font11Grey600Medium),
               ],
             ],
           ),

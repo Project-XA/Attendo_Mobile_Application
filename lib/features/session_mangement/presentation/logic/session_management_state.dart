@@ -24,15 +24,13 @@ final class SessionManagementError extends SessionManagementState {
 sealed class SessionManagementStateWithTab extends SessionManagementState {
   final int selectedTabIndex;
 
-  const SessionManagementStateWithTab({
-    this.selectedTabIndex = 0,
-  });
+  const SessionManagementStateWithTab({this.selectedTabIndex = 0});
 }
 
 final class SessionManagementIdle extends SessionManagementStateWithTab {
   final List<HallInfo>? halls;
   final bool isLoadingHalls;
-  
+
   const SessionManagementIdle({
     super.selectedTabIndex,
     this.halls,
@@ -52,14 +50,14 @@ final class SessionManagementIdle extends SessionManagementStateWithTab {
   }
 }
 
-enum SessionOperation { 
-  creating, 
-  starting, 
-  active, 
-  ending, 
+enum SessionOperation {
+  creating,
+  starting,
+  active,
+  ending,
   ended,
-  deleting,  
-  deleted,  
+  deleting,
+  deleted,
 }
 
 extension SessionOperationX on SessionOperation {
@@ -76,9 +74,9 @@ extension SessionOperationX on SessionOperation {
       case SessionOperation.active:
         return 'Session is active';
       case SessionOperation.deleting:
-        return 'Deleting session...';  
+        return 'Deleting session...';
       case SessionOperation.deleted:
-        return 'Session deleted successfully';  
+        return 'Session deleted successfully';
     }
   }
 }
@@ -89,7 +87,7 @@ final class SessionState extends SessionManagementStateWithTab {
   final ServerInfo? serverInfo;
   final AttendanceRecord? latestRecord;
   final bool showWarning;
-  final bool showNetworkError; 
+  final bool showNetworkError;
 
   const SessionState({
     required this.session,
@@ -97,7 +95,7 @@ final class SessionState extends SessionManagementStateWithTab {
     this.serverInfo,
     this.latestRecord,
     this.showWarning = false,
-    this.showNetworkError = false, 
+    this.showNetworkError = false,
     super.selectedTabIndex,
   });
 
@@ -105,11 +103,11 @@ final class SessionState extends SessionManagementStateWithTab {
       operation == SessionOperation.creating ||
       operation == SessionOperation.starting ||
       operation == SessionOperation.ending ||
-      operation == SessionOperation.deleting;  // NEW
+      operation == SessionOperation.deleting; // NEW
 
   bool get isActive => operation == SessionOperation.active;
-  
-  bool get isDeleted => operation == SessionOperation.deleted;  // NEW
+
+  bool get isDeleted => operation == SessionOperation.deleted; // NEW
 
   SessionState copyWith({
     Session? session,
@@ -119,13 +117,15 @@ final class SessionState extends SessionManagementStateWithTab {
     int? selectedTabIndex,
     bool clearLatestRecord = false,
     bool? showWarning,
-    bool? showNetworkError, 
+    bool? showNetworkError,
   }) {
     return SessionState(
       session: session ?? this.session,
       operation: operation ?? this.operation,
       serverInfo: serverInfo ?? this.serverInfo,
-      latestRecord: clearLatestRecord ? null : (latestRecord ?? this.latestRecord),
+      latestRecord: clearLatestRecord
+          ? null
+          : (latestRecord ?? this.latestRecord),
       selectedTabIndex: selectedTabIndex ?? this.selectedTabIndex,
       showWarning: showWarning ?? this.showWarning,
       showNetworkError: showNetworkError ?? this.showNetworkError,
@@ -134,18 +134,18 @@ final class SessionState extends SessionManagementStateWithTab {
 }
 
 final class SessionError extends SessionManagementStateWithTab {
-  final ApiErrorModel error; 
+  final ApiErrorModel error;
   final Session? session;
-  
+
   const SessionError({
     required this.error,
     this.session,
     super.selectedTabIndex,
   });
-  
+
   String get message => error.message;
   bool get isNetworkError => error.isNetworkError;
-  
+
   SessionError copyWith({
     ApiErrorModel? error,
     Session? session,

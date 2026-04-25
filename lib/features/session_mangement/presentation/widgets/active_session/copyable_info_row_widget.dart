@@ -8,11 +8,7 @@ class CopyableInfoRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const CopyableInfoRow({
-    super.key,
-    required this.label,
-    required this.value,
-  });
+  const CopyableInfoRow({super.key, required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -21,23 +17,9 @@ class CopyableInfoRow extends StatelessWidget {
       children: [
         SizedBox(
           width: 110.w,
-          child: Text(
-            label,
-            style: AppTextStyle.font14MediamGrey.copyWith(
-              fontSize: 13.sp,
-              color: Colors.grey.shade600,
-            ),
-          ),
+          child: Text(label, style: AppTextStyle.font13Grey600Medium),
         ),
-        Expanded(
-          child: Text(
-            value,
-            style: AppTextStyle.font14MediamGrey.copyWith(
-              fontSize: 13.sp,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
+        Expanded(child: Text(value, style: AppTextStyle.font13GreyMedium)),
         InkWell(
           onTap: () {
             Clipboard.setData(ClipboardData(text: value));

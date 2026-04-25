@@ -28,7 +28,7 @@ class ErrorStateWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24.sp,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               textAlign: TextAlign.center,
             ),
@@ -37,7 +37,7 @@ class ErrorStateWidget extends StatelessWidget {
               errorMessage ?? 'An unexpected error occurred',
               style: TextStyle(
                 fontSize: 14.sp,
-                color: Colors.black54,
+                color: Theme.of(context).colorScheme.outline,
                 height: 1.4,
               ),
               textAlign: TextAlign.center,

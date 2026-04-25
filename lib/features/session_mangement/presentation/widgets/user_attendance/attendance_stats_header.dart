@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
-import 'package:mobile_app/core/themes/font_weight_helper.dart';
 
 class AttendanceStatsHeader extends StatelessWidget {
   final int totalCount;
@@ -20,7 +19,7 @@ class AttendanceStatsHeader extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: AppColors.backGroundColorWhite,
+        color: AppColors.mainBackgroundWhiteColor,
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
@@ -47,22 +46,12 @@ class AttendanceStatsHeader extends StatelessWidget {
                   horizontalSpace(8.w),
                   Text(
                     'Total Attendance',
-                    style: AppTextStyle.font14MediamGrey.copyWith(
-                      fontSize: 14.sp,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: AppTextStyle.font14Grey600Medium,
                   ),
                 ],
               ),
               verticalSpace(4.h),
-              Text(
-                '$totalCount',
-                style: AppTextStyle.font14MediamGrey.copyWith(
-                  fontSize: 32.sp,
-                  fontWeight: FontWeightHelper.bold,
-                  color: AppColors.mainTextColorBlack,
-                ),
-              ),
+              Text('$totalCount', style: AppTextStyle.font32BlackBold),
             ],
           ),
 
@@ -85,14 +74,7 @@ class AttendanceStatsHeader extends StatelessWidget {
                     ),
                   ),
                   horizontalSpace(6.w),
-                  Text(
-                    'Live',
-                    style: AppTextStyle.font14MediamGrey.copyWith(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeightHelper.semiBold,
-                      color: Colors.green.shade700,
-                    ),
-                  ),
+                  Text('Live', style: AppTextStyle.font12Green700Bold),
                 ],
               ),
             ),

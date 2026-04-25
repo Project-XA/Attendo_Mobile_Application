@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
-import 'package:mobile_app/core/themes/font_weight_helper.dart';
 
 class AttendanceCardWidget extends StatelessWidget {
   final dynamic record;
@@ -24,7 +23,9 @@ class AttendanceCardWidget extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
       margin: EdgeInsets.only(bottom: 12.h),
       decoration: BoxDecoration(
-        color: isLatest ? Colors.green.shade50 : AppColors.backGroundColorWhite,
+        color: isLatest
+            ? Colors.green.shade50
+            : AppColors.mainBackgroundWhiteColor,
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
           color: isLatest ? Colors.green.shade300 : Colors.grey.shade200,
@@ -64,18 +65,11 @@ class AttendanceCardWidget extends StatelessWidget {
       width: 36.w,
       height: 36.w,
       decoration: BoxDecoration(
-        color: isLatest ? Colors.green : AppColors.mainTextColorBlack,
+        color: isLatest ? Colors.green : AppColors.mainTextBlackColor,
         shape: BoxShape.circle,
       ),
       child: Center(
-        child: Text(
-          '$number',
-          style: AppTextStyle.font14MediamGrey.copyWith(
-            fontSize: 14.sp,
-            fontWeight: FontWeightHelper.bold,
-            color: AppColors.backGroundColorWhite,
-          ),
-        ),
+        child: Text('$number', style: AppTextStyle.font14WhiteBold),
       ),
     );
   }
@@ -89,11 +83,7 @@ class AttendanceCardWidget extends StatelessWidget {
             Expanded(
               child: Text(
                 record.userName,
-                style: AppTextStyle.font14MediamGrey.copyWith(
-                  fontSize: 15.sp,
-                  fontWeight: FontWeightHelper.semiBold,
-                  color: AppColors.mainTextColorBlack,
-                ),
+                style: AppTextStyle.font15BlackBold,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -105,14 +95,7 @@ class AttendanceCardWidget extends StatelessWidget {
                   color: Colors.green,
                   borderRadius: BorderRadius.circular(4.r),
                 ),
-                child: Text(
-                  'NEW',
-                  style: AppTextStyle.font14MediamGrey.copyWith(
-                    fontSize: 10.sp,
-                    fontWeight: FontWeightHelper.bold,
-                    color: AppColors.backGroundColorWhite,
-                  ),
-                ),
+                child: Text('NEW', style: AppTextStyle.font10WhiteBold),
               ),
           ],
         ),
@@ -124,12 +107,9 @@ class AttendanceCardWidget extends StatelessWidget {
             Flexible(
               child: Text(
                 'ID: ${record.userId}',
-                style: AppTextStyle.font14MediamGrey.copyWith(
-                  fontSize: 11.sp, 
-                  color: Colors.grey.shade600,
-                ),
+                style: AppTextStyle.font11Grey600Medium,
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis, 
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -143,10 +123,7 @@ class AttendanceCardWidget extends StatelessWidget {
               Expanded(
                 child: Text(
                   record.location!,
-                  style: AppTextStyle.font14MediamGrey.copyWith(
-                    fontSize: 11.sp,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: AppTextStyle.font11Grey600Medium,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -166,18 +143,11 @@ class AttendanceCardWidget extends StatelessWidget {
         verticalSpace(4.h),
         Text(
           DateFormat('HH:mm').format(record.checkInTime),
-          style: AppTextStyle.font14MediamGrey.copyWith(
-            fontSize: 14.sp,
-            fontWeight: FontWeightHelper.semiBold,
-            color: AppColors.mainTextColorBlack,
-          ),
+          style: AppTextStyle.font14BlackBold,
         ),
         Text(
           DateFormat('MMM dd').format(record.checkInTime),
-          style: AppTextStyle.font14MediamGrey.copyWith(
-            fontSize: 11.sp,
-            color: Colors.grey.shade600,
-          ),
+          style: AppTextStyle.font11Grey600Medium,
         ),
       ],
     );

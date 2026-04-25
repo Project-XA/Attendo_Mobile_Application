@@ -23,7 +23,7 @@ class ActionButtons extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () => context.read<VerificationCubit>().capturePhoto(),
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.mainTextColorBlack,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.r),
           ),
@@ -34,7 +34,7 @@ class ActionButtons extends StatelessWidget {
           children: [
             Icon(
               Icons.camera_alt,
-              color: AppColors.backGroundColorWhite,
+              color: Theme.of(context).colorScheme.onPrimary,
               size: 24.sp,
             ),
             horizontalSpace(12),
@@ -43,7 +43,7 @@ class ActionButtons extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
-                color: AppColors.backGroundColorWhite,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
           ],

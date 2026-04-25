@@ -23,7 +23,7 @@ class CapturedOverlay extends StatelessWidget {
             style: TextStyle(
               fontSize: 64.sp,
               fontWeight: FontWeight.bold,
-              color: AppColors.backGroundColorWhite,
+              color: AppColors.mainBackgroundWhiteColor,
               shadows: const [
                 Shadow(
                   color: Colors.black45,
@@ -38,7 +38,7 @@ class CapturedOverlay extends StatelessWidget {
             'Processing...',
             style: TextStyle(
               fontSize: 16.sp,
-              color: AppColors.backGroundColorWhite,
+              color: AppColors.mainBackgroundWhiteColor,
               fontWeight: FontWeight.w500,
               shadows: const [
                 Shadow(
