@@ -1,4 +1,4 @@
-enum PrivacyAction { none, changePassword }
+enum PrivacyAction { none ,deactivate, delete, changePassword }
 
 class PrivacySecurityState {
   final bool isLoading;

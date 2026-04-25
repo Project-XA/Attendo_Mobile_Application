@@ -9,6 +9,8 @@ class ApiConst {
   static const String userStatistics = "user/statistics";
   static const String changePassword = "Account/Change-Password";
   static const String saveAttendance = "Session/save-attend";
+  static const String deactivateAccount = '/User/deactivate';
+  static const String deleteAccountDELETE = '/User/me';
   static String getAllHalls(int organizationId) =>
       '/hall/get-all-halls/$organizationId';
 }

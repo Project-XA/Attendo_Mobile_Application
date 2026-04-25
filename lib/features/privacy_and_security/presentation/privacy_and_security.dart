@@ -2,12 +2,15 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/features/privacy_and_security/presentation/logic/privacy_and_secuirty_state.dart';
 import 'package:mobile_app/features/privacy_and_security/presentation/logic/privacy_and_security_cubit.dart';
 import 'package:mobile_app/features/privacy_and_security/presentation/widgets/change_password_form.dart';
+import 'package:mobile_app/features/privacy_and_security/presentation/widgets/deactive_section.dart';
+import 'package:mobile_app/features/privacy_and_security/presentation/widgets/delete_section.dart';
 import 'package:mobile_app/features/privacy_and_security/presentation/widgets/privacy_card.dart';
 import 'package:mobile_app/features/privacy_and_security/presentation/widgets/privacy_tile.dart';
 import 'package:mobile_app/features/privacy_and_security/presentation/widgets/section_label.dart';
@@ -49,6 +52,13 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
               backgroundColor: AppColors.buttonGreenColor,
             ),
           );
+        } else if (state.activeAction == PrivacyAction.deactivate ||
+            state.activeAction == PrivacyAction.delete) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.of(
+              context,
+            ).pushNamedAndRemoveUntil(Routes.startPage, (route) => false);
+          });
         }
         if (state.errorMessage != null) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -91,21 +101,23 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                   PrivacyCard(
                     children: [
                       PrivacyTile(
+                        iconBg: AppColors.buttonFilledDarkColor,
                         icon: Icons.lock_outline_rounded,
+                        iconColor: AppColors.buttonBlueTextDarkColor,
                         title: 'privacy.change_password'.tr(),
                         subtitle: 'privacy.change_password_sub'.tr(),
                         isExpanded:
                             state.activeAction == PrivacyAction.changePassword,
                         onTap: () =>
                             state.activeAction == PrivacyAction.changePassword
-                                ? cubit.closeSection()
-                                : cubit.openSection(
-                                    PrivacyAction.changePassword),
+                            ? cubit.closeSection()
+                            : cubit.openSection(PrivacyAction.changePassword),
                         expandedChild: ChangePasswordForm(
-                          isLoading: state.isLoading &&
-                              state.activeAction == PrivacyAction.changePassword,
-                          onSubmit: (current, newPass) =>
-                              cubit.changePassword(
+                          isLoading:
+                              state.isLoading &&
+                              state.activeAction ==
+                                  PrivacyAction.changePassword,
+                          onSubmit: (current, newPass) => cubit.changePassword(
                             currentPassword: current,
                             newPassword: newPass,
                           ),
@@ -113,7 +125,52 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                       ),
                     ],
                   ),
+
                   verticalSpace(24),
+                  SectionLabel(label: 'privacy.section_account'.tr()),
+                  verticalSpace(8),
+                  PrivacyCard(
+                    children: [
+                      PrivacyTile(
+                        icon: Icons.pause_circle_outline_rounded,
+                        iconBg: const Color(0xFFFFF8E1),
+                        iconColor: const Color(0xFFE65100),
+                        title: 'privacy.deactivate'.tr(),
+                        subtitle: 'privacy.deactivate_sub'.tr(),
+                        isExpanded:
+                            state.activeAction == PrivacyAction.deactivate,
+                        onTap: () =>
+                            state.activeAction == PrivacyAction.deactivate
+                            ? cubit.closeSection()
+                            : cubit.openSection(PrivacyAction.deactivate),
+                        expandedChild: DeactivateSection(
+                          isLoading:
+                              state.isLoading &&
+                              state.activeAction == PrivacyAction.deactivate,
+                          onConfirm: cubit.deactivateAccount,
+                        ),
+                        showDivider: true,
+                      ),
+                      PrivacyTile(
+                        icon: Icons.delete_outline_rounded,
+                        iconBg: const Color(0xFFFFF5F5),
+                        iconColor: const Color(0xFFE53935),
+                        title: 'privacy.delete'.tr(),
+                        subtitle: 'privacy.delete_sub'.tr(),
+                        titleColor: const Color(0xFFE53935),
+                        isExpanded: state.activeAction == PrivacyAction.delete,
+                        onTap: () => state.activeAction == PrivacyAction.delete
+                            ? cubit.closeSection()
+                            : cubit.openSection(PrivacyAction.delete),
+                        expandedChild: DeleteSection(
+                          isLoading:
+                              state.isLoading &&
+                              state.activeAction == PrivacyAction.delete,
+                          onConfirm: cubit.deleteAccount,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             );

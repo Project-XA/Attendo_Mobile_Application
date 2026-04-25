@@ -1,37 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
 
 class InfoBox extends StatelessWidget {
   const InfoBox({
+    required this.color,
+    required this.textColor,
     required this.message,
+    this.borderColor,
     super.key,
   });
 
+  final Color color;
+  final Color textColor;
   final String message;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
       decoration: BoxDecoration(
-        color: AppColors.buttonBlueBgDarkColor,
+        color: color,
         borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(
-          color: colorScheme.outline.withOpacity(0.2),
-          width: 0.5,
-        ),
+        border: borderColor != null
+            ? Border.all(color: borderColor!, width: 0.5)
+            : null,
       ),
       child: Text(
         message,
-        style: TextStyle(
-          fontSize: 12.sp,
-          color: AppColors.buttonBlueTextDarkColor,
-          height: 1.6,
-        ),
+        style: TextStyle(fontSize: 12.sp, color: textColor, height: 1.6),
       ),
     );
   }

@@ -18,4 +18,15 @@ class PrivacySecurityRepoImpl extends PrivacySecurityRepo {
     );
   }
 
+
+  @override
+  Future<ApiResult<void>> deactivateAccount(String password) async {
+    return await psRemoteDataSource.deactivateAccount(password);
+  }
+
+  @override
+  Future<ApiResult<void>> deleteAccount(String password) async {
+    return await psRemoteDataSource.deleteAccount(password);
+  }
+
 }

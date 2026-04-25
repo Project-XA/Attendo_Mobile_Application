@@ -56,51 +56,14 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final isEnabled = widget.onSubmit != null;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ─── Feature under development banner ──────────────
-        if (!isEnabled)
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-            margin: EdgeInsets.only(bottom: 14.h),
-            decoration: BoxDecoration(
-              color: AppColors.buttonBlueBgDarkColor,
-              borderRadius: BorderRadius.circular(10.r),
-              border: Border.all(
-                color: colorScheme.outline.withOpacity(0.3),
-                width: 0.5,
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.info_outline_rounded,
-                  size: 16.sp,
-                  color: AppColors.buttonBlueTextDarkColor,
-                ),
-                SizedBox(width: 8.w),
-                Expanded(
-                  child: Text(
-                    'privacy.feature_under_development'.tr(),
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: AppColors.buttonBlueTextDarkColor,
-                      height: 1.5,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-        // ─── Hint box ──────────────────────────────────────
-        InfoBox(message: 'privacy.password_hint'.tr()),
-
+        InfoBox(
+          color: const Color(0xFFE8F4F8),
+          textColor: AppColors.buttonBlueColor,
+          message: 'privacy.password_hint'.tr(),
+        ),
         verticalSpace(14),
         PasswordField(
           label: 'privacy.current_password'.tr(),
@@ -136,7 +99,7 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
           label: 'privacy.update_password'.tr(),
           isLoading: widget.isLoading,
           color: AppColors.buttonBlueColor,
-          enabled: isEnabled,
+          enabled: true,
           onTap: _submit,
         ),
       ],
