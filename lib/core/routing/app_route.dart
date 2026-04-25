@@ -1,21 +1,20 @@
 // core/routing/app_route.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_app/core/DI/get_it.dart';
-import 'package:mobile_app/core/DI/init_current_user_di.dart';
-import 'package:mobile_app/core/DI/init_user_attendace.dart';
-import 'package:mobile_app/core/DI/init_verify_get_it.dart';
-import 'package:mobile_app/core/DI/register_get_it.dart';
-import 'package:mobile_app/core/DI/scan_ocr_di.dart';
-import 'package:mobile_app/core/DI/forgot_password_get_it.dart';
+import 'package:mobile_app/core/dependency_injection/get_it.dart';
+import 'package:mobile_app/core/dependency_injection/init_auth.dart';
+import 'package:mobile_app/core/dependency_injection/init_current_user_di.dart';
+import 'package:mobile_app/core/dependency_injection/init_user_attendace.dart';
+import 'package:mobile_app/core/dependency_injection/init_verify_get_it.dart';
+import 'package:mobile_app/core/dependency_injection/scan_ocr_di.dart';
 import 'package:mobile_app/core/routing/routes.dart';
-import 'package:mobile_app/features/auth/forget_password/presentation/forgot_password_screen.dart';
-import 'package:mobile_app/features/auth/forget_password/presentation/verify_reset_password_otp_screen.dart';
+import 'package:mobile_app/features/auth/presentation/views/forgot_password_screen.dart';
+import 'package:mobile_app/features/auth/presentation/views/verify_reset_password_otp_screen.dart';
 import 'package:mobile_app/features/session_mangement/presentation/admin_dashboard.dart';
 import 'package:mobile_app/features/profile/presentation/profile_screen.dart';
 import 'package:mobile_app/features/attendance/presentation/user_dashboard_screen.dart';
 import 'package:mobile_app/features/navigation_screen/presentation/main_navigation_screen.dart';
-import 'package:mobile_app/features/auth/register/presentation/register_screen.dart';
+import 'package:mobile_app/features/auth/presentation/views/register_screen.dart';
 import 'package:mobile_app/features/ocr/presentation/scan_id_screen.dart';
 import 'package:mobile_app/features/onboarding/start_page.dart';
 import 'package:mobile_app/features/verification/presentation/logic/verification_cubit.dart';
@@ -36,19 +35,16 @@ class AppRoute {
         break;
 
       case Routes.registerScreen:
-        initRegister();
+        initAuth();
         page = const RegisterScreen();
         break;
 
       case Routes.forgotPasswordScreen:
-        initForgotPassword();
         page = const ForgotPasswordScreen();
         break;
 
       case Routes.verifyResetPasswordOtpScreen:
-        initForgotPassword();
-        final email = (settings.arguments is String) ? settings.arguments as String : '';
-        page = VerifyResetPasswordOtpScreen(email: email);
+        page = const VerifyResetPasswordOtpScreen();
         break;
 
       case Routes.mainNavigation:

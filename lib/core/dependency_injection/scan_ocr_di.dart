@@ -1,4 +1,4 @@
-import 'package:mobile_app/core/DI/get_it.dart';
+import 'package:mobile_app/core/dependency_injection/get_it.dart';
 import 'package:mobile_app/features/ocr/data/repo_imp/camera_reo_imp.dart';
 import 'package:mobile_app/features/ocr/domain/repo/camera_repo.dart';
 import 'package:mobile_app/features/ocr/domain/usecases/captured_photo.dart';

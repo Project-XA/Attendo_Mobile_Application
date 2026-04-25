@@ -1,7 +1,6 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:mobile_app/core/DI/get_it.dart';
 import 'package:mobile_app/core/current_user/data/remote_data_source/user_remote_data_source.dart';
-import 'package:mobile_app/core/services/auth/authentication_manager.dart';
 import 'package:mobile_app/core/services/auth/authentication_service.dart';
 import 'package:mobile_app/features/attendance/data/data_source/attendance_local_data_source.dart';
 import 'package:mobile_app/features/attendance/data/data_source/attendance_remote_data_source.dart';
@@ -17,7 +16,9 @@ import 'package:mobile_app/features/attendance/domain/use_cases/get_attendence_h
 import 'package:mobile_app/features/attendance/domain/use_cases/get_attendence_status_use_case.dart';
 import 'package:mobile_app/features/attendance/domain/use_cases/start_discovery_use_case.dart';
 import 'package:mobile_app/features/attendance/domain/use_cases/stop_discover_use_case.dart';
-import 'package:mobile_app/features/attendance/presentation/logic/user_cubit.dart';
+import 'package:mobile_app/features/attendance/presentation/logic/check_in/chech_in_cubit.dart';
+import 'package:mobile_app/features/attendance/presentation/logic/discover/discover_cubit.dart';
+import 'package:mobile_app/features/attendance/presentation/logic/stats/stats_cubit.dart';
 
 void initUserAttendace() {
   if (!getIt.isRegistered<SessionDiscoveryService>()) {
@@ -25,28 +26,21 @@ void initUserAttendace() {
       () => SessionDiscoveryService(),
     );
   }
+  if (!getIt.isRegistered<AuthenticationService>()) {
+    getIt.registerLazySingleton<AuthenticationService>(
+      () => AuthenticationService(),
+    );
+  }
 
+  if (!getIt.isRegistered<IBiometricService>()) {
+    getIt.registerLazySingleton<IBiometricService>(
+      () => getIt<AuthenticationService>(),
+    );
+  }
   if (!getIt.isRegistered<AttendanceService>()) {
     getIt.registerLazySingleton<AttendanceService>(() => AttendanceService());
   }
-  getIt.registerLazySingleton<AuthenticationService>(
-    () => AuthenticationService(),
-  );
 
-  getIt.registerLazySingleton<IBiometricService>(
-    () => getIt<AuthenticationService>(),
-  );
-
-  getIt.registerLazySingleton<IPinService>(
-    () => getIt<AuthenticationService>(),
-  );
-
-  getIt.registerLazySingleton<AuthenticationManager>(
-    () => AuthenticationManager(
-      biometricService: getIt<IBiometricService>(),
-      pinService: getIt<IPinService>(),
-    ),
-  );
   if (!getIt.isRegistered<DeviceInfoPlugin>()) {
     getIt.registerLazySingleton<DeviceInfoPlugin>(() => DeviceInfoPlugin());
   }
@@ -122,16 +116,27 @@ void initUserAttendace() {
     );
   }
 
-  if (!getIt.isRegistered<UserCubit>()) {
-    getIt.registerFactory<UserCubit>(
-      () => UserCubit(
+  if (!getIt.isRegistered<StatsCubit>()) {
+    getIt.registerFactory<StatsCubit>(
+      () => StatsCubit(
+        getAttendanceStatsUseCase: getIt<GetAttendanceStatsUseCase>(),
+      ),
+    );
+  }
+
+  if (!getIt.isRegistered<DiscoveryCubit>()) {
+    getIt.registerFactory<DiscoveryCubit>(
+      () => DiscoveryCubit(
         startDiscoveryUseCase: getIt<StartDiscoveryUseCase>(),
         stopDiscoveryUseCase: getIt<StopDiscoveryUseCase>(),
         discoverSessionsUseCase: getIt<DiscoverSessionsUseCase>(),
-        checkInUseCase: getIt<CheckInUseCase>(),
-        getAttendanceHistoryUseCase: getIt<GetAttendanceHistoryUseCase>(),
-        getAttendanceStatsUseCase: getIt<GetAttendanceStatsUseCase>(),
       ),
+    );
+  }
+
+  if (!getIt.isRegistered<CheckInCubit>()) {
+    getIt.registerFactory<CheckInCubit>(
+      () => CheckInCubit(checkInUseCase: getIt<CheckInUseCase>()),
     );
   }
 }

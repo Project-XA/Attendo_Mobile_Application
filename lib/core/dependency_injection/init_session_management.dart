@@ -1,4 +1,4 @@
-import 'package:mobile_app/core/DI/get_it.dart';
+import 'package:mobile_app/core/dependency_injection/get_it.dart';
 import 'package:mobile_app/core/current_user/data/local_data_soruce/user_local_data_source.dart';
 import 'package:mobile_app/core/networking/network_service.dart';
 import 'package:mobile_app/core/utils/register_lazy_if_not_registered.dart';

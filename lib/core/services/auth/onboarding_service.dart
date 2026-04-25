@@ -1,6 +1,6 @@
 import 'package:mobile_app/core/current_user/data/local_data_soruce/user_local_data_source.dart';
 import 'package:mobile_app/core/services/auth/auth_state_service.dart';
-import 'package:mobile_app/core/services/auth/dio_token_service.dart';
+import 'package:mobile_app/core/services/auth/secure_storage_service.dart';
 import 'package:mobile_app/core/services/auth/onboarding_service/i_ocr_service.dart';
 import 'package:mobile_app/core/services/auth/onboarding_service/i_registeration_service.dart';
 import 'package:mobile_app/core/services/auth/onboarding_service/i_session_service.dart';
@@ -14,12 +14,7 @@ class OnboardingService
     implements IOcrService, IRegistrationService, ISessionService {
   final AuthStateService _authStateService;
   final UserLocalDataSource _userLocalDataSource;
-  final ITokenService _tokenService;
-  OnboardingService(
-    this._authStateService,
-    this._userLocalDataSource,
-    this._tokenService,
-  );
+  OnboardingService(this._authStateService, this._userLocalDataSource);
 
   @override
   Future<bool> hasCompletedOCR() async {
@@ -67,7 +62,7 @@ class OnboardingService
 
   @override
   Future<void> logout() async {
-    await _tokenService.clearTokens();
+    await SecureStorageService.deleteToken();
     await _userLocalDataSource.logout();
     await _authStateService.clearAuthState();
   }

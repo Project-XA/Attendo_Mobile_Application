@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mobile_app/core/current_user/data/local_data_soruce/cache_exception.dart';
 import 'package:mobile_app/core/current_user/data/models/user_model.dart';
+import 'package:mobile_app/core/services/auth/secure_storage_service.dart';
 import 'package:path_provider/path_provider.dart';
 
 abstract class UserLocalDataSource {
@@ -66,10 +67,8 @@ class UserLocalDataSourceImp extends UserLocalDataSource {
   @override
   Future<bool> hasValidToken() async {
     try {
-      final user = userBox.get(_currentUserKey);
-      return user != null &&
-          user.loginToken != null &&
-          user.loginToken!.isNotEmpty;
+      await SecureStorageService.hasValidToken();
+      return true;
     } catch (e) {
       return false;
     }
@@ -174,11 +173,7 @@ class UserLocalDataSourceImp extends UserLocalDataSource {
   @override
   Future<void> logout() async {
     try {
-      final user = await getCurrentUser();
-
-      user.loginToken = null;
-
-      await userBox.put(_currentUserKey, user);
+      await SecureStorageService.deleteToken();
       await userBox.flush();
     } catch (e) {
       throw CacheException('Failed to logout: $e');

@@ -1,6 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_app/core/DI/get_it.dart';
+import 'package:mobile_app/core/dependency_injection/get_it.dart';
 import 'package:mobile_app/core/services/auth/onboarding_service.dart';
 import 'package:mobile_app/features/verification/data/exceptions/face_recognition_exception.dart';
 import 'package:mobile_app/features/verification/data/exceptions/no_face_detected_exception.dart';

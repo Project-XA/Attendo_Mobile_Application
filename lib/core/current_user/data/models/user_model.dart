@@ -42,12 +42,9 @@ class UserModel extends HiveObject {
 
   @HiveField(10)
   String? idCardImage;
-
   @HiveField(11)
-  String? loginToken;
-  @HiveField(12)
   String? id;
-  @HiveField(13)
+  @HiveField(12)
   String? username;
   
 
@@ -65,7 +62,6 @@ class UserModel extends HiveObject {
     this.organizations,
     this.profileImage,
     this.idCardImage,
-    this.loginToken,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -89,7 +85,6 @@ class UserModel extends HiveObject {
           .toList(),
       profileImage: user.profileImage,
       idCardImage: user.idCardImage,
-      loginToken: user.loginToken,
       username: user.username,
     );
   }
@@ -116,7 +111,6 @@ class UserModel extends HiveObject {
           .toList(),
       profileImage: profileImage,
       idCardImage: idCardImage,
-      loginToken: loginToken,
       username: username,
     );
   }
@@ -135,7 +129,6 @@ class UserModel extends HiveObject {
       organizations: organizations,
       profileImage: profileImage,
       idCardImage: idCardImage,
-      loginToken: null,
       username: username,
       // Clear token only
     );
@@ -171,7 +164,6 @@ class UserModel extends HiveObject {
       organizations: organizations ?? this.organizations,
       profileImage: profileImage ?? this.profileImage,
       idCardImage: idCardImage ?? this.idCardImage,
-      loginToken: loginToken ?? this.loginToken,
       username: username ?? this.username,
     );
   }

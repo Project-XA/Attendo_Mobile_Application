@@ -1,4 +1,4 @@
-import 'package:mobile_app/core/DI/get_it.dart';
+import 'package:mobile_app/core/dependency_injection/get_it.dart';
 import 'package:mobile_app/core/current_user/data/local_data_soruce/user_local_data_source.dart';
 import 'package:mobile_app/features/verification/data/models/face_detection_model.dart';
 import 'package:mobile_app/features/verification/data/models/face_recognition_model.dart';
