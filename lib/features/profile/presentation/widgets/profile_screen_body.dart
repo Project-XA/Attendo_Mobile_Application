@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
@@ -11,12 +13,13 @@ import 'package:mobile_app/features/profile/presentation/widgets/top_section.dar
 import 'package:mobile_app/features/profile/presentation/widgets/profile_body.dart';
 
 class ProfileScreenBody extends StatelessWidget {
-  const ProfileScreenBody({super.key});
+  const ProfileScreenBody({super.key, required this.drawerController});
+
+  final AdvancedDrawerController drawerController;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backGroundColorWhite,
       body: BlocListener<CurrentUserCubit, CurrentUserState>(
         listener: (context, state) {
           if (state.error != null) {
@@ -25,17 +28,15 @@ class ProfileScreenBody extends StatelessWidget {
         },
         child: BlocBuilder<CurrentUserCubit, CurrentUserState>(
           builder: (context, state) {
-            // Loading
             if (state.isLoading) {
               return const Center(
                 child: CircularProgressIndicator(
-                  color: AppColors.mainTextColorBlack,
+                  color: AppColors.mainTextBlackColor,
                 ),
               );
             }
 
             final user = state.user;
-
             if (user == null) {
               return Center(
                 child: Column(
@@ -44,18 +45,24 @@ class ProfileScreenBody extends StatelessWidget {
                     Icon(Icons.error_outline, size: 60.sp, color: Colors.grey),
                     verticalSpace(20.h),
                     Text(
-                      'No user data found',
-                      style: AppTextStyle.font14MediamGrey,
+                      'profile.no_user_data'.tr(),
+                      style: AppTextStyle.font14GreyMedium,
                     ),
                   ],
                 ),
               );
             }
 
-            return const Column(
-              children: [
-                TopSection(),
-                Expanded(child: ProfileBody()),
+            return CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: TopSection(drawerController: drawerController),
+                ),
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: ProfileBody(),
+                ),
               ],
             );
           },

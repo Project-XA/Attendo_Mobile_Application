@@ -47,7 +47,7 @@ class AppTextFormField extends StatelessWidget {
       keyboardType: keyboardType ?? TextInputType.text,
       decoration: InputDecoration(
         filled: true,
-        fillColor: backgroundColor ?? AppColors.backGroundColorWhite,
+        fillColor: backgroundColor ?? AppColors.mainBackgroundWhiteColor,
         isDense: true,
         contentPadding:
             contentPadding ??

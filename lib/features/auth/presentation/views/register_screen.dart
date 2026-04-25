@@ -22,7 +22,7 @@ class RegisterScreen extends StatelessWidget {
           return false;
         },
         child: Scaffold(
-          backgroundColor: AppColors.backGroundColorWhite,
+          backgroundColor: AppColors.mainBackgroundWhiteColor,
           body: SafeArea(
             child: SingleChildScrollView(
               child: Column(
@@ -43,9 +43,9 @@ class RegisterScreen extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.mainTextColorBlack,
+            AppColors.mainSurfaceBlackColor,
             // ignore: deprecated_member_use
-            AppColors.mainTextColorBlack.withOpacity(0.8),
+            AppColors.mainSurfaceBlackColor.withOpacity(0.8),
           ],
         ),
         borderRadius: BorderRadius.only(

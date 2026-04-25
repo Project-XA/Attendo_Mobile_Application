@@ -1,7 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 
 class InfoCard extends StatelessWidget {
@@ -23,7 +23,7 @@ class InfoCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: AppColors.backGroundColorWhite,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
@@ -41,10 +41,10 @@ class InfoCard extends StatelessWidget {
             padding: EdgeInsets.all(10.w),
             decoration: BoxDecoration(
               // ignore: deprecated_member_use
-              color: AppColors.mainTextColorBlack.withOpacity(0.08),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.08),
               borderRadius: BorderRadius.circular(10.r),
             ),
-            child: Icon(icon, color: AppColors.mainTextColorBlack, size: 24.sp),
+            child: Icon(icon, color: Theme.of(context).colorScheme.onSurface, size: 24.sp),
           ),
           horizontalSpace(15.w),
           Expanded(
@@ -53,20 +53,13 @@ class InfoCard extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: AppTextStyle.font14MediamGrey.copyWith(
+                  style: AppTextStyle.font14GreyMedium.copyWith(
                     fontSize: 12.sp,
                     color: Colors.grey[600],
                   ),
                 ),
                 verticalSpace(4.h),
-                Text(
-                  value,
-                  style: AppTextStyle.font14MediamGrey.copyWith(
-                    color: AppColors.mainTextColorBlack,
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                Text(value, style: AppTextStyle.font15BlackMedium.copyWith(color: Theme.of(context).colorScheme.onSurface)),
               ],
             ),
           ),
@@ -75,10 +68,10 @@ class InfoCard extends StatelessWidget {
               onPressed: onEdit,
               icon: Icon(
                 Icons.edit_outlined,
-                color: AppColors.mainTextColorBlack,
+                color: Theme.of(context).colorScheme.onSurface,
                 size: 22.sp,
               ),
-              tooltip: 'Edit',
+              tooltip: 'profile.edit_tooltip'.tr(),
             )
           else
             Icon(Icons.lock_outline, color: Colors.grey[400], size: 20.sp),

@@ -45,7 +45,6 @@ class _VerifyResetPasswordOtpScreenState
 
   @override
   Widget build(BuildContext context) {
-    // ✅ جيب الـ email من الـ state مباشرة
     final email = context.read<AuthCubit>().state.email ?? '';
 
     return BlocConsumer<AuthCubit, AuthState>(
@@ -68,13 +67,13 @@ class _VerifyResetPasswordOtpScreenState
         final isLoading = state.status == AuthStatus.loading;
 
         return Scaffold(
-          backgroundColor: AppColors.backGroundColorWhite,
+          backgroundColor: AppColors.mainBackgroundWhiteColor,
           appBar: AppBar(
-            backgroundColor: AppColors.backGroundColorWhite,
+            backgroundColor: AppColors.mainBackgroundWhiteColor,
             elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios_new_rounded),
-              color: AppColors.mainTextColorBlack,
+              color: AppColors.mainBackgroundDarkColor,
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
@@ -88,14 +87,14 @@ class _VerifyResetPasswordOtpScreenState
                     verticalSpace(16.h),
                     Text(
                       'verify_otp_title'.tr(),
-                      style: AppTextStyle.font18BoldBlack.copyWith(
+                      style: AppTextStyle.font18BlackBold.copyWith(
                         fontSize: 24.sp,
                       ),
                     ),
                     verticalSpace(8.h),
                     Text(
                       'verify_otp_subtitle'.tr(args: [email]),
-                      style: AppTextStyle.font14MediamGrey,
+                      style: AppTextStyle.font14GreyMedium,
                     ),
                     verticalSpace(24.h),
                     Form(

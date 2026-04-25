@@ -1,6 +1,6 @@
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:mobile_app/core/DI/get_it.dart';
 import 'package:mobile_app/core/current_user/data/remote_data_source/user_remote_data_source.dart';
+import 'package:mobile_app/core/dependency_injection/get_it.dart';
 import 'package:mobile_app/core/services/auth/authentication_service.dart';
 import 'package:mobile_app/features/attendance/data/data_source/attendance_local_data_source.dart';
 import 'package:mobile_app/features/attendance/data/data_source/attendance_remote_data_source.dart';

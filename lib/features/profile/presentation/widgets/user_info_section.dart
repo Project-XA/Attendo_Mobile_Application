@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 
 class UserNameSection extends StatelessWidget {
@@ -10,14 +9,7 @@ class UserNameSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      fullNameEn,
-      style: AppTextStyle.font14MediamGrey.copyWith(
-        color: AppColors.backGroundColorWhite,
-        fontSize: 22.sp,
-        fontWeight: FontWeight.bold,
-      ),
-    );
+    return Text(fullNameEn, style: AppTextStyle.font22WhiteBold);
   }
 }
 
@@ -28,14 +20,7 @@ class UserEmailSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      email,
-      style: AppTextStyle.font14MediamGrey.copyWith(
-        // ignore: deprecated_member_use
-        color: AppColors.backGroundColorWhite.withOpacity(0.9),
-        fontSize: 14.sp,
-      ),
-    );
+    return Text(email, style: AppTextStyle.font14WhiteMedium);
   }
 }
 
@@ -50,16 +35,10 @@ class UserRoleSection extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       decoration: BoxDecoration(
         // ignore: deprecated_member_use
-        color: AppColors.backGroundColorWhite.withOpacity(0.2),
+        color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.2),
         borderRadius: BorderRadius.circular(20.r),
       ),
-      child: Text(
-        role,
-        style: AppTextStyle.font14MediamGrey.copyWith(
-          color: AppColors.backGroundColorWhite,
-          fontSize: 12.sp,
-        ),
-      ),
+      child: Text(role, style: AppTextStyle.font12WhiteMedium),
     );
   }
 }

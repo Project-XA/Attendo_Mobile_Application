@@ -32,9 +32,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   void _onSubmit() {
     if (!_formKey.currentState!.validate()) return;
-    context.read<AuthCubit>().sendResetOtp(
-      email: _emailController.text.trim(),
-    );
+    context.read<AuthCubit>().sendResetOtp(email: _emailController.text.trim());
   }
 
   @override
@@ -42,11 +40,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state.status == AuthStatus.otpSent) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message ?? '')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message ?? '')));
           context.pushNamed(Routes.verifyResetPasswordOtpScreen);
-          // ✅ مش محتاج تبعت email — الـ cubit بيحتفظ بيه في state.email
         } else if (state.status == AuthStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -60,13 +57,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         final isLoading = state.status == AuthStatus.loading;
 
         return Scaffold(
-          backgroundColor: AppColors.backGroundColorWhite,
+          backgroundColor: AppColors.mainBackgroundWhiteColor,
           appBar: AppBar(
-            backgroundColor: AppColors.backGroundColorWhite,
+            backgroundColor: AppColors.mainBackgroundWhiteColor,
             elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios_new_rounded),
-              color: AppColors.mainTextColorBlack,
+              color: AppColors.mainTextBlackColor,
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
@@ -80,14 +77,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     verticalSpace(16.h),
                     Text(
                       'forgot_password_title'.tr(),
-                      style: AppTextStyle.font18BoldBlack.copyWith(
+                      style: AppTextStyle.font18BlackBold.copyWith(
                         fontSize: 24.sp,
                       ),
                     ),
                     verticalSpace(8.h),
                     Text(
                       'forgot_password_subtitle'.tr(),
-                      style: AppTextStyle.font14MediamGrey,
+                      style: AppTextStyle.font14GreyMedium,
                     ),
                     verticalSpace(24.h),
                     Form(

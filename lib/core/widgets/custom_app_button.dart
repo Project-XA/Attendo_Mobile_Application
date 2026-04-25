@@ -42,7 +42,7 @@ class CustomAppButton extends StatelessWidget {
             ),
           ),
           backgroundColor: WidgetStatePropertyAll(
-            backgroundColor ?? AppColors.backGroundColorWhite,
+            backgroundColor ?? AppColors.mainBackgroundWhiteColor,
           ),
           padding: WidgetStatePropertyAll(
             EdgeInsets.symmetric(

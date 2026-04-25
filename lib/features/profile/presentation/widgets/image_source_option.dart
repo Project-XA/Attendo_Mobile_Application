@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 
 class ImageSourceOption extends StatelessWidget {
@@ -25,14 +24,14 @@ class ImageSourceOption extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 30.w),
         decoration: BoxDecoration(
           // ignore: deprecated_member_use
-          color: AppColors.mainTextColorBlack.withOpacity(0.05),
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
           borderRadius: BorderRadius.circular(15.r),
         ),
         child: Column(
           children: [
-            Icon(icon, size: 40.sp, color: AppColors.mainTextColorBlack),
+            Icon(icon, size: 40.sp, color: Theme.of(context).colorScheme.onSurface),
             verticalSpace(8.h),
-            Text(label, style: AppTextStyle.font14MediamGrey),
+            Text(label, style: AppTextStyle.font14GreyMedium),
           ],
         ),
       ),

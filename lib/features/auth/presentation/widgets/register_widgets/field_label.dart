@@ -23,15 +23,13 @@ class FieldLabel extends StatelessWidget {
           icon,
           size: 18.sp,
           // ignore: deprecated_member_use
-          color: AppColors.mainTextColorBlack.withOpacity(0.7),
+          color: AppColors.mainTextBlackColor.withOpacity(0.7),
         ),
         horizontalSpace(6.w),
         Text(
           label,
-          style: AppTextStyle.font14MediamGrey.copyWith(
-            fontSize: 14.sp,
+          style: AppTextStyle.font14BlackMedium.copyWith(
             fontWeight: FontWeightHelper.semiBold,
-            color: AppColors.mainTextColorBlack,
           ),
         ),
       ],

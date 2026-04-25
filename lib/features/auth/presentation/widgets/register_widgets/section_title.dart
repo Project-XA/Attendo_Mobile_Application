@@ -17,10 +17,10 @@ class SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: AppTextStyle.font18BoldBlack.copyWith(
+      style: AppTextStyle.font18BlackBold.copyWith(
         fontSize: 20.sp,
         fontWeight: FontWeightHelper.bold,
-        color: AppColors.mainTextColorBlack,
+        color: AppColors.mainTextBlackColor,
       ),
     );
   }

@@ -66,7 +66,7 @@ class _UserAvatar extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: AppColors.backGroundColorWhite,
+        color: AppColors.mainBackgroundWhiteColor,
         borderRadius: BorderRadius.circular(10.r),
         boxShadow: [
           BoxShadow(
@@ -109,7 +109,7 @@ class _UserInfo extends StatelessWidget {
         Text(
           userName,
           style: TextStyle(
-            color: AppColors.mainTextColorBlack,
+            color: AppColors.mainBackgroundDarkColor,
             fontSize: isSmallScreen ? 14.sp : 16.sp,
             fontWeight: FontWeight.bold,
           ),
@@ -120,7 +120,7 @@ class _UserInfo extends StatelessWidget {
         Text(
           userRole,
           style: TextStyle(
-            color: AppColors.mainTextColorBlack.withOpacity(0.8),
+            color: AppColors.mainTextDarkColor.withOpacity(0.8),
             fontSize: isSmallScreen ? 11.sp : 14.sp,
             fontWeight: FontWeight.w400,
           ),

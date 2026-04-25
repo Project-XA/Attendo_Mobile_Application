@@ -1,10 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:mobile_app/core/dependency_injection/get_it.dart';
-import 'package:mobile_app/core/routing/routes.dart';
-import 'package:mobile_app/core/services/UI/extensions.dart';
-import 'package:mobile_app/core/services/auth/onboarding_service.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
@@ -14,7 +12,9 @@ import 'package:mobile_app/features/profile/presentation/widgets/profile_image_s
 import 'package:mobile_app/features/profile/presentation/widgets/user_info_section.dart';
 
 class TopSection extends StatelessWidget {
-  const TopSection({super.key});
+  const TopSection({super.key, required this.drawerController});
+
+  final AdvancedDrawerController drawerController;
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +27,10 @@ class TopSection extends StatelessWidget {
         return Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                AppColors.mainTextColorBlack,
-                AppColors.mainTextColorBlack.withOpacity(0.8),
-              ],
+              colors: [Color(0xFF1A1A1A), Color(0xFF2C2C2C)],
             ),
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(30.r),
@@ -41,120 +38,65 @@ class TopSection extends StatelessWidget {
             ),
           ),
           child: SafeArea(
-            child: Column(
-              children: [
-                // Logout Button
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 20.w,
-                    vertical: 10.h,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 24.h),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                        onPressed: () => _showLogoutDialog(context),
-                        icon: Icon(
-                          Icons.logout,
-                          color: AppColors.backGroundColorWhite,
-                          size: 22.sp,
-                        ),
+                      Text(
+                        'profile.title'.tr(),
+                        style: AppTextStyle.font20WhiteBold,
+                      ),
+                      ValueListenableBuilder(
+                        valueListenable: drawerController,
+                        builder: (_, value, __) {
+                          return AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 250),
+                            child: IconButton(
+                              key: ValueKey(value.visible),
+                              icon: Icon(
+                                value.visible
+                                    ? Icons.close_rounded
+                                    : Icons.menu_rounded,
+                                color: AppColors.mainBackgroundWhiteColor,
+                                size: 26.sp,
+                              ),
+                              onPressed: drawerController.toggleDrawer,
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
-                ),
 
-                // Profile Image
-                const ProfileImageSection(),
+                  verticalSpace(16.h),
 
-                verticalSpace(10.h),
+                  // Profile Image
+                  const ProfileImageSection(),
 
-                UserNameSection(fullNameEn: user.fullNameEn),
+                  verticalSpace(10.h),
 
-                verticalSpace(5.h),
+                  UserNameSection(fullNameEn: user.fullNameEn),
 
-                if (user.email != null) UserEmailSection(email: user.email!),
+                  verticalSpace(5.h),
 
-                verticalSpace(5.h),
+                  if (user.email != null) UserEmailSection(email: user.email!),
 
-                if (user.organizations != null &&
-                    user.organizations!.isNotEmpty)
-                  UserRoleSection(role: user.organizations!.first.role),
+                  verticalSpace(5.h),
 
-                verticalSpace(10.h),
-              ],
+                  if (user.organizations != null &&
+                      user.organizations!.isNotEmpty)
+                    UserRoleSection(role: user.organizations!.first.role),
+
+                  verticalSpace(8.h),
+                ],
+              ),
             ),
           ),
         );
       },
-    );
-  }
-
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.r),
-        ),
-        title: Text(
-          'Logout',
-          style: AppTextStyle.font14MediamGrey.copyWith(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Text(
-          'Are you sure you want to logout?',
-          style: AppTextStyle.font14MediamGrey,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              // Close dialog first
-              Navigator.pop(ctx);
-
-              try {
-                final onboardingService = getIt<OnboardingService>();
-                await onboardingService.logout();
-
-                if (!context.mounted) return;
-
-                context.pushNameAndRemoveUntil(
-                  Routes.registerScreen,
-                  predicate: (route) => false,
-                );
-              } catch (e) {
-                debugPrint('Logout error: $e');
-
-                if (!context.mounted) return;
-
-                // Show error message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Logout failed: $e'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.mainTextColorBlack,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-            ),
-            child: const Text(
-              'Logout',
-              style: TextStyle(color: AppColors.backGroundColorWhite),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

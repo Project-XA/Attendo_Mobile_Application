@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
-import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/core/widgets/custom_app_button.dart';
 
 class RegisterSubmitButton extends StatelessWidget {
@@ -26,7 +25,7 @@ class RegisterSubmitButton extends StatelessWidget {
     final label = text ?? 'add_account'.tr();
     return CustomAppButton(
       onPressed: isLoading ? null : onPressed,
-      backgroundColor: AppColors.mainTextColorBlack,
+      backgroundColor: AppColors.mainTextBlackColor,
       borderRadius: 16.r,
       width: double.infinity,
       height: 46.h,
@@ -44,15 +43,16 @@ class RegisterSubmitButton extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: AppTextStyle.font14MediamGrey.copyWith(
-                    color: AppColors.backGroundColorWhite,
-                    fontWeight: FontWeightHelper.semiBold,
-                    fontSize: 16.sp,
+                  style: AppTextStyle.font16WhiteMedium.copyWith(
                     letterSpacing: 0.3,
                   ),
                 ),
                 horizontalSpace(8.w),
-                Icon(icon, color: AppColors.backGroundColorWhite, size: 20.sp),
+                Icon(
+                  icon,
+                  color: AppColors.mainBackgroundWhiteColor,
+                  size: 20.sp,
+                ),
               ],
             ),
     );

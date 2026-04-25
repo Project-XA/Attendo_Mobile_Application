@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/current_user/presentation/cubits/current_user_cubit.dart';
 import 'package:mobile_app/core/current_user/presentation/cubits/current_user_state.dart';
@@ -25,11 +24,7 @@ class ProfileBody extends StatelessWidget {
             children: [
               Text(
                 'Personal Information',
-                style: AppTextStyle.font14MediamGrey.copyWith(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.mainTextColorBlack,
-                ),
+                style: AppTextStyle.font18BlackBold
               ),
               verticalSpace(15.h),
               FirstNameCard(firstNameAr: user.firstNameEn!),
@@ -39,9 +34,7 @@ class ProfileBody extends StatelessWidget {
               if (user.email != null) EmailCard(email: user.email!),
               verticalSpace(12.h),
               // NationalIdCard(nationalId: user.nationalId),
-              // verticalSpace(12.h),
-              if (user.address != null) AddressCard(address: user.address!),
-              verticalSpace(12.h),
+             
               // if (user.birthDate != null)
               //   BirthDateCard(birthDate: user.birthDate!),
             ],

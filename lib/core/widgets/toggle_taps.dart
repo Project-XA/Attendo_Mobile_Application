@@ -17,9 +17,9 @@ class ToggleTabs extends StatelessWidget {
     required this.tabs,
     required this.selectedIndex,
     required this.onTabSelected,
-    this.selectedColor = AppColors.mainTextColorBlack,
+    this.selectedColor = AppColors.mainTextBlackColor,
     this.unselectedColor = Colors.transparent,
-    this.selectedTextColor = AppColors.backGroundColorWhite,
+    this.selectedTextColor = AppColors.mainBackgroundWhiteColor,
     this.unselectedTextColor = Colors.black87,
     this.backgroundColor = const Color(0xFFF5F5F5),
   });

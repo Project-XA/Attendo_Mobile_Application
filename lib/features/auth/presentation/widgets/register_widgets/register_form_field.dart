@@ -96,7 +96,7 @@ class RegisterFormFields extends StatelessWidget {
           style: TextStyle(
             fontSize: 13.sp,
             fontWeight: FontWeight.w500,
-            color: AppColors.mainTextColorBlack.withOpacity(0.7),
+            color: AppColors.mainTextBlackColor.withOpacity(0.7),
           ),
         ),
       ),

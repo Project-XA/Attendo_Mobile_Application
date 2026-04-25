@@ -20,13 +20,13 @@ Future<void> main() async {
   Hive.registerAdapter(HallModelAdapter());
   Hive.registerAdapter(CacheHallsDataAdapter());
   Hive.registerAdapter(AttendanceStatsModelAdapter());
-
+  final themeBox = await Hive.openBox<bool>('themePrefs');
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ar')],
       path: 'assets/translations',
       fallbackLocale: const Locale('en'),
-      child: const AppBootstrap(),
+      child: AppBootstrap(themeBox: themeBox),
     ),
   );
 }

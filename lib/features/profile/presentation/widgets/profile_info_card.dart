@@ -1,7 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_app/core/current_user/presentation/cubits/current_user_cubit.dart';
-import 'package:mobile_app/features/profile/data/service/dialog_service.dart';
 import 'package:mobile_app/features/profile/presentation/widgets/info_card.dart';
 
 class FirstNameCard extends StatelessWidget {
@@ -27,6 +25,31 @@ class FirstNameCard extends StatelessWidget {
     );
   }
 }
+
+class FullNameCard extends StatelessWidget {
+  final String fullName;
+
+  const FullNameCard({super.key, required this.fullName});
+
+  @override
+  Widget build(BuildContext context) {
+    return InfoCard(
+      icon: Icons.person,
+      label: 'profile.field_full_name'.tr(),
+      value: fullName,
+      onEdit: null,
+      //showEditDialog(
+      //   context,
+      //   'First Name',
+      //   firstNameAr,
+      //   (newValue) => context.read<UserProfileCubit>().updateUser(
+      //         firstNameAr: newValue,
+      //       ),
+      // ),
+    );
+  }
+}
+
 
 class LastNameCard extends StatelessWidget {
   final String lastNameAr;
@@ -60,7 +83,7 @@ class EmailCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InfoCard(
       icon: Icons.email,
-      label: 'Email',
+      label: 'profile.field_email'.tr(),
       value: email,
       onEdit: null,
       // () => showEditDialog(
@@ -85,44 +108,6 @@ class NationalIdCard extends StatelessWidget {
       icon: Icons.badge,
       label: 'National ID',
       value: nationalId,
-      onEdit: null,
-    );
-  }
-}
-
-class AddressCard extends StatelessWidget {
-  final String address;
-
-  const AddressCard({super.key, required this.address});
-
-  @override
-  Widget build(BuildContext context) {
-    return InfoCard(
-      icon: Icons.location_on,
-      label: 'Address',
-      value: address,
-      onEdit: () => showEditDialog(
-        context,
-        'Address',
-        address,
-        (newValue) =>
-            context.read<CurrentUserCubit>().updateUser(address: newValue),
-      ),
-    );
-  }
-}
-
-class BirthDateCard extends StatelessWidget {
-  final String birthDate;
-
-  const BirthDateCard({super.key, required this.birthDate});
-
-  @override
-  Widget build(BuildContext context) {
-    return InfoCard(
-      icon: Icons.cake,
-      label: 'Birth Date',
-      value: birthDate,
       onEdit: null,
     );
   }

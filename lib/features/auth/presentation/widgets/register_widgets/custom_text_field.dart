@@ -30,12 +30,9 @@ class CustomTextField extends StatelessWidget {
       keyboardType: keyboardType,
       obscureText: obscureText,
       suffixIcon: suffixIcon,
-      contentPadding: EdgeInsets.symmetric(
-        vertical: 18.h,
-        horizontal: 20.w,
-      ),
+      contentPadding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 20.w),
       borderRadius: 16.r,
-      focusedBorderColor: AppColors.mainTextColorBlack,
+      focusedBorderColor: AppColors.mainTextBlackColor,
       enabledBorderColor: Colors.grey.shade300,
       hintText: hintText,
       labelStyle: TextStyle(
@@ -43,7 +40,7 @@ class CustomTextField extends StatelessWidget {
         color: Colors.grey.shade400,
         fontWeight: FontWeightHelper.regular,
       ),
-      textStyle: AppTextStyle.font18BoldBlack.copyWith(
+      textStyle: AppTextStyle.font18BlackBold.copyWith(
         fontSize: 14.sp,
         fontWeight: FontWeightHelper.medium,
       ),

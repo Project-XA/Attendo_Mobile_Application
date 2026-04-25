@@ -1,16 +1,16 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_app/core/current_user/presentation/cubits/current_user_cubit.dart';
+import 'package:mobile_app/core/current_user/presentation/cubits/current_user_state.dart';
 import 'package:mobile_app/core/dependency_injection/get_it.dart';
 import 'package:mobile_app/core/dependency_injection/init_session_management.dart';
 import 'package:mobile_app/core/dependency_injection/init_user_attendace.dart';
-import 'package:mobile_app/core/current_user/presentation/cubits/current_user_cubit.dart';
-import 'package:mobile_app/core/current_user/presentation/cubits/current_user_state.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/features/session_mangement/presentation/admin_dashboard.dart';
 import 'package:mobile_app/features/profile/presentation/profile_screen.dart';
 import 'package:mobile_app/features/attendance/presentation/user_dashboard_screen.dart';
@@ -23,18 +23,22 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(() {
-      context.read<CurrentUserCubit>().loadUser();
-    });
+  bool _diInitialized = false;
+
+  void _initDI(String role) {
+    if (_diInitialized) return;
+    if (role.toLowerCase() == 'admin') {
+      initSessionManagement();
+    } else {
+      initUserAttendace();
+    }
+    _diInitialized = true;
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: getIt<CurrentUserCubit>(),
+      value: getIt<CurrentUserCubit>()..loadUser(),
       child: BlocBuilder<CurrentUserCubit, CurrentUserState>(
         builder: (context, state) {
           // Loading
@@ -58,7 +62,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                     ),
                     verticalSpace(16),
                     Text(
-                      'Error Occurred',
+                      'common.error_occurred'.tr(),
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     verticalSpace(8),
@@ -67,7 +71,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                     ElevatedButton(
                       onPressed: () =>
                           context.read<CurrentUserCubit>().loadUser(),
-                      child: const Text('Try Again'),
+                      child: Text('common.try_again'.tr()),
                     ),
                   ],
                 ),
@@ -78,7 +82,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           final user = state.user;
 
           if (user == null) {
-            return const Scaffold(body: Center(child: Text("No user found")));
+            return Scaffold(
+              body: Center(child: Text('common.no_user_found'.tr())),
+            );
           }
 
           final role = user.organizations?.isNotEmpty == true
@@ -97,12 +103,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             );
           }
 
-          // DI init (once)
-          if (role.toLowerCase() == 'admin') {
-            initSessionManagement();
-          } else {
-            initUserAttendace();
-          }
+          _initDI(role);
 
           return _MainNavigationContent(isAdmin: role.toLowerCase() == 'admin');
         },
@@ -161,9 +162,9 @@ class _MainNavigationContentState extends State<_MainNavigationContent> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        backgroundColor: AppColors.backGroundColorWhite,
-        selectedItemColor: AppColors.mainTextColorBlack,
-        unselectedItemColor: Colors.grey,
+        backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+        selectedItemColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
+        unselectedItemColor: Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
         selectedLabelStyle: TextStyle(
           fontSize: 12.sp,
           fontWeight: FontWeight.w600,
@@ -177,17 +178,15 @@ class _MainNavigationContentState extends State<_MainNavigationContent> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined, size: 24.sp),
             activeIcon: Icon(Icons.home, size: 26.sp),
-            label: 'Home',
+            label: 'navigation.home'.tr(),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline, size: 24.sp),
             activeIcon: Icon(Icons.person, size: 26.sp),
-            label: 'Profile',
+            label: 'navigation.profile'.tr(),
           ),
         ],
       ),
     );
   }
 }
-
-

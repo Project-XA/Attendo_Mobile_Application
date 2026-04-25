@@ -20,13 +20,13 @@ class RegisterHeader extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(20.w),
             decoration: BoxDecoration(
-              color: AppColors.backGroundColorWhite.withOpacity(0.15),
+              color: AppColors.mainBackgroundWhiteColor.withOpacity(0.15),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.person_add_rounded,
               size: 50.sp,
-              color: AppColors.backGroundColorWhite,
+              color: AppColors.mainBackgroundWhiteColor,
             ),
           ),
           verticalSpace(15.h),
@@ -36,7 +36,7 @@ class RegisterHeader extends StatelessWidget {
             style: TextStyle(
               fontSize: 32.sp,
               fontWeight: FontWeightHelper.bold,
-              color: AppColors.backGroundColorWhite,
+              color: AppColors.mainBackgroundWhiteColor,
               letterSpacing: -0.5,
             ),
           ),
@@ -47,7 +47,7 @@ class RegisterHeader extends StatelessWidget {
             style: TextStyle(
               fontSize: 15.sp,
               fontWeight: FontWeightHelper.regular,
-              color: AppColors.backGroundColorWhite.withOpacity(0.85),
+              color: AppColors.mainBackgroundWhiteColor.withOpacity(0.85),
               letterSpacing: 0.2,
             ),
           ),

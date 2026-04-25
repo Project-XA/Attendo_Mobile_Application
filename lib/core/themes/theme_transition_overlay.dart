@@ -11,7 +11,8 @@ class ThemeTransitionOverlay extends StatefulWidget {
   });
 
   @override
-  State<ThemeTransitionOverlay> createState() => _ThemeTransitionOverlayState();
+  State<ThemeTransitionOverlay> createState() =>
+      _ThemeTransitionOverlayState();
 }
 
 class _ThemeTransitionOverlayState extends State<ThemeTransitionOverlay>
@@ -32,35 +33,30 @@ class _ThemeTransitionOverlayState extends State<ThemeTransitionOverlay>
 
     _scaleAnim = TweenSequence([
       TweenSequenceItem(
-        tween: Tween(
-          begin: 0.0,
-          end: 1.2,
-        ).chain(CurveTween(curve: Curves.easeOut)),
+        tween: Tween(begin: 0.0, end: 1.2)
+            .chain(CurveTween(curve: Curves.easeOut)),
         weight: 50,
       ),
       TweenSequenceItem(
-        tween: Tween(
-          begin: 1.2,
-          end: 1.0,
-        ).chain(CurveTween(curve: Curves.elasticOut)),
+        tween: Tween(begin: 1.2, end: 1.0)
+            .chain(CurveTween(curve: Curves.elasticOut)),
         weight: 50,
       ),
     ]).animate(_controller);
 
     _fadeAnim = TweenSequence([
       TweenSequenceItem(
-        tween: Tween(
-          begin: 0.0,
-          end: 1.0,
-        ).chain(CurveTween(curve: Curves.easeIn)),
+        tween: Tween(begin: 0.0, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeIn)),
         weight: 20,
       ),
-      TweenSequenceItem(tween: ConstantTween(1.0), weight: 60),
       TweenSequenceItem(
-        tween: Tween(
-          begin: 1.0,
-          end: 0.0,
-        ).chain(CurveTween(curve: Curves.easeOut)),
+        tween: ConstantTween(1.0),
+        weight: 60,
+      ),
+      TweenSequenceItem(
+        tween: Tween(begin: 1.0, end: 0.0)
+            .chain(CurveTween(curve: Curves.easeOut)),
         weight: 20,
       ),
     ]).animate(_controller);
@@ -68,7 +64,10 @@ class _ThemeTransitionOverlayState extends State<ThemeTransitionOverlay>
     _rippleAnim = Tween(begin: 0.0, end: 1.0)
         .chain(CurveTween(curve: Curves.easeOut))
         .animate(
-          CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.6)),
+          CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.0, 0.6),
+          ),
         );
 
     _controller.forward().then((_) => widget.onComplete());
@@ -103,10 +102,8 @@ class _ThemeTransitionOverlayState extends State<ThemeTransitionOverlay>
                   // Ripple rings
                   ...List.generate(3, (i) {
                     final delay = i * 0.15;
-                    final progress = (_rippleAnim.value - delay).clamp(
-                      0.0,
-                      1.0,
-                    );
+                    final progress =
+                        (_rippleAnim.value - delay).clamp(0.0, 1.0);
                     return Transform.scale(
                       scale: 1.0 + progress * (2.5 + i * 0.8),
                       child: Opacity(
