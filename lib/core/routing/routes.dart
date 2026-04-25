@@ -11,4 +11,5 @@ class Routes {
       '/verifyResetPasswordOtpScreen';
   static const String mainNavigation = '/main-navigation';
   static const String verficationScreen = '/verificationScreen';
+  static const String privacyAndSecurityScreen = '/privacyAndSecurityScreen';
 }

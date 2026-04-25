@@ -4,6 +4,7 @@ import 'package:mobile_app/core/networking/dio_factory.dart';
 abstract class NetworkService {
   Future<Response> get(String url);
   Future<Response> post(String url, dynamic body);
+  Future<Response> patch(String url, dynamic body);
 }
 
 class NetworkServiceImp extends NetworkService {
@@ -17,6 +18,12 @@ class NetworkServiceImp extends NetworkService {
   @override
   Future<Response> post(String url, dynamic body) async {
     final response = await dio.post(url, data: body);
+    return response;
+  }
+  
+  @override
+  Future<Response<dynamic>> patch(String url, dynamic body) async {
+    final response = await dio.patch(url, data: body);
     return response;
   }
 }

@@ -6,10 +6,12 @@ import 'package:mobile_app/core/dependency_injection/init_auth.dart';
 import 'package:mobile_app/core/dependency_injection/init_current_user_di.dart';
 import 'package:mobile_app/core/dependency_injection/init_user_attendace.dart';
 import 'package:mobile_app/core/dependency_injection/init_verify_get_it.dart';
+import 'package:mobile_app/core/dependency_injection/privacy_security_di.dart';
 import 'package:mobile_app/core/dependency_injection/scan_ocr_di.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/features/auth/presentation/views/forgot_password_screen.dart';
 import 'package:mobile_app/features/auth/presentation/views/verify_reset_password_otp_screen.dart';
+import 'package:mobile_app/features/privacy_and_security/presentation/privacy_and_security.dart';
 import 'package:mobile_app/features/session_mangement/presentation/admin_dashboard.dart';
 import 'package:mobile_app/features/profile/presentation/profile_screen.dart';
 import 'package:mobile_app/features/attendance/presentation/user_dashboard_screen.dart';
@@ -71,6 +73,11 @@ class AppRoute {
 
       case Routes.profileScreen:
         page = const ProfileScreen();
+        break;
+
+      case Routes.privacyAndSecurityScreen:
+        privacySecurityDi();
+        page = const PrivacySecurityScreen();
         break;
 
       default:
