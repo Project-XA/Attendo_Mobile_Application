@@ -41,7 +41,7 @@ class ActionButtons extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 16.h),
       decoration: BoxDecoration(
         // ignore: deprecated_member_use
-        color: AppColors.mainTextColorBlack.withOpacity(0.1),
+        color: AppColors.mainTextBlackColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -53,7 +53,7 @@ class ActionButtons extends StatelessWidget {
             child: const CircularProgressIndicator(
               strokeWidth: 2,
               valueColor: AlwaysStoppedAnimation<Color>(
-                AppColors.mainTextColorBlack,
+                AppColors.mainTextBlackColor,
               ),
             ),
           ),
@@ -63,7 +63,7 @@ class ActionButtons extends StatelessWidget {
             style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeightHelper.semiBold,
-              color: AppColors.mainTextColorBlack,
+              color: AppColors.mainTextBlackColor,
             ),
           ),
         ],
@@ -97,11 +97,11 @@ class ActionButtons extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.check, color: AppColors.backGroundColorWhite),
+                const Icon(Icons.check, color: AppColors.mainBackgroundWhiteColor),
                 horizontalSpace(8.w),
                 Text(
                   "Verify",
-                  style: AppTextStyle.font15SemiBoldWhite.copyWith(
+                  style: AppTextStyle.font16WhiteMedium.copyWith(
                     fontSize: 16.sp,
                   ),
                 ),
@@ -121,12 +121,12 @@ class ActionButtons extends StatelessWidget {
               children: [
                 const Icon(
                   Icons.refresh,
-                  color: AppColors.backGroundColorWhite,
+                  color: AppColors.mainBackgroundWhiteColor,
                 ),
                 horizontalSpace(8),
                 Text(
                   "Retake",
-                  style: AppTextStyle.font15SemiBoldWhite.copyWith(
+                  style: AppTextStyle.font16WhiteMedium.copyWith(
                     fontSize: 16.sp,
                   ),
                 ),
@@ -177,12 +177,12 @@ class ActionButtons extends StatelessWidget {
               children: [
                 const Icon(
                   Icons.refresh,
-                  color: AppColors.backGroundColorWhite,
+                  color: AppColors.mainBackgroundWhiteColor,
                 ),
                 horizontalSpace(8),
                 Text(
                   "Retake Photo",
-                  style: AppTextStyle.font15SemiBoldWhite.copyWith(
+                  style: AppTextStyle.font16WhiteMedium.copyWith(
                     fontSize: 16.sp,
                   ),
                 ),
@@ -202,12 +202,12 @@ class ActionButtons extends StatelessWidget {
             ? () => context.read<CameraCubit>().capturePhoto()
             : null,
         backgroundColor: state.isOpened && !state.hasCaptured
-            ? AppColors.mainTextColorBlack
+            ? AppColors.mainTextBlackColor
             // ignore: deprecated_member_use
-            : AppColors.subTextColorGrey.withOpacity(0.5),
+            : AppColors.subTextDarkColor.withOpacity(0.5),
         child: Text(
           "Capture",
-          style: AppTextStyle.font15SemiBoldWhite.copyWith(fontSize: 16.sp),
+          style: AppTextStyle.font16WhiteMedium.copyWith(fontSize: 16.sp),
         ),
       ),
     );

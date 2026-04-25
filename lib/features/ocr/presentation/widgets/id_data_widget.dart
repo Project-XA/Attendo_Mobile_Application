@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
 
@@ -26,26 +25,26 @@ class IdDataWidget extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.backGroundColorWhite,
-            AppColors.backGroundColorWhite.withOpacity(0.95),
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surface.withOpacity(0.95),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: AppColors.mainTextColorBlack.withOpacity(0.08),
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.08),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.mainTextColorBlack.withOpacity(0.08),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.08),
             blurRadius: 20,
             offset: const Offset(0, 8),
             spreadRadius: -2,
           ),
           BoxShadow(
-            color: AppColors.mainTextColorBlack.withOpacity(0.04),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.04),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -58,7 +57,7 @@ class IdDataWidget extends StatelessWidget {
             width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
             decoration: BoxDecoration(
-              color: AppColors.mainTextColorBlack.withOpacity(0.03),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.03),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(16.r),
                 topRight: Radius.circular(16.r),
@@ -81,10 +80,10 @@ class IdDataWidget extends StatelessWidget {
                 horizontalSpace(12),
                 Text(
                   'ID Information',
-                  style: AppTextStyle.font14MediamGrey.copyWith(
+                  style: AppTextStyle.font14GreyMedium.copyWith(
                     fontSize: 16.sp,
                     fontWeight: FontWeightHelper.semiBold,
-                    color: AppColors.mainTextColorBlack,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],
@@ -100,12 +99,14 @@ class IdDataWidget extends StatelessWidget {
                   icon: Icons.person_outline,
                   label: 'First Name',
                   value: firstName,
+                  context: context,
                 ),
                 verticalSpace(14.h),
                 _buildInfoCard(
                   icon: Icons.person_outline,
                   label: 'Last Name',
                   value: lastName,
+                  context: context,
                 ),
               
               ],
@@ -121,17 +122,18 @@ class IdDataWidget extends StatelessWidget {
     required String label,
     required String value,
     bool isHighlighted = false,
+    required BuildContext context,
   }) {
     return Container(
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
         color: isHighlighted
-            ? AppColors.mainTextColorBlack.withOpacity(0.02)
+            ? Theme.of(context).colorScheme.onSurface.withOpacity(0.02)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
           color: isHighlighted
-              ? AppColors.mainTextColorBlack.withOpacity(0.1)
+              ? Theme.of(context).colorScheme.onSurface.withOpacity(0.1)
               : Colors.grey.shade200,
           width: 1,
         ),
@@ -141,13 +143,13 @@ class IdDataWidget extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
-              color: AppColors.mainTextColorBlack.withOpacity(0.05),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
               borderRadius: BorderRadius.circular(8.r),
             ),
             child: Icon(
               icon,
               size: 18.w,
-              color: AppColors.mainTextColorBlack.withOpacity(0.6),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
             ),
           ),
           horizontalSpace(12),
@@ -157,18 +159,18 @@ class IdDataWidget extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: AppTextStyle.font14MediamGrey.copyWith(
+                  style: AppTextStyle.font14GreyMedium.copyWith(
                     fontSize: 12.sp,
-                    color: AppColors.mainTextColorBlack.withOpacity(0.5),
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                   ),
                 ),
                 verticalSpace(4.h),
                 Text(
                   value,
-                  style: AppTextStyle.font14MediamGrey.copyWith(
+                  style: AppTextStyle.font14GreyMedium.copyWith(
                     fontSize: 15.sp,
                     fontWeight: FontWeightHelper.semiBold,
-                    color: AppColors.mainTextColorBlack,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],

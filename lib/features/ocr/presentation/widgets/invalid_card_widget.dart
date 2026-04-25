@@ -61,7 +61,7 @@ class InvalidCardWidget extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
-              color: AppColors.backGroundColorWhite,
+              color: AppColors.mainBackgroundWhiteColor,
               borderRadius: BorderRadius.circular(8.r),
               border: Border.all(color: Colors.red.shade200),
             ),

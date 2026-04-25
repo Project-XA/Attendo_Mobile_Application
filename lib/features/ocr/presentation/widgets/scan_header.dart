@@ -14,13 +14,13 @@ class ScanHeader extends StatelessWidget {
       children: [
         Text(
           "Scan Your ID",
-          style: AppTextStyle.font18BoldBlack.copyWith(fontSize: 24.sp),
+          style: AppTextStyle.font18BlackBold.copyWith(fontSize: 24.sp),
         ),
         verticalSpace(10),
         Text(
           "Please scan your ID to confirm verification process.",
           textAlign: TextAlign.start,
-          style: TextStyle(fontSize: 14.sp, color: AppColors.subTextColorGrey),
+          style: TextStyle(fontSize: 14.sp, color: AppColors.subTextDarkColor),
         ),
       ],
     );

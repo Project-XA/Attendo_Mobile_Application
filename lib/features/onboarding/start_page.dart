@@ -1,10 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/core/services/UI/extensions.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
+import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/core/utils/app_assets.dart';
 import 'package:mobile_app/core/widgets/custom_app_button.dart';
@@ -23,7 +24,6 @@ class StartPage extends StatelessWidget {
         return false;
       },
       child: Scaffold(
-        backgroundColor: AppColors.backGroundColorWhite,
         body: LayoutBuilder(
           builder: (context, constraints) {
             bool isTablet = constraints.maxWidth > 600;
@@ -56,9 +56,9 @@ class StartPage extends StatelessWidget {
                     verticalSpace(15),
 
                     Text(
-                      "Welcome to Attendo",
+                      'onboarding.welcome_title'.tr(),
                       style: TextStyle(
-                        color: AppColors.mainTextColorBlack,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: textFont.sp,
                         fontWeight: FontWeightHelper.bold,
                       ),
@@ -67,10 +67,10 @@ class StartPage extends StatelessWidget {
                     verticalSpace(8),
 
                     Text(
-                      "Follow the steps below to continue",
+                      'onboarding.welcome_subtitle'.tr(),
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: AppColors.subTextColorGrey,
+                        color: Theme.of(context).colorScheme.outline,
                         fontSize: descFont.sp,
                         fontWeight: FontWeightHelper.medium,
                       ),
@@ -79,22 +79,22 @@ class StartPage extends StatelessWidget {
                     verticalSpace(30),
 
                     /// STEPS
-                    const Column(
+                    Column(
                       children: [
                         StepItem(
                           icon: Icons.phone_android,
-                          title: "Device Registration",
-                          subtitle: "One-time setup on this device",
+                          title: 'onboarding.step_device_title'.tr(),
+                          subtitle: 'onboarding.step_device_subtitle'.tr(),
                         ),
                         StepItem(
                           icon: Icons.apartment,
-                          title: "Join Organization",
-                          subtitle: "Log in to your school or company",
+                          title: 'onboarding.step_org_title'.tr(),
+                          subtitle: 'onboarding.step_org_subtitle'.tr(),
                         ),
                         StepItem(
                           icon: Icons.location_pin,
-                          title: "Take Attendance",
-                          subtitle: "Check in with your biometrics",
+                          title: 'onboarding.step_attendance_title'.tr(),
+                          subtitle: 'onboarding.step_attendance_subtitle'.tr(),
                         ),
                       ],
                     ),
@@ -103,14 +103,10 @@ class StartPage extends StatelessWidget {
 
                     /// BUTTON
                     CustomAppButton(
-                      backgroundColor: AppColors.mainTextColorBlack,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       child: Text(
-                        "Start Registration",
-                        style: TextStyle(
-                          color: AppColors.backGroundColorWhite,
-                          fontWeight: FontWeightHelper.semiBold,
-                          fontSize: 15.sp,
-                        ),
+                        'onboarding.start_registration'.tr(),
+                        style: AppTextStyle.font15WhiteBold.copyWith(color: Theme.of(context).colorScheme.onPrimary),
                       ),
                       onPressed: () {
                         context.pushNamed(Routes.scanIdScreen);

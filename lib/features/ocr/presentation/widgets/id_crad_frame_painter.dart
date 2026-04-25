@@ -6,7 +6,7 @@ class IdCardFramePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.backGroundColorWhite.withOpacity(0.6)
+      ..color = AppColors.mainBackgroundWhiteColor.withOpacity(0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.5;
 
@@ -24,7 +24,7 @@ class IdCardFramePainter extends CustomPainter {
       paint,
     );
     final cornerPaint = Paint()
-      ..color = AppColors.backGroundColorWhite
+      ..color = AppColors.mainBackgroundWhiteColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.5;
 
@@ -77,7 +77,7 @@ class IdCardFramePainter extends CustomPainter {
     );
 
     final centerLinePaint = Paint()
-      ..color = AppColors.backGroundColorWhite.withOpacity(0.3)
+      ..color = AppColors.mainBackgroundWhiteColor.withOpacity(0.3)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
 

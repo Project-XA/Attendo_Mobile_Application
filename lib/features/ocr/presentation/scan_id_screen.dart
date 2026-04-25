@@ -50,7 +50,7 @@ class _ScanIdScreenState extends State<ScanIdScreen> {
     return BlocProvider(
       create: (context) => getIt<CameraCubit>()..openCamera(),
       child: Scaffold(
-        backgroundColor: AppColors.backGroundColorWhite,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: _buildAppBar(context),
         body: BlocConsumer<CameraCubit, CameraState>(
           listener: (context, state) {
@@ -97,7 +97,7 @@ class _ScanIdScreenState extends State<ScanIdScreen> {
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: AppColors.backGroundColorWhite,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       automaticallyImplyLeading: false,
       centerTitle: true,
       title: Text(
@@ -105,7 +105,7 @@ class _ScanIdScreenState extends State<ScanIdScreen> {
         style: TextStyle(
           fontWeight: FontWeightHelper.semiBold,
           fontSize: 18.sp,
-          color: AppColors.mainTextColorBlack,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );

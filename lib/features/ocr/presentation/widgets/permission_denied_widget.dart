@@ -12,7 +12,7 @@ class PermissionDeniedWidget extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(32.w),
       decoration: BoxDecoration(
-        color: AppColors.backGroundColorWhite,
+        color: AppColors.mainBackgroundWhiteColor,
         borderRadius: BorderRadius.circular(16.r),
       ),
       child: Column(
@@ -48,7 +48,7 @@ class PermissionDeniedWidget extends StatelessWidget {
             style: TextStyle(
               fontSize: 22.sp,
               fontWeight: FontWeight.bold,
-              color: AppColors.mainTextColorBlack,
+              color: AppColors.mainTextBlackColor,
             ),
           ),
 
@@ -59,7 +59,7 @@ class PermissionDeniedWidget extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 15.sp,
-              color: AppColors.subTextColorGrey,
+              color: AppColors.subTextDarkColor,
               height: 1.5,
             ),
           ),
@@ -81,7 +81,7 @@ class PermissionDeniedWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.mainTextColorBlack,
+                    color: AppColors.mainTextBlackColor,
                   ),
                 ),
                 verticalSpace(12.h),
@@ -103,7 +103,7 @@ class PermissionDeniedWidget extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 13.sp,
-              color: AppColors.subTextColorGrey.withOpacity(0.7),
+              color: AppColors.subTextDarkColor.withOpacity(0.7),
               fontStyle: FontStyle.italic,
             ),
           ),
@@ -129,7 +129,7 @@ class PermissionDeniedWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.bold,
-                color: AppColors.backGroundColorWhite,
+                color: AppColors.mainBackgroundWhiteColor,
               ),
             ),
           ),
@@ -140,7 +140,7 @@ class PermissionDeniedWidget extends StatelessWidget {
             text,
             style: TextStyle(
               fontSize: 13.sp,
-              color: AppColors.mainTextColorBlack.withOpacity(0.8),
+              color: AppColors.mainTextBlackColor.withOpacity(0.8),
               height: 1.4,
             ),
           ),

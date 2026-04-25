@@ -188,7 +188,7 @@ class CameraBox extends StatelessWidget {
     if (state.showResult) return Colors.green;
     if (state.hasError) return Colors.red;
     if (state.isProcessing) return Colors.orange;
-    if (state.isOpened) return AppColors.mainTextColorBlack;
+    if (state.isOpened) return AppColors.mainTextBlackColor;
     return Colors.grey;
   }
 }
