@@ -99,17 +99,32 @@ class StartPage extends StatelessWidget {
                       ],
                     ),
 
-                    verticalSpace(size.height * 0.09),
+                    verticalSpace(size.height * 0.07),
 
                     /// BUTTON
                     CustomAppButton(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       child: Text(
                         'onboarding.start_registration'.tr(),
-                        style: AppTextStyle.font15WhiteBold.copyWith(color: Theme.of(context).colorScheme.onPrimary),
+                        style: AppTextStyle.font15WhiteBold.copyWith(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
                       ),
                       onPressed: () {
                         context.pushNamed(Routes.scanIdScreen);
+                      },
+                    ),
+
+                    CustomAppButton(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      child: Text(
+                        'onboarding.start_registration'.tr(),
+                        style: AppTextStyle.font15WhiteBold.copyWith(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      ),
+                      onPressed: () {
+                        context.pushNamed(Routes.studentLoginScreen);
                       },
                     ),
                   ],

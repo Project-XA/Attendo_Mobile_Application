@@ -12,4 +12,5 @@ class Routes {
   static const String mainNavigation = '/main-navigation';
   static const String verficationScreen = '/verificationScreen';
   static const String privacyAndSecurityScreen = '/privacyAndSecurityScreen';
+  static const String studentLoginScreen = '/studentLoginScreen';
 }

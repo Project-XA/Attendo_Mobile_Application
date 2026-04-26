@@ -12,6 +12,10 @@ import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/core/utils/app_assets.dart';
 import 'package:mobile_app/core/widgets/app_text_form_field.dart';
+import 'package:mobile_app/core/widgets/custom_app_button.dart';
+import 'package:mobile_app/features/student_auth/data/model/login_student_request_body.dart';
+import 'package:mobile_app/features/student_auth/presentation/logic/student_auth_cubit.dart';
+import 'package:mobile_app/features/student_auth/presentation/logic/student_auth_state.dart';
 
 class LoginStudentScreen extends StatefulWidget {
   const LoginStudentScreen({super.key});
@@ -77,20 +81,20 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
               verticalSpace(20),
               Text(
                 'login.welcome_back'.tr(),
-                style:AppTextStyle.font24BlackBold
+                style: AppTextStyle.font24BlackBold,
               ),
               verticalSpace(8),
               Text(
                 'login.subtitle'.tr(),
                 textAlign: TextAlign.center,
-                style: AppTextStyle.font14GreyRegular
+                style: AppTextStyle.font14GreyRegular,
               ),
               verticalSpace(36),
               Align(
                 alignment: AlignmentDirectional.centerStart,
                 child: Text(
                   'login.email_label'.tr(),
-                  style: AppTextStyle.font14GreyMedium
+                  style: AppTextStyle.font14GreyMedium,
                 ),
               ),
               verticalSpace(8),
@@ -106,7 +110,7 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                   fontSize: 14.sp,
                 ),
                 keyboardType: TextInputType.emailAddress,
-                label:const Icon(
+                label: const Icon(
                   Icons.email_outlined,
                   color: AppColors.subTextGreyColor,
                   size: 20,
@@ -120,7 +124,7 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                 alignment: AlignmentDirectional.centerStart,
                 child: Text(
                   'login.password_label'.tr(),
-                  style: AppTextStyle.font14BlackMedium
+                  style: AppTextStyle.font14BlackMedium,
                 ),
               ),
               verticalSpace(8),
@@ -136,7 +140,7 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                   fontSize: 14.sp,
                 ),
                 obscureText: _obscurePassword,
-                label:const Icon(
+                label: const Icon(
                   Icons.lock_outline_rounded,
                   color: AppColors.subTextGreyColor,
                   size: 20,
@@ -171,7 +175,7 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                   child: Text(
                     'login.forgot_password'.tr(),
                     style: TextStyle(
-                      color: AppColors.primaryBlue,
+                      color: AppColors.mainBackgroundDarkColor,
                       fontSize: 13.sp,
                       fontWeight: FontWeightHelper.semiBold,
                     ),
@@ -179,12 +183,12 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                 ),
               ),
               verticalSpace(28),
-              BlocConsumer<AuthCubit, AuthState>(
+              BlocConsumer<AuthStudentCubit, AuthStudentState>(
                 listener: (context, state) {
-                  if (state.status == AuthStatus.loginSuccess) {
-                    context.pushReplacmentNamed(Routes.navigationScreen);
+                  if (state.status == AuthStudentStatus.loginSuccess) {
+                    context.pushReplacmentNamed(Routes.mainNavigation);
                   }
-                  if (state.status == AuthStatus.failure) {
+                  if (state.status == AuthStudentStatus.failure) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(state.errorMessage ?? ''),
@@ -194,26 +198,26 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                   }
                 },
                 builder: (context, state) {
-                  return AppButton(
-                    buttonHeight: 56.h,
+                  return CustomAppButton(
+                    height: 56,
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        context.read<AuthCubit>().login(
-                          LoginRequestBody(
+                        context.read<AuthStudentCubit>().login(
+                          LoginStudentRequestBody(
                             email: _emailController.text,
                             password: _passwordController.text,
                           ),
                         );
                       }
                     },
-                    backgroundColor: AppColors.primaryBlue,
-                    radius: 16.r,
-                    child: state.status == AuthStatus.loading
+                    backgroundColor: AppColors.mainBackgroundDarkColor,
+                    borderRadius: 16,
+                    child: state.status == AuthStudentStatus.loading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : Text(
                             'login.log_in_button'.tr(),
                             style: TextStyle(
-                              color: AppColors.textWhite,
+                              color: AppColors.mainBackgroundWhiteColor,
                               fontSize: 16.sp,
                               fontWeight: FontWeightHelper.semiBold,
                             ),
@@ -228,7 +232,7 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                   Text(
                     'login.no_account'.tr(),
                     style: TextStyle(
-                      color: AppColors.textSecondary,
+                      color: AppColors.subTextDarkColor,
                       fontSize: 14.sp,
                       fontWeight: FontWeightHelper.regular,
                     ),
@@ -243,7 +247,7 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                     child: Text(
                       'login.create_account'.tr(),
                       style: TextStyle(
-                        color: AppColors.primaryBlue,
+                        color: AppColors.mainBackgroundDarkColor,
                         fontSize: 14.sp,
                         fontWeight: FontWeightHelper.semiBold,
                       ),

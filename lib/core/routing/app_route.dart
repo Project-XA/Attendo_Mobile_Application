@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_app/core/dependency_injection/get_it.dart';
 import 'package:mobile_app/core/dependency_injection/init_auth.dart';
+import 'package:mobile_app/core/dependency_injection/init_auth_student.dart';
 import 'package:mobile_app/core/dependency_injection/init_current_user_di.dart';
 import 'package:mobile_app/core/dependency_injection/init_user_attendace.dart';
 import 'package:mobile_app/core/dependency_injection/init_verify_get_it.dart';
@@ -19,6 +20,8 @@ import 'package:mobile_app/features/navigation_screen/presentation/main_navigati
 import 'package:mobile_app/features/auth/presentation/views/register_screen.dart';
 import 'package:mobile_app/features/ocr/presentation/scan_id_screen.dart';
 import 'package:mobile_app/features/onboarding/start_page.dart';
+import 'package:mobile_app/features/student_auth/presentation/logic/student_auth_cubit.dart';
+import 'package:mobile_app/features/student_auth/presentation/views/login_student_screen.dart';
 import 'package:mobile_app/features/verification/presentation/logic/verification_cubit.dart';
 import 'package:mobile_app/features/verification/presentation/verification_screen.dart';
 
@@ -39,6 +42,14 @@ class AppRoute {
       case Routes.registerScreen:
         initAuth();
         page = const RegisterScreen();
+        break;
+
+      case Routes.studentLoginScreen:
+        initAuthStudent();
+        page = BlocProvider(
+          create: (context) => getIt<AuthStudentCubit>(),
+          child: const LoginStudentScreen(),
+        );
         break;
 
       case Routes.forgotPasswordScreen:

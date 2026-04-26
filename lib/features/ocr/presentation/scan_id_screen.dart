@@ -8,7 +8,6 @@ import 'package:mobile_app/core/dependency_injection/scan_ocr_di.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/core/services/UI/extensions.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/features/ocr/presentation/widgets/camera_box.dart';
 // import 'package:mobile_app/feature/scan_OCR/presentation/widgets/cropped_field.dart';

@@ -1,15 +1,15 @@
-class LoginRequestBody {
+class LoginStudentRequestBody {
   final String email;
   final String password;
 
-  LoginRequestBody({required this.email, required this.password});
+  LoginStudentRequestBody({required this.email, required this.password});
 
   Map<String, dynamic> toJson() {
     return {"email": email, "password": password};
   }
 
-  factory LoginRequestBody.fromJson(Map<String, dynamic> json) {
-    return LoginRequestBody(
+  factory LoginStudentRequestBody.fromJson(Map<String, dynamic> json) {
+    return LoginStudentRequestBody(
       email: json['email'] as String,
       password: json['password'] as String,
     );

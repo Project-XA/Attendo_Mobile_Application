@@ -13,4 +13,8 @@ class ApiConst {
   static const String deleteAccountDELETE = '/User/me';
   static String getAllHalls(int organizationId) =>
       '/hall/get-all-halls/$organizationId';
+
+  static String studetnLogin = 'Account/student/login';
+  static String studentRegister = 'Account/student/register';
+
 }
