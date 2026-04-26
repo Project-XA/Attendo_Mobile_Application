@@ -10,7 +10,6 @@ import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
-import 'package:mobile_app/core/utils/app_assets.dart';
 import 'package:mobile_app/core/widgets/app_text_form_field.dart';
 import 'package:mobile_app/core/widgets/custom_app_button.dart';
 import 'package:mobile_app/features/student_auth/data/model/login_student_request_body.dart';
@@ -29,6 +28,10 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+
+  static const _fieldBg = Color(0xFFF5F5F5);
+  static const _fieldBorder = Color(0xFFE0E0E0);
+  static const _fieldIcon = Color(0xFFBDBDBD);
 
   @override
   void dispose() {
@@ -67,43 +70,97 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              verticalSpace(16),
-              SizedBox(
-                width: 60.w,
-                height: 60.w,
-                child: Image.asset(
-                  Assets.assetsImagesAttendoLogo,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              verticalSpace(20),
+              verticalSpace(40),
               Text(
-                'login.welcome_back'.tr(),
+                'loginStudent.welcome_back'.tr(),
                 style: AppTextStyle.font24BlackBold,
               ),
               verticalSpace(8),
               Text(
-                'login.subtitle'.tr(),
-                textAlign: TextAlign.center,
+                'loginStudent.subtitle'.tr(),
                 style: AppTextStyle.font14GreyRegular,
               ),
+              verticalSpace(20),
+
+              // ── Student Badge ─────────────────────────────────────────
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 14.w,
+                    vertical: 8.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.mainBackgroundDarkColor.withOpacity(0.06),
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color: AppColors.mainBackgroundDarkColor.withOpacity(
+                        0.12,
+                      ),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(6.r),
+                        decoration: BoxDecoration(
+                          color: AppColors.mainBackgroundDarkColor,
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Icon(
+                          Icons.school_rounded,
+                          size: 16.sp,
+                          color: AppColors.mainBackgroundWhiteColor,
+                        ),
+                      ),
+                      SizedBox(width: 10.w),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'loginStudent.portal_badge'.tr(),
+                            style: TextStyle(
+                              color: AppColors.mainBackgroundDarkColor,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeightHelper.semiBold,
+                            ),
+                          ),
+                          Text(
+                            'loginStudent.portal_badge_sub'.tr(),
+                            style: TextStyle(
+                              color: AppColors.subTextGreyColor,
+                              fontSize: 11.sp,
+                              fontWeight: FontWeightHelper.regular,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               verticalSpace(36),
+
+              // ── Email ─────────────────────────────────────────────
               Align(
                 alignment: AlignmentDirectional.centerStart,
                 child: Text(
-                  'login.email_label'.tr(),
+                  'loginStudent.email_label'.tr(),
                   style: AppTextStyle.font14GreyMedium,
                 ),
               ),
               verticalSpace(8),
               AppTextFormField(
                 controller: _emailController,
-                hintText: 'login.email_hint'.tr(),
+                hintText: 'loginStudent.email_hint'.tr(),
                 borderRadius: 14.r,
-                backgroundColor: AppColors.subTextGreyColor,
-                enabledBorderColor: AppColors.subTextGreyColor,
+                backgroundColor: _fieldBg,
+                enabledBorderColor: _fieldBorder,
                 focusedBorderColor: AppColors.mainBackgroundDarkColor,
                 textStyle: TextStyle(
                   color: AppColors.mainBackgroundDarkColor,
@@ -112,28 +169,31 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                 keyboardType: TextInputType.emailAddress,
                 label: const Icon(
                   Icons.email_outlined,
-                  color: AppColors.subTextGreyColor,
+                  color: _fieldIcon,
                   size: 20,
                 ),
                 validator: (val) => val == null || !val.contains('@')
                     ? 'validation.enter_valid_email'.tr()
                     : null,
               ),
+
               verticalSpace(16),
+
+              // ── Password ──────────────────────────────────────────
               Align(
                 alignment: AlignmentDirectional.centerStart,
                 child: Text(
-                  'login.password_label'.tr(),
+                  'loginStudent.password_label'.tr(),
                   style: AppTextStyle.font14BlackMedium,
                 ),
               ),
               verticalSpace(8),
               AppTextFormField(
                 controller: _passwordController,
-                hintText: "••••••••",
+                hintText: '••••••••',
                 borderRadius: 14.r,
-                backgroundColor: AppColors.subTextGreyColor,
-                enabledBorderColor: AppColors.subTextGreyColor,
+                backgroundColor: _fieldBg,
+                enabledBorderColor: _fieldBorder,
                 focusedBorderColor: AppColors.mainBackgroundDarkColor,
                 textStyle: TextStyle(
                   color: AppColors.mainBackgroundDarkColor,
@@ -142,7 +202,7 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                 obscureText: _obscurePassword,
                 label: const Icon(
                   Icons.lock_outline_rounded,
-                  color: AppColors.subTextGreyColor,
+                  color: _fieldIcon,
                   size: 20,
                 ),
                 suffixIcon: IconButton(
@@ -150,7 +210,7 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                     _obscurePassword
                         ? Icons.visibility_off_outlined
                         : Icons.visibility_outlined,
-                    color: AppColors.subTextGreyColor,
+                    color: _fieldIcon,
                     size: 20,
                   ),
                   onPressed: () =>
@@ -160,20 +220,22 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                     ? 'validation.password_min_chars'.tr()
                     : null,
               ),
+
               verticalSpace(8),
+
+              // ── Forgot password ───────────────────────────────────
               Align(
                 alignment: AlignmentDirectional.centerEnd,
                 child: TextButton(
-                  onPressed: () {
-                    context.pushNamed(Routes.forgotPasswordScreen);
-                  },
+                  onPressed: () =>
+                      context.pushNamed(Routes.forgotPasswordScreen),
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   child: Text(
-                    'login.forgot_password'.tr(),
+                    'loginStudent.forgot_password'.tr(),
                     style: TextStyle(
                       color: AppColors.mainBackgroundDarkColor,
                       fontSize: 13.sp,
@@ -182,7 +244,10 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                   ),
                 ),
               ),
+
               verticalSpace(28),
+
+              // ── Login button ──────────────────────────────────────
               BlocConsumer<AuthStudentCubit, AuthStudentState>(
                 listener: (context, state) {
                   if (state.status == AuthStudentStatus.loginSuccess) {
@@ -200,22 +265,24 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                 builder: (context, state) {
                   return CustomAppButton(
                     height: 56,
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        context.read<AuthStudentCubit>().login(
-                          LoginStudentRequestBody(
-                            email: _emailController.text,
-                            password: _passwordController.text,
-                          ),
-                        );
-                      }
-                    },
+                    onPressed: state.status == AuthStudentStatus.loading
+                        ? null
+                        : () {
+                            if (_formKey.currentState!.validate()) {
+                              context.read<AuthStudentCubit>().login(
+                                LoginStudentRequestBody(
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                ),
+                              );
+                            }
+                          },
                     backgroundColor: AppColors.mainBackgroundDarkColor,
                     borderRadius: 16,
                     child: state.status == AuthStudentStatus.loading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : Text(
-                            'login.log_in_button'.tr(),
+                            'loginStudent.log_in_button'.tr(),
                             style: TextStyle(
                               color: AppColors.mainBackgroundWhiteColor,
                               fontSize: 16.sp,
@@ -225,12 +292,15 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                   );
                 },
               ),
+
               verticalSpace(24),
+
+              // ── Sign up row ───────────────────────────────────────
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'login.no_account'.tr(),
+                    'loginStudent.no_account'.tr(),
                     style: TextStyle(
                       color: AppColors.subTextDarkColor,
                       fontSize: 14.sp,
@@ -238,14 +308,15 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () => context.pushNamed(Routes.registerScreen),
+                    onPressed: () =>
+                        context.pushNamed(Routes.registerStudentScreen),
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.symmetric(horizontal: 6.w),
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
-                      'login.create_account'.tr(),
+                      'loginStudent.create_account'.tr(),
                       style: TextStyle(
                         color: AppColors.mainBackgroundDarkColor,
                         fontSize: 14.sp,
@@ -255,6 +326,7 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                   ),
                 ],
               ),
+
               verticalSpace(16),
             ],
           ),

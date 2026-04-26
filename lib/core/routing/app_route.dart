@@ -22,6 +22,7 @@ import 'package:mobile_app/features/ocr/presentation/scan_id_screen.dart';
 import 'package:mobile_app/features/onboarding/start_page.dart';
 import 'package:mobile_app/features/student_auth/presentation/logic/student_auth_cubit.dart';
 import 'package:mobile_app/features/student_auth/presentation/views/login_student_screen.dart';
+import 'package:mobile_app/features/student_auth/presentation/views/register_student_screen.dart';
 import 'package:mobile_app/features/verification/presentation/logic/verification_cubit.dart';
 import 'package:mobile_app/features/verification/presentation/verification_screen.dart';
 
@@ -52,6 +53,12 @@ class AppRoute {
         );
         break;
 
+      case Routes.registerStudentScreen:
+        page = BlocProvider(
+          create: (context) => getIt<AuthStudentCubit>(),
+          child: const RegisterStudentScreen(),
+        );
+        break;
       case Routes.forgotPasswordScreen:
         page = const ForgotPasswordScreen();
         break;

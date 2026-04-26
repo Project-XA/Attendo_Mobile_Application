@@ -7,7 +7,6 @@ import 'package:mobile_app/core/current_user/data/remote_data_source/user_remote
 import 'package:mobile_app/core/networking/dio_factory.dart';
 import 'package:mobile_app/core/networking/network_service.dart';
 import 'package:mobile_app/core/services/auth/auth_state_service.dart';
-import 'package:mobile_app/core/services/auth/secure_storage_service.dart';
 import 'package:mobile_app/core/services/auth/onboarding_service.dart';
 import 'package:mobile_app/core/current_user/data/models/user_model.dart';
 

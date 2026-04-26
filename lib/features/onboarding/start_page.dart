@@ -33,7 +33,7 @@ class StartPage extends StatelessWidget {
                 ? constraints.maxWidth * 0.45
                 : isTablet
                 ? constraints.maxWidth * 0.6
-                : constraints.maxWidth * 1;
+                : constraints.maxWidth * .6;
 
             double textFont = isTablet ? 20 : 18;
             double descFont = isTablet ? 16 : 14;
@@ -49,11 +49,9 @@ class StartPage extends StatelessWidget {
                     verticalSpace(size.height * 0.05),
 
                     Image.asset(
-                      Assets.assetsImagesAttendoLogo,
+                      Assets.assetsImagesAttendoDarkLogo,
                       width: logoSize,
                     ),
-
-                    verticalSpace(15),
 
                     Text(
                       'onboarding.welcome_title'.tr(),
@@ -105,7 +103,7 @@ class StartPage extends StatelessWidget {
                     CustomAppButton(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       child: Text(
-                        'onboarding.start_registration'.tr(),
+                        'onboarding.start_as_worker'.tr(),
                         style: AppTextStyle.font15WhiteBold.copyWith(
                           color: Theme.of(context).colorScheme.onPrimary,
                         ),
@@ -114,11 +112,12 @@ class StartPage extends StatelessWidget {
                         context.pushNamed(Routes.scanIdScreen);
                       },
                     ),
+                    verticalSpace(12),
 
                     CustomAppButton(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       child: Text(
-                        'onboarding.start_registration'.tr(),
+                        'onboarding.start_as_student'.tr(),
                         style: AppTextStyle.font15WhiteBold.copyWith(
                           color: Theme.of(context).colorScheme.onPrimary,
                         ),

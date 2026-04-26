@@ -74,7 +74,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      Assets.assetsImagesAttendoLogo,
+                      Assets.assetsImagesAttendoDarkLogo,
                       width: logoSize,
                       height: logoSize,
                     ),

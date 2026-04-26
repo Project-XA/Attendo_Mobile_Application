@@ -12,7 +12,7 @@ import 'package:mobile_app/features/splash/animated_splash_screen.dart';
 
 class AppBootstrap extends StatefulWidget {
   const AppBootstrap({super.key, required this.themeBox});
-final Box<bool> themeBox;
+  final Box<bool> themeBox;
   @override
   State<AppBootstrap> createState() => _AppBootstrapState();
 }
@@ -25,8 +25,8 @@ class _AppBootstrapState extends State<AppBootstrap> {
   late final ThemeCubit _themeCubit;
   @override
   void initState() {
-    super.initState();    _themeCubit = ThemeCubit(themeBox: widget.themeBox);
-        _themeCubit = ThemeCubit(themeBox: widget.themeBox);
+    super.initState();
+    _themeCubit = ThemeCubit(themeBox: widget.themeBox);
     _init();
   }
 
@@ -70,6 +70,7 @@ class _AppBootstrapState extends State<AppBootstrap> {
       _showAnimatedSplash = false;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ThemeCubit>.value(
@@ -86,7 +87,8 @@ class _AppBootstrapState extends State<AppBootstrap> {
               darkTheme: ThemeData.dark(),
               themeMode: themeMode,
               home: AnimatedSplashScreen(
-                  onAnimationComplete: _onAnimationComplete),
+                onAnimationComplete: _onAnimationComplete,
+              ),
             );
           }
 
