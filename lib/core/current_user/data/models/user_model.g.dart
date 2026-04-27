@@ -17,54 +17,39 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return UserModel(
-      nationalId: fields[0] as String,
-      firstNameAr: fields[1] as String,
-      lastNameAr: fields[2] as String,
-      isUniversity: fields[13] as bool?,
-      id: fields[11] as String?,
-      username: fields[12] as String?,
-      address: fields[3] as String?,
-      birthDate: fields[4] as String?,
-      email: fields[5] as String?,
-      firstNameEn: fields[6] as String?,
-      lastNameEn: fields[7] as String?,
-      organizations: (fields[8] as List?)?.cast<UserOrgModel>(),
-      profileImage: fields[9] as String?,
-      idCardImage: fields[10] as String?,
+      isUniversity: fields[8] as bool?,
+      id: fields[0] as String?,
+      fullName: fields[1] as String,
+      email: fields[2] as String?,
+      collegeCardId: fields[3] as String?,
+      profileImage: fields[4] as String?,
+      organizations: (fields[5] as List?)?.cast<UserOrgModel>(),
+      username: fields[6] as String?,
+      role: fields[7] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserModel obj) {
     writer
-      ..writeByte(14)
-      ..writeByte(0)
-      ..write(obj.nationalId)
-      ..writeByte(1)
-      ..write(obj.firstNameAr)
-      ..writeByte(2)
-      ..write(obj.lastNameAr)
-      ..writeByte(3)
-      ..write(obj.address)
-      ..writeByte(4)
-      ..write(obj.birthDate)
-      ..writeByte(5)
-      ..write(obj.email)
-      ..writeByte(6)
-      ..write(obj.firstNameEn)
-      ..writeByte(7)
-      ..write(obj.lastNameEn)
-      ..writeByte(8)
-      ..write(obj.organizations)
       ..writeByte(9)
-      ..write(obj.profileImage)
-      ..writeByte(10)
-      ..write(obj.idCardImage)
-      ..writeByte(11)
+      ..writeByte(0)
       ..write(obj.id)
-      ..writeByte(12)
+      ..writeByte(1)
+      ..write(obj.fullName)
+      ..writeByte(2)
+      ..write(obj.email)
+      ..writeByte(3)
+      ..write(obj.collegeCardId)
+      ..writeByte(4)
+      ..write(obj.profileImage)
+      ..writeByte(5)
+      ..write(obj.organizations)
+      ..writeByte(6)
       ..write(obj.username)
-      ..writeByte(13)
+      ..writeByte(7)
+      ..write(obj.role)
+      ..writeByte(8)
       ..write(obj.isUniversity);
   }
 
@@ -84,37 +69,27 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
 // **************************************************************************
 
 UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
-      nationalId: json['nationalId'] as String,
-      firstNameAr: json['firstNameAr'] as String,
-      lastNameAr: json['lastNameAr'] as String,
       isUniversity: json['isUniversity'] as bool?,
       id: json['id'] as String?,
-      username: json['username'] as String?,
-      address: json['address'] as String?,
-      birthDate: json['birthDate'] as String?,
+      fullName: json['fullName'] as String,
       email: json['email'] as String?,
-      firstNameEn: json['firstNameEn'] as String?,
-      lastNameEn: json['lastNameEn'] as String?,
+      collegeCardId: json['collegeCardId'] as String?,
+      profileImage: json['profileImage'] as String?,
       organizations: (json['organizations'] as List<dynamic>?)
           ?.map((e) => UserOrgModel.fromJson(e as Map<String, dynamic>))
           .toList(),
-      profileImage: json['profileImage'] as String?,
-      idCardImage: json['idCardImage'] as String?,
+      username: json['username'] as String?,
+      role: json['role'] as String?,
     );
 
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
-      'nationalId': instance.nationalId,
-      'firstNameAr': instance.firstNameAr,
-      'lastNameAr': instance.lastNameAr,
-      'address': instance.address,
-      'birthDate': instance.birthDate,
-      'email': instance.email,
-      'firstNameEn': instance.firstNameEn,
-      'lastNameEn': instance.lastNameEn,
-      'organizations': instance.organizations,
-      'profileImage': instance.profileImage,
-      'idCardImage': instance.idCardImage,
       'id': instance.id,
+      'fullName': instance.fullName,
+      'email': instance.email,
+      'collegeCardId': instance.collegeCardId,
+      'profileImage': instance.profileImage,
+      'organizations': instance.organizations,
       'username': instance.username,
+      'role': instance.role,
       'isUniversity': instance.isUniversity,
     };

@@ -33,10 +33,7 @@ class ProfileBody extends StatelessWidget {
               verticalSpace(12.h),
               if (user.email != null) EmailCard(email: user.email!),
               verticalSpace(12.h),
-              // NationalIdCard(nationalId: user.nationalId),
-             
-              // if (user.birthDate != null)
-              //   BirthDateCard(birthDate: user.birthDate!),
+           
             ],
           ),
         );

@@ -11,62 +11,42 @@ part 'user_model.g.dart';
 @HiveType(typeId: 0)
 class UserModel extends HiveObject {
   @HiveField(0)
-  String nationalId;
+  String? id;
 
   @HiveField(1)
-  String firstNameAr;
+  String fullName;
 
   @HiveField(2)
-  String lastNameAr;
-
-  @HiveField(3)
-  String? address;
-
-  @HiveField(4)
-  String? birthDate;
-
-  @HiveField(5)
   String? email;
 
-  @HiveField(6)
-  String? firstNameEn;
+  @HiveField(3)
+  String? collegeCardId;
 
-  @HiveField(7)
-  String? lastNameEn;
-
-  @HiveField(8)
-  List<UserOrgModel>? organizations;
-
-  @HiveField(9)
+  @HiveField(4)
   String? profileImage;
 
-  @HiveField(10)
-  String? idCardImage;
-  @HiveField(11)
-  String? id;
-  @HiveField(12)
+  @HiveField(5)
+  List<UserOrgModel>? organizations;
+  @HiveField(6)
   String? username;
-  @HiveField(13)
+  @HiveField(7)
+  String? role;
+  @HiveField(8)
   bool? isUniversity;
-  
 
   UserModel({
-    required this.nationalId,
-    required this.firstNameAr,
-    required this.lastNameAr,
-   this.isUniversity,
+    this.isUniversity,
     this.id,
-    this.username,
-    this.address,
-    this.birthDate,
+    required this.fullName,
     this.email,
-    this.firstNameEn,
-    this.lastNameEn,
-    this.organizations,
+    this.collegeCardId,
     this.profileImage,
-    this.idCardImage,
+    this.organizations,
+    this.username,
+    this.role,
   });
 
+  /// JSON
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
 
@@ -75,104 +55,63 @@ class UserModel extends HiveObject {
   factory UserModel.fromEntity(User user) {
     return UserModel(
       isUniversity: user.isUniversity,
-      id: user.id,
-      nationalId: user.nationalId,
-      firstNameAr: user.firstNameAr,
-      lastNameAr: user.lastNameAr,
-      address: user.address,
-      birthDate: user.birthDate,
-      email: user.email,
-      firstNameEn: user.firstNameEn,
-      lastNameEn: user.lastNameEn,
-      organizations: user.organizations
-          ?.map((org) => UserOrgModel.fromEntity(org))
-          .toList(),
-      profileImage: user.profileImage,
-      idCardImage: user.idCardImage,
       username: user.username,
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      collegeCardId: user.collegeCardId,
+      role: user.role,
+      profileImage: user.profileImage,
+      organizations: user.organizations
+          ?.map((e) => UserOrgModel.fromEntity(e))
+          .toList(),
     );
   }
 
   User toEntity() {
     return User(
-      isUniversity: isUniversity,
+      username: username,
       id: id,
-      nationalId: nationalId,
-      firstNameAr: firstNameAr,
-      lastNameAr: lastNameAr,
-      address: address,
-      birthDate: birthDate,
+      isUniversity: isUniversity,
+      fullName: fullName,
       email: email,
-      firstNameEn: firstNameEn,
-      lastNameEn: lastNameEn,
+      collegeCardId: collegeCardId,
+      profileImage: profileImage,
+      role: role,
       organizations: organizations
           ?.map(
-            (orgModel) => UserOrg(
-              organizationId: orgModel.organizationId,
-              role: orgModel.role,
-              organizationName: orgModel.organizationName,
+            (e) => UserOrg(
+              organizationId: e.organizationId,
+              role: e.role,
+              organizationName: e.organizationName,
             ),
           )
           .toList(),
-      profileImage: profileImage,
-      idCardImage: idCardImage,
-      username: username,
     );
   }
 
-  UserModel copyWithClearedAuth() {
-    return UserModel(
-      isUniversity: isUniversity,
-      id: id,
-      nationalId: nationalId,
-      firstNameAr: firstNameAr,
-      lastNameAr: lastNameAr,
-      address: address,
-      birthDate: birthDate,
-      email: email,
-      firstNameEn: firstNameEn,
-      lastNameEn: lastNameEn,
-      organizations: organizations,
-      profileImage: profileImage,
-      idCardImage: idCardImage,
-      username: username,
-      // Clear token only
-    );
-  }
-
+  /// copyWith
   UserModel copyWith({
-    String? id,
-    String? nationalId,
-    String? firstNameAr,
-    String? lastNameAr,
-    String? address,
-    String? birthDate,
-    String? email,
-    String? firstNameEn,
-    String? lastNameEn,
-    List<UserOrgModel>? organizations,
-    String? profileImage,
-    String? idCardImage,
-    String? loginToken,
     String? username,
-    String? pinCode,
+    String? id,
+    String? fullName,
+    String? email,
+    String? collegeCardId,
+    String? profileImage,
+    List<UserOrgModel>? organizations,
+    String? role,
     bool? isUniversity,
   }) {
     return UserModel(
-      id: id ?? this.id,
-      nationalId: nationalId ?? this.nationalId,
-      firstNameAr: firstNameAr ?? this.firstNameAr,
-      lastNameAr: lastNameAr ?? this.lastNameAr,
-      address: address ?? this.address,
-      birthDate: birthDate ?? this.birthDate,
-      email: email ?? this.email,
-      firstNameEn: firstNameEn ?? this.firstNameEn,
-      lastNameEn: lastNameEn ?? this.lastNameEn,
-      organizations: organizations ?? this.organizations,
-      profileImage: profileImage ?? this.profileImage,
-      idCardImage: idCardImage ?? this.idCardImage,
-      username: username ?? this.username,
       isUniversity: isUniversity ?? this.isUniversity,
+      id: id ?? this.id,
+      fullName: fullName ?? this.fullName,
+      email: email ?? this.email,
+      collegeCardId: collegeCardId ?? this.collegeCardId,
+      profileImage: profileImage ?? this.profileImage,
+      organizations: organizations ?? this.organizations,
+      username: username ?? this.username,
+      role: role ?? this.role,
     );
   }
 }

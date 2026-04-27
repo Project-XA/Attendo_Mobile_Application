@@ -14,7 +14,6 @@ abstract class UserLocalDataSource {
   Future<String> saveImageLocally(File imageFile);
   Future<void> deleteOldProfileImage(String imagePath);
   Future<bool> hasCurrentUser();
-  Future<String> getIdCardImagePath();
   Future<void> logout();
   Future<bool> hasValidToken();
 }
@@ -40,20 +39,7 @@ class UserLocalDataSourceImp extends UserLocalDataSource {
     }
   }
 
-  @override
-  Future<String> getIdCardImagePath() async {
-    try {
-      final user = await getCurrentUser();
-      final idCardImagePath = user.idCardImage;
-      if (idCardImagePath == null || idCardImagePath.isEmpty) {
-        throw CacheException('ID card image path not found');
-      }
-      return idCardImagePath;
-    } catch (e) {
-      if (e is CacheException) rethrow;
-      throw CacheException('Failed to get ID card image path: $e');
-    }
-  }
+
 
   @override
   Future<bool> hasCurrentUser() async {
