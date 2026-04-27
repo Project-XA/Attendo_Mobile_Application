@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,17 +24,18 @@ class ProfileBody extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Personal Information',
-                style: AppTextStyle.font18BlackBold
+                'profile.personal_information'.tr(),
+                style: AppTextStyle.font18BlackBold.copyWith(color: Theme.of(context).colorScheme.onSurface),
               ),
               verticalSpace(15.h),
-              FirstNameCard(firstNameAr: user.firstNameEn!),
-              verticalSpace(12.h),
-              LastNameCard(lastNameAr: user.lastNameEn!),
+              FullNameCard(fullName: user.fullName),
               verticalSpace(12.h),
               if (user.email != null) EmailCard(email: user.email!),
               verticalSpace(12.h),
-           
+              CollageCardId(
+                collageCardId:
+                    user.collegeCardId ?? 'profile.not_available'.tr(),
+              ),
             ],
           ),
         );
