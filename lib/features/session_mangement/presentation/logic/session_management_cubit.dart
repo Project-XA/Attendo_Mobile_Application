@@ -8,6 +8,7 @@ import 'package:mobile_app/features/session_mangement/domain/entities/session.da
 import 'package:mobile_app/features/session_mangement/domain/use_cases/create_session_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/end_session_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/get_all_halls_use_case.dart';
+import 'package:mobile_app/features/session_mangement/domain/use_cases/get_all_sections.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/listen_attendence_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/start_session_server_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/delete_current_session_use_case.dart';
@@ -21,10 +22,12 @@ class SessionManagementCubit extends Cubit<SessionManagementState> {
   final GetAllHallsUseCase getAllHallsUseCase;
   final DeleteCurrentSessionUseCase deleteCurrentSessionUseCase;
   final SessionTimerService _timerService;
+  final GetAllSectionsUseCase getAllSectionsUseCase;
 
   StreamSubscription<AttendanceRecord>? _attendanceSubscription;
 
   SessionManagementCubit({
+    required this.getAllSectionsUseCase,
     required this.createSessionUseCase,
     required this.startSessionServerUseCase,
     required this.endSessionUseCase,
@@ -35,6 +38,42 @@ class SessionManagementCubit extends Cubit<SessionManagementState> {
   }) : _timerService = timerService ?? SessionTimerService(),
        super(const SessionManagementInitial());
 
+  Future<void> loadSections() async {
+    final tabIndex = _currentTabIndex;
+    final currentIdle = state is SessionManagementIdle
+        ? state as SessionManagementIdle
+        : null;
+
+    if (currentIdle == null) {
+      emit(const SessionManagementLoading());
+    } else {
+      emit(currentIdle.copyWith(isLoadingSections: true));
+    }
+
+    try {
+      final sections = (await getAllSectionsUseCase()).sections;
+      emit(
+        SessionManagementIdle(
+          selectedTabIndex: tabIndex,
+          sections: sections,
+          isLoadingSections: false,
+        ),
+      );
+    } on ApiErrorModel catch (error) {
+      emit(SessionError(error: error, selectedTabIndex: tabIndex));
+    } catch (_) {
+      emit(
+        SessionError(
+          error: const ApiErrorModel(
+            message: 'Failed to load sections',
+            type: ApiErrorType.connectionError,
+            statusCode: 0,
+          ),
+          selectedTabIndex: tabIndex,
+        ),
+      );
+    }
+  }
 
   Future<void> loadHalls() async {
     final tabIndex = _currentTabIndex;

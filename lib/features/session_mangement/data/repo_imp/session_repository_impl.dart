@@ -3,8 +3,10 @@ import 'package:mobile_app/core/networking/api_error_model.dart';
 import 'package:mobile_app/features/session_mangement/data/data_source/local_session_data_source.dart';
 import 'package:mobile_app/features/session_mangement/data/data_source/remote_session_data_source.dart';
 import 'package:mobile_app/features/session_mangement/data/models/local_models/hall_model.dart';
+import 'package:mobile_app/features/session_mangement/data/models/local_models/section_model.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/create_session/create_session_request_model.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_sections/get_all_sections_response.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/save_attendance/save_attendance_request.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/save_attendance/save_attendance_response.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/server_info.dart';
@@ -102,6 +104,60 @@ class SessionRepositoryImpl implements SessionRepository {
   }
 
   @override
+  Future<GetAllSectionsResponse> getAllSections() async {
+    final userData = await _localDataSource.getCurrentUser();
+
+    final organizationId = userData.organizations?.isNotEmpty == true
+        ? userData.organizations!.first.organizationId
+        : null;
+
+    if (organizationId == null) {
+      throw const ApiErrorModel(
+        message: 'Invalid organization ID',
+        type: ApiErrorType.defaultError,
+        statusCode: 400,
+      );
+    }
+
+    final cachedData = await _localSessionDataSource.getCachedSections();
+
+    if (cachedData != null && !cachedData.shouldRefresh()) {
+      final sectionInfoList = cachedData.sections
+          .map((model) => model.toSectionInfo())
+          .toList();
+      return GetAllSectionsResponse(sections: sectionInfoList);
+    }
+
+    try {
+      final response = await _remoteSessionDataSource.getAllSections(
+        organizationId,
+      );
+
+      final sectionModels = response.sections
+          .map((info) => SectionModel.fromSectionInfo(info))
+          .toList();
+
+      await _localSessionDataSource.cacheSections(sectionModels);
+
+      return response;
+    } on ApiErrorModel catch (error) {
+      if (error.isNetworkError && cachedData != null) {
+        return GetAllSectionsResponse(
+          sections: cachedData.sections.map((m) => m.toSectionInfo()).toList(),
+        );
+      }
+      rethrow;
+    } catch (e) {
+      if (cachedData != null) {
+        return GetAllSectionsResponse(
+          sections: cachedData.sections.map((m) => m.toSectionInfo()).toList(),
+        );
+      }
+      rethrow;
+    }
+  }
+
+  @override
   Future<ServerInfo> startSessionServer(int sessionId) async {
     if (_currentSession?.id != sessionId) {
       throw const ApiErrorModel(
@@ -117,7 +173,7 @@ class SessionRepositoryImpl implements SessionRepository {
       latitude: _sessionLatitude,
       longitude: _sessionLongitude,
       allowedRadius: _allowedRadius,
-      orgainzationId: _currentSession!.organizationId
+      orgainzationId: _currentSession!.organizationId,
     );
 
     _currentSession = _currentSession!.copyWith(status: SessionStatus.active);
@@ -204,7 +260,9 @@ class SessionRepositoryImpl implements SessionRepository {
     }
 
     try {
-      final response = await _remoteSessionDataSource.getAllHalls(organizationId);
+      final response = await _remoteSessionDataSource.getAllHalls(
+        organizationId,
+      );
 
       final hallModels = response.halls
           .map((hallInfo) => HallModel.fromHallInfo(hallInfo))

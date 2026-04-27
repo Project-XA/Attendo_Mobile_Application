@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/widgets/app_text_form_field.dart';
@@ -8,11 +9,13 @@ import 'package:mobile_app/core/widgets/app_text_form_field.dart';
 class LoginStudentFormFields extends StatefulWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
+  final TextEditingController organizationCodeController;
 
   const LoginStudentFormFields({
     super.key,
     required this.emailController,
     required this.passwordController,
+    required this.organizationCodeController,
   });
 
   @override
@@ -31,6 +34,34 @@ class _LoginStudentFormFieldsState extends State<LoginStudentFormFields> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Text(
+            'loginStudent.org_code'.tr(),
+            style: AppTextStyle.font14GreyMedium,
+          ),
+        ),
+        verticalSpace(8.h),
+        AppTextFormField(
+          controller: widget.organizationCodeController,
+          hintText: 'loginStudent.org_code_hint'.tr(),
+          borderRadius: 14.r,
+          backgroundColor: _fieldBg,
+          enabledBorderColor: _fieldBorder,
+          focusedBorderColor: AppColors.mainBackgroundDarkColor,
+          textStyle: TextStyle(
+            color: AppColors.mainBackgroundDarkColor,
+            fontSize: 14.sp,
+          ),
+          label: const Icon(
+            Icons.apartment_outlined,
+            color: _fieldIcon,
+            size: 20,
+          ),
+          validator: (val) => val == null || val.isEmpty
+              ? 'validation.enter_org_code'.tr()
+              : null,
+        ),
         // Email
         Align(
           alignment: AlignmentDirectional.centerStart,

@@ -183,7 +183,8 @@
     "edit_dialog_title": "Edit {title}",
     "logout_title": "Logout",
     "logout_confirm": "Are you sure you want to logout?",
-    "logout_failed": "Logout failed: {0}"
+    "privacy": "Privacy Policy",
+    "logout_failed": "Logout failed"
   },
 
     "loginStudent": {
@@ -197,7 +198,9 @@
     "no_account": "Don't have an account?",
     "create_account": "Create Account",
     "portal_badge": "Student Registration",
-    "portal_badge_sub": "Create your Attendo account"
+    "portal_badge_sub": "Create your Attendo account",
+    "org_code": "Organization Code",
+    "org_code_hint": "Enter organization code"
   },
   "validation": {
     "enter_valid_email": "Enter a valid email",

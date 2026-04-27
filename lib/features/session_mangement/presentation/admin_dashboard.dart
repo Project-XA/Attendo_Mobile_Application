@@ -25,17 +25,24 @@ class AdminDashboard extends StatelessWidget {
     final isSmallScreen = width < 360;
 
     return BlocProvider(
-      create: (context) => getIt<SessionManagementCubit>()..loadHalls(),
+      create: (context) {
+        final cubit = getIt<SessionManagementCubit>();
+        final user = getIt<CurrentUserCubit>().currentUser;
+        if (user?.isUniversity == true) {
+          cubit.loadSections();
+        } else {
+          cubit.loadHalls();
+        }
+        return cubit;
+      },
       child: Scaffold(
         body: BlocBuilder<SessionManagementCubit, SessionManagementState>(
           builder: (context, adminState) {
-            // Loading state (first load / no cache)
             if (adminState is SessionManagementLoading ||
                 adminState is SessionManagementInitial) {
               return const AdminHomeShimmer();
             }
 
-            // Error state
             if (adminState is SessionError) {
               return _buildErrorView(context, adminState.error.message);
             }
@@ -61,9 +68,7 @@ class AdminDashboard extends StatelessWidget {
                       );
                     },
                   ),
-
                   verticalSpace(20),
-
                   Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: isSmallScreen ? 12.w : 20.w,
@@ -78,14 +83,11 @@ class AdminDashboard extends StatelessWidget {
                               'admin.organization_placeholder'.tr(),
                           description: 'admin.panel_description'.tr(),
                         ),
-
                         verticalSpace(16.h),
-
                         _buildToggleTabs(adminState),
                       ],
                     ),
                   ),
-
                   Expanded(child: _buildContent(adminState)),
                 ],
               ),
@@ -97,6 +99,9 @@ class AdminDashboard extends StatelessWidget {
   }
 
   Widget _buildErrorView(BuildContext context, String message) {
+    final isUniversity =
+        getIt<CurrentUserCubit>().currentUser?.isUniversity ?? false;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -110,8 +115,14 @@ class AdminDashboard extends StatelessWidget {
           ),
           verticalSpace(16.h),
           ElevatedButton(
-            // Retry directly calls loadHalls()
-            onPressed: () => context.read<SessionManagementCubit>().loadHalls(),
+            onPressed: () {
+              final cubit = context.read<SessionManagementCubit>();
+              if (isUniversity) {
+                cubit.loadSections();
+              } else {
+                cubit.loadHalls();
+              }
+            },
             child: Text('common.retry'.tr()),
           ),
         ],

@@ -1,5 +1,6 @@
 import 'package:mobile_app/core/networking/api_error_model.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_sections/get_all_sections_response.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/server_info.dart';
 import 'package:mobile_app/features/session_mangement/data/models/attendency_record.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/session.dart';
@@ -30,22 +31,30 @@ sealed class SessionManagementStateWithTab extends SessionManagementState {
 final class SessionManagementIdle extends SessionManagementStateWithTab {
   final List<HallInfo>? halls;
   final bool isLoadingHalls;
+  final List<SectionInfo>? sections;
+  final bool isLoadingSections;
 
   const SessionManagementIdle({
     super.selectedTabIndex,
     this.halls,
     this.isLoadingHalls = false,
+    this.sections,
+    this.isLoadingSections = false,
   });
 
   SessionManagementIdle copyWith({
     int? selectedTabIndex,
     List<HallInfo>? halls,
     bool? isLoadingHalls,
+    List<SectionInfo>? sections,
+    bool? isLoadingSections,
   }) {
     return SessionManagementIdle(
       selectedTabIndex: selectedTabIndex ?? this.selectedTabIndex,
       halls: halls ?? this.halls,
       isLoadingHalls: isLoadingHalls ?? this.isLoadingHalls,
+      sections: sections ?? this.sections,
+      isLoadingSections: isLoadingSections ?? this.isLoadingSections,
     );
   }
 }

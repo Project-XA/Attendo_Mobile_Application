@@ -24,11 +24,13 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _organizationCodeController = TextEditingController();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _organizationCodeController.dispose();
     super.dispose();
   }
 
@@ -38,10 +40,13 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
         LoginStudentRequestBody(
           email: _emailController.text,
           password: _passwordController.text,
+          organizationCode: _organizationCodeController.text,
         ),
       );
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +109,7 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
                 const StudentBadge(),
                 SizedBox(height: 36.h),
                 LoginStudentFormFields(
+                  organizationCodeController: _organizationCodeController,
                   emailController: _emailController,
                   passwordController: _passwordController,
                 ),

@@ -1,8 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:mobile_app/core/current_user/presentation/cubits/current_user_cubit.dart';
 import 'package:mobile_app/core/networking/api_error_model.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/services/UI/toast_service.dart';
@@ -12,7 +14,9 @@ import 'package:mobile_app/core/widgets/custom_app_button.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_cubit.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_state.dart';
 import 'package:mobile_app/features/session_mangement/presentation/widgets/session_form_field.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:mobile_app/features/session_mangement/presentation/widgets/session_location_dialogs.dart';
+import 'package:mobile_app/features/session_mangement/presentation/widgets/session_network_error.dart';
+import 'package:mobile_app/features/session_mangement/presentation/widgets/session_time_dialogs.dart';
 
 class CreateSessionForm extends StatefulWidget {
   const CreateSessionForm({super.key});
@@ -31,6 +35,14 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
   String? _selectedWifiOption = 'WiFi';
   int? _selectedHallId;
   String? _selectedHallName;
+  late final bool _isUniversity;
+
+  @override
+  void initState() {
+    super.initState();
+    _isUniversity =
+        context.read<CurrentUserCubit>().currentUser?.isUniversity ?? false;
+  }
 
   @override
   void dispose() {
@@ -39,6 +51,30 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
     _allowedRadiusController.dispose();
     super.dispose();
   }
+
+  // ─── Validation ────────────────────────────────────────────
+
+  TimeValidation? _validateSelectedTime(TimeOfDay selectedTime) {
+    final now = DateTime.now();
+    final sessionStartTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      selectedTime.hour,
+      selectedTime.minute,
+    );
+    final difference = sessionStartTime.difference(now);
+
+    if (difference.isNegative && difference.inMinutes.abs() > 5) {
+      return TimeValidation.pastTime;
+    }
+    if (difference.inMinutes > 10) {
+      return TimeValidation.futureTime;
+    }
+    return null;
+  }
+
+  // ─── Actions ───────────────────────────────────────────────
 
   void _handleStartSession() async {
     if (!_formKey.currentState!.validate()) return;
@@ -52,158 +88,27 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
     }
 
     final timeValidation = _validateSelectedTime(_selectedTime!);
-    if (timeValidation != null) {
-      if (timeValidation == TimeValidation.pastTime) {
-        _showPastTimeConfirmationDialog();
-        return;
-      } else if (timeValidation == TimeValidation.futureTime) {
-        _showFutureTimeDialog();
-        return;
-      }
+    if (timeValidation == TimeValidation.pastTime) {
+      showPastTimeConfirmationDialog(context, onConfirm: _startSession);
+      return;
+    }
+    if (timeValidation == TimeValidation.futureTime) {
+      showFutureTimeDialog(context);
+      return;
     }
 
     final locationStatus = await LocationHelper.check();
 
     if (locationStatus == LocationStatus.serviceDisabled) {
-      _showLocationSettingsDialog();
+      showLocationSettingsDialog(context);
       return;
     }
-
     if (locationStatus == LocationStatus.deniedForever) {
-      _showAppSettingsDialog();
+      showAppSettingsDialog(context);
       return;
     }
 
     _startSession();
-  }
-
-  TimeValidation? _validateSelectedTime(TimeOfDay selectedTime) {
-    final now = DateTime.now();
-    final sessionStartTime = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      selectedTime.hour,
-      selectedTime.minute,
-    );
-
-    final difference = sessionStartTime.difference(now);
-
-    if (difference.isNegative && difference.inMinutes.abs() > 5) {
-      return TimeValidation.pastTime;
-    }
-
-    if (difference.inMinutes > 10) {
-      return TimeValidation.futureTime;
-    }
-
-    return null;
-  }
-
-  void _showPastTimeConfirmationDialog() {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
-        title: Row(
-          children: [
-            Icon(
-              Icons.warning_amber_rounded,
-              color: Colors.orange,
-              size: 24.sp,
-            ),
-            horizontalSpace(8.w),
-            Flexible(
-              child: Text(
-                'sessions.past_time_title'.tr(),
-                style: AppTextStyle.font18BlackSemiBold,
-              ),
-            ),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Text(
-            'sessions.past_time_body'.tr(),
-            style: AppTextStyle.font14GreyRegular,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(
-              'common.cancel'.tr(),
-              style: AppTextStyle.font14GreyRegular,
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              elevation: 0,
-            ),
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              _startSession();
-            },
-            child: Text(
-              'common.continue'.tr(),
-              style: TextStyle(fontSize: 14.sp),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showFutureTimeDialog() {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
-        title: Row(
-          children: [
-            Icon(Icons.schedule, color: Colors.blue, size: 24.sp),
-            horizontalSpace(8.w),
-            Flexible(
-              child: Text(
-                'sessions.future_time_title'.tr(),
-                style: AppTextStyle.font18BlackSemiBold,
-              ),
-            ),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Text(
-            'sessions.future_time_body'.tr(),
-            style: AppTextStyle.font14GreyRegular,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(
-              'common.cancel'.tr(),
-              style: AppTextStyle.font14GreyRegular,
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              elevation: 0,
-            ),
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              showToast(
-                message: 'sessions.future_not_supported_toast'.tr(),
-                type: ToastType.info,
-              );
-            },
-            child: Text('common.ok'.tr(), style: TextStyle(fontSize: 14.sp)),
-          ),
-        ],
-      ),
-    );
   }
 
   void _startSession() {
@@ -218,138 +123,23 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
     );
   }
 
-  void _showLocationSettingsDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
-        title: Flexible(
-          child: Text(
-            'sessions.location_services_disabled_title'.tr(),
-            style: AppTextStyle.font18BlackSemiBold,
-          ),
-        ),
-        content: SingleChildScrollView(
-          child: Text(
-            'sessions.location_services_disabled_body'.tr(),
-            style: AppTextStyle.font14GreyRegular,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'common.cancel'.tr(),
-              style: AppTextStyle.font14GreyRegular,
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              elevation: 0,
-            ),
-            onPressed: () async {
-              Navigator.pop(context);
-              await Geolocator.openLocationSettings();
-            },
-            child: Text(
-              'common.open_settings'.tr(),
-              style: TextStyle(fontSize: 14.sp),
-            ),
-          ),
-        ],
-      ),
-    );
+  void _onRefresh() {
+    final cubit = context.read<SessionManagementCubit>();
+    if (_isUniversity) {
+      cubit.loadSections();
+    } else {
+      cubit.loadHalls();
+    }
   }
 
-  void _showAppSettingsDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
-        title: Flexible(
-          child: Text(
-            'sessions.location_permission_title'.tr(),
-            style: AppTextStyle.font18BlackSemiBold,
-          ),
-        ),
-        content: SingleChildScrollView(
-          child: Text(
-            'sessions.location_permission_body'.tr(),
-            style: AppTextStyle.font14GreyRegular,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'common.cancel'.tr(),
-              style: AppTextStyle.font14GreyRegular,
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              elevation: 0,
-            ),
-            onPressed: () async {
-              Navigator.pop(context);
-              await openAppSettings();
-            },
-            child: Text(
-              'common.open_settings'.tr(),
-              style: TextStyle(fontSize: 14.sp),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNetworkErrorBanner() {
-    return Container(
-      margin: EdgeInsets.only(bottom: 16.h),
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: Colors.red.shade50,
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.red.shade300, width: 2),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.wifi_off_rounded, color: Colors.red, size: 28.sp),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'sessions.no_internet_title'.tr(),
-                  style: AppTextStyle.font16Red900Bold,
-                ),
-                verticalSpace(4.h),
-                Text(
-                  'sessions.no_internet_body'.tr(),
-                  style: AppTextStyle.font13Red700Medium,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // ─── Build ─────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SessionManagementCubit, SessionManagementState>(
       listener: (context, state) {
-        if (state is SessionError) {
-          if (!state.error.isNetworkError) {
-            showToast(message: state.error.message, type: ToastType.error);
-          }
+        if (state is SessionError && !state.error.isNetworkError) {
+          showToast(message: state.error.message, type: ToastType.error);
         }
       },
       builder: (context, state) {
@@ -368,34 +158,26 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 verticalSpace(20.h),
-
-                if (showNetworkError) _buildNetworkErrorBanner(),
-
+                if (showNetworkError) const SessionNetworkErrorBanner(),
                 SessionFormFields(
+                  isUniversity: _isUniversity,
                   sessionNameController: _sessionNameController,
                   durationController: _durationController,
                   allowedRadiusController: _allowedRadiusController,
                   initialTime: _selectedTime,
                   initialWifiOption: _selectedWifiOption,
                   selectedHallId: _selectedHallId,
-                  onTimeSelected: (time) {
-                    setState(() => _selectedTime = time);
-                  },
-                  onWifiOptionChanged: (option) {
-                    setState(() => _selectedWifiOption = option);
-                  },
-                  onHallSelected: (hallId, hallName) {
-                    setState(() {
-                      _selectedHallId = hallId;
-                      _selectedHallName = hallName;
-                    });
-                  },
-                  onRefreshHalls: () =>
-                      context.read<SessionManagementCubit>().loadHalls(),
+                  onTimeSelected: (time) =>
+                      setState(() => _selectedTime = time),
+                  onWifiOptionChanged: (option) =>
+                      setState(() => _selectedWifiOption = option),
+                  onHallSelected: (hallId, hallName) => setState(() {
+                    _selectedHallId = hallId;
+                    _selectedHallName = hallName;
+                  }),
+                  onRefreshHalls: _onRefresh,
                 ),
-
                 verticalSpace(25.h),
-
                 CustomAppButton(
                   onPressed: isLoading ? null : _handleStartSession,
                   backgroundColor: isLoading
@@ -418,7 +200,6 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
                           style: AppTextStyle.font16WhiteMedium,
                         ),
                 ),
-
                 verticalSpace(20.h),
               ],
             ),

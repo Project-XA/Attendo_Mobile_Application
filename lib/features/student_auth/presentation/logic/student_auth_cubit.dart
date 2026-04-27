@@ -24,7 +24,7 @@ class AuthStudentCubit extends Cubit<AuthStudentState> {
         onError: (error) => emit(
           state.copyWith(
             status: AuthStudentStatus.failure,
-            errorMessage: error.message,
+            errorMessage: error.toString(),
           ),
         ),
       );

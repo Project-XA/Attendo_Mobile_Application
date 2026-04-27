@@ -1,5 +1,9 @@
+import 'package:mobile_app/core/current_student/data/data_source/student_local_data_source.dart';
+import 'package:mobile_app/core/current_student/data/model/student_model_hive.dart';
+import 'package:mobile_app/core/helpers/auth_session_helper.dart';
 import 'package:mobile_app/core/networking/api_error_handler.dart';
 import 'package:mobile_app/core/networking/api_result.dart';
+import 'package:mobile_app/core/services/auth/onboarding_service.dart';
 import 'package:mobile_app/features/student_auth/data/data_source/student_auth_remote_data_source.dart';
 import 'package:mobile_app/features/student_auth/data/model/login_student_request_body.dart';
 import 'package:mobile_app/features/student_auth/data/model/login_student_response_body.dart';
@@ -8,15 +12,28 @@ import 'package:mobile_app/features/student_auth/domain/repo/auth_student_repo.d
 
 class AuthStudentRepoImpl extends AuthStudentRepo {
   final StudentAuthRemoteDataSource remoteDataSource;
-
-  AuthStudentRepoImpl({required this.remoteDataSource});
+  final StudentLocalDataSource localDataSource;
+  final OnboardingService onboardingService;
+  AuthStudentRepoImpl({
+    required this.remoteDataSource,
+    required this.localDataSource,
+    required this.onboardingService,
+  });
   @override
   Future<ApiResult<LoginStudentResponseBody>> login(
     LoginStudentRequestBody requestBody,
   ) async {
     try {
       final response = await remoteDataSource.loginStudent(requestBody);
-
+      final studentModel = StudentModelHive.fromJson(
+        response.data.student.toJson(),
+      );
+      await localDataSource.saveStudentLogin(studentModel);
+      await AuthSessionHelper.persistSession(
+        token: response.data.loginToken,
+        role: 'Student',
+        onboardingService: onboardingService,
+      );
       return ApiResult.success(response);
     } catch (e) {
       return ApiResult.error(ApiErrorHandler.handle(e));

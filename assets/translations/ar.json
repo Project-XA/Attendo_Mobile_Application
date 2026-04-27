@@ -183,7 +183,8 @@
     "edit_dialog_title": "تعديل {title}",
     "logout_title": "تسجيل الخروج",
     "logout_confirm": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
-    "logout_failed": "فشل تسجيل الخروج: {0}"
+    "logout_failed": "فشل تسجيل الخروج",
+    "privacy": "سياسة الخصوصية"
   },
  
 "loginStudent": {
@@ -197,7 +198,10 @@
     "no_account": "ليس لديك حساب؟",
     "create_account": "إنشاء حساب",
     "portal_badge": "تسجيل الطالب",
-    "portal_badge_sub": "أنشئ حسابك على Attendo"
+    "portal_badge_sub": "أنشئ حسابك على Attendo",
+    "org_code": "كود المؤسسة",
+    "org_code_hint": "أدخل كود المؤسسة"
+
   },
   "validation": {
     "enter_valid_email": "أدخل بريداً إلكترونياً صحيحاً",

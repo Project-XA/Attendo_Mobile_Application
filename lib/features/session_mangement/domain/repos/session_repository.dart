@@ -1,4 +1,5 @@
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_sections/get_all_sections_response.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/save_attendance/save_attendance_request.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/save_attendance/save_attendance_response.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/server_info.dart';
@@ -19,6 +20,7 @@ abstract class SessionRepository {
     required double latitude,
     required double longitude,
   });
+  Future<GetAllSectionsResponse> getAllSections();
 
   Future<ServerInfo> startSessionServer(int sessionId);
 

@@ -6,6 +6,7 @@ import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/widgets/app_text_form_field.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_sections/get_all_sections_response.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_cubit.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_state.dart';
 
@@ -20,6 +21,7 @@ class SessionFormFields extends StatefulWidget {
   final Function(int?, String?)? onHallSelected;
   final VoidCallback? onRefreshHalls;
   final int? selectedHallId;
+  final bool isUniversity;
 
   const SessionFormFields({
     super.key,
@@ -33,6 +35,7 @@ class SessionFormFields extends StatefulWidget {
     this.onHallSelected,
     this.selectedHallId,
     this.onRefreshHalls,
+    required this.isUniversity,
   });
 
   @override
@@ -58,9 +61,7 @@ class _SessionFormFieldsState extends State<SessionFormFields> {
   void didUpdateWidget(SessionFormFields oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.selectedHallId != oldWidget.selectedHallId) {
-      setState(() {
-        _selectedHallId = widget.selectedHallId;
-      });
+      setState(() => _selectedHallId = widget.selectedHallId);
     }
   }
 
@@ -70,18 +71,15 @@ class _SessionFormFieldsState extends State<SessionFormFields> {
       initialTime: _selectedTime ?? TimeOfDay.now(),
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(context).colorScheme,
-          ),
+          data: Theme.of(
+            context,
+          ).copyWith(colorScheme: Theme.of(context).colorScheme),
           child: child!,
         );
       },
     );
-
     if (picked != null && picked != _selectedTime) {
-      setState(() {
-        _selectedTime = picked;
-      });
+      setState(() => _selectedTime = picked);
       widget.onTimeSelected(picked);
     }
   }
@@ -93,50 +91,57 @@ class _SessionFormFieldsState extends State<SessionFormFields> {
       children: [
         _buildSessionNameField(),
         verticalSpace(15.h),
-
-        _buildHallDropdown(),
+        _buildHallOrSectionDropdown(),
         verticalSpace(15.h),
-
         _buildWifiDropdown(),
         verticalSpace(15.h),
-
         _buildTimePicker(context),
         verticalSpace(15.h),
-
         _buildDurationField(),
         verticalSpace(15.h),
-
         _buildAllowedRadiusField(),
       ],
     );
   }
 
-  Widget _buildSessionNameField() {
-    return AppTextFormField(
-      borderRadius: 20.r,
-      contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
-      focusedBorderColor: Theme.of(context).colorScheme.onSurface,
-      enabledBorderColor: Theme.of(context).colorScheme.outline,
-      controller: widget.sessionNameController,
-      hintText: 'sessions.hint_session_name'.tr(),
-      labelStyle: AppTextStyle.font14GreyMedium,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'sessions.val_session_name_required'.tr();
-        }
-        return null;
-      },
-    );
-  }
+  // ─── Hall or Section ───────────────────────────────────────
 
-  Widget _buildHallDropdown() {
+  Widget _buildHallOrSectionDropdown() {
     final state = context.watch<SessionManagementCubit>().state;
 
-    final bool isLoadingHalls =
+    if (widget.isUniversity) {
+      final bool isLoading =
+          state is SessionManagementIdle && state.isLoadingSections;
+      final bool hasError = state is SessionError;
+      final List<SectionInfo>? sections = state is SessionManagementIdle
+          ? state.sections
+          : null;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'sessions.org_section_section'.tr(),
+            style: AppTextStyle.font12GreyBold,
+          ),
+          verticalSpace(8.h),
+          if (isLoading)
+            _buildLoadingState()
+          else if (hasError || sections == null)
+            _buildErrorState()
+          else
+            _buildSectionDropdownField(sections),
+        ],
+      );
+    }
+
+    // ─── Halls ────────────────────────────────────────────────
+    final bool isLoading =
         state is SessionManagementIdle && state.isLoadingHalls;
-    final bool hasNetworkError = state is SessionError;
-    final List<HallInfo>? halls =
-        state is SessionManagementIdle ? state.halls : null;
+    final bool hasError = state is SessionError;
+    final List<HallInfo>? halls = state is SessionManagementIdle
+        ? state.halls
+        : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,18 +151,19 @@ class _SessionFormFieldsState extends State<SessionFormFields> {
           style: AppTextStyle.font12GreyBold,
         ),
         verticalSpace(8.h),
-
-        if (isLoadingHalls)
-          _buildHallLoadingState()
-        else if (hasNetworkError || halls == null)
-          _buildHallErrorState()
+        if (isLoading)
+          _buildLoadingState()
+        else if (hasError || halls == null)
+          _buildErrorState()
         else
           _buildHallDropdownField(halls),
       ],
     );
   }
 
-  Widget _buildHallLoadingState() {
+  // ─── Shared States ─────────────────────────────────────────
+
+  Widget _buildLoadingState() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 15.h),
       decoration: BoxDecoration(
@@ -186,7 +192,7 @@ class _SessionFormFieldsState extends State<SessionFormFields> {
     );
   }
 
-  Widget _buildHallErrorState() {
+  Widget _buildErrorState() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
       decoration: BoxDecoration(
@@ -216,28 +222,11 @@ class _SessionFormFieldsState extends State<SessionFormFields> {
     );
   }
 
+  // ─── Halls Dropdown ────────────────────────────────────────
+
   Widget _buildHallDropdownField(List<HallInfo> halls) {
     if (halls.isEmpty) {
-      return Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 15.h),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.orange.shade300),
-          borderRadius: BorderRadius.circular(20.r),
-          color: Colors.orange.shade50,
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.info_outline, color: Colors.orange, size: 20.sp),
-            SizedBox(width: 8.w),
-            Expanded(
-              child: Text(
-                'sessions.no_halls'.tr(),
-                style: AppTextStyle.font13Orange700Medium,
-              ),
-            ),
-          ],
-        ),
-      );
+      return _buildEmptyState('sessions.no_halls'.tr());
     }
 
     return Container(
@@ -254,24 +243,108 @@ class _SessionFormFieldsState extends State<SessionFormFields> {
           hint: Text('sessions.select_hall_hint'.tr()),
           icon: const Icon(Icons.keyboard_arrow_down),
           style: AppTextStyle.font14BlackMedium,
+          focusColor: Theme.of(context).colorScheme.surface,
+          dropdownColor: Theme.of(context).colorScheme.surface,
           items: halls.map((HallInfo hall) {
             return DropdownMenuItem<int>(
               value: hall.id,
               child: Text(hall.hallName),
             );
           }).toList(),
-          focusColor: Theme.of(context).colorScheme.surface,
-          dropdownColor: Theme.of(context).colorScheme.surface,
           onChanged: (hallId) {
             if (hallId != null) {
               setState(() => _selectedHallId = hallId);
-              final hallName =
-                  halls.firstWhere((h) => h.id == hallId).hallName;
+              final hallName = halls.firstWhere((h) => h.id == hallId).hallName;
               widget.onHallSelected?.call(hallId, hallName);
             }
           },
         ),
       ),
+    );
+  }
+
+  // ─── Sections Dropdown ─────────────────────────────────────
+
+  Widget _buildSectionDropdownField(List<SectionInfo> sections) {
+    if (sections.isEmpty) {
+      return _buildEmptyState('sessions.no_sections'.tr());
+    }
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(20.r),
+        color: Theme.of(context).colorScheme.surface,
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<int>(
+          value: _selectedHallId,
+          isExpanded: true,
+          hint: Text('sessions.select_section_hint'.tr()),
+          icon: const Icon(Icons.keyboard_arrow_down),
+          style: AppTextStyle.font14BlackMedium,
+          focusColor: Theme.of(context).colorScheme.surface,
+          dropdownColor: Theme.of(context).colorScheme.surface,
+          items: sections.map((SectionInfo section) {
+            return DropdownMenuItem<int>(
+              value: section.id,
+              child: Text(section.sectionName),
+            );
+          }).toList(),
+          onChanged: (sectionId) {
+            if (sectionId != null) {
+              setState(() => _selectedHallId = sectionId);
+              final sectionName = sections
+                  .firstWhere((s) => s.id == sectionId)
+                  .sectionName;
+              widget.onHallSelected?.call(sectionId, sectionName);
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  // ─── Empty State ───────────────────────────────────────────
+
+  Widget _buildEmptyState(String message) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 15.h),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.orange.shade300),
+        borderRadius: BorderRadius.circular(20.r),
+        color: Colors.orange.shade50,
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline, color: Colors.orange, size: 20.sp),
+          SizedBox(width: 8.w),
+          Expanded(
+            child: Text(message, style: AppTextStyle.font13Orange700Medium),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Other Fields ──────────────────────────────────────────
+
+  Widget _buildSessionNameField() {
+    return AppTextFormField(
+      borderRadius: 20.r,
+      contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
+      focusedBorderColor: Theme.of(context).colorScheme.onSurface,
+      enabledBorderColor: Theme.of(context).colorScheme.outline,
+      controller: widget.sessionNameController,
+      hintText: 'sessions.hint_session_name'.tr(),
+      labelStyle: AppTextStyle.font14GreyMedium,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'sessions.val_session_name_required'.tr();
+        }
+        return null;
+      },
     );
   }
 
@@ -300,9 +373,7 @@ class _SessionFormFieldsState extends State<SessionFormFields> {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(
-                    value == 'WiFi'
-                        ? 'sessions.connection_wifi'.tr()
-                        : value,
+                    value == 'WiFi' ? 'sessions.connection_wifi'.tr() : value,
                   ),
                 );
               }).toList(),
@@ -347,7 +418,7 @@ class _SessionFormFieldsState extends State<SessionFormFields> {
                   style: AppTextStyle.font14GreyMedium.copyWith(
                     color: _selectedTime == null
                         ? Colors.grey
-                        : Theme.of(context).colorScheme.onSurface
+                        : Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 Icon(Icons.access_time, color: Colors.grey, size: 20.sp),

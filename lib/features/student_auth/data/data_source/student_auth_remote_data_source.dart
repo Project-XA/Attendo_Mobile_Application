@@ -21,11 +21,12 @@ class StudentAuthRemoteDataSourceImpl implements StudentAuthRemoteDataSource {
     LoginStudentRequestBody requestBody,
   ) async {
     final response = await networkService.post(
-      ApiConst.studetnLogin,
+      ApiConst.studentLogin,
       requestBody.toJson(),
     );
 
-    return LoginStudentResponseBody.fromJson(response.data);
+    final json = response.data as Map<String, dynamic>;
+    return LoginStudentResponseBody.fromJson(json);
   }
 
   @override
