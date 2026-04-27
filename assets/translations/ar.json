@@ -73,7 +73,8 @@
     "step_org_subtitle": "سجّل الدخول إلى مدرستك أو شركتك",
     "step_attendance_title": "تسجيل الحضور",
     "step_attendance_subtitle": "سجّل حضورك بالبصمة",
-    "start_registration": "بدء التسجيل"
+    "start_as_worker": "بدء كعامل",
+    "start_as_student": "بدء كطالب"
   },
   "admin": {
     "panel_title": "لوحة تحكم المشرف",
@@ -183,5 +184,53 @@
     "logout_title": "تسجيل الخروج",
     "logout_confirm": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
     "logout_failed": "فشل تسجيل الخروج: {0}"
-  }
+  },
+ 
+"loginStudent": {
+    "welcome_back": "مرحباً بعودتك!",
+    "subtitle": "سجّل دخولك للمتابعة على Attendo",
+    "email_label": "البريد الإلكتروني",
+    "email_hint": "أدخل بريدك الإلكتروني",
+    "password_label": "كلمة المرور",
+    "forgot_password": "نسيت كلمة المرور؟",
+    "log_in_button": "تسجيل الدخول",
+    "no_account": "ليس لديك حساب؟",
+    "create_account": "إنشاء حساب",
+    "portal_badge": "تسجيل الطالب",
+    "portal_badge_sub": "أنشئ حسابك على Attendo"
+  },
+  "validation": {
+    "enter_valid_email": "أدخل بريداً إلكترونياً صحيحاً",
+    "password_min_chars": "كلمة المرور يجب أن تكون 6 أحرف على الأقل"
+  },
+  "registerStudent": {
+  "create_account": "إنشاء حساب",
+  "subtitle": "املأ بياناتك للبدء",
+  "org_code_label": "كود المؤسسة",
+  "org_code_hint": "أدخل كود المؤسسة",
+  "full_name_label": "الاسم بالكامل",
+  "full_name_hint": "أحمد علي",
+  "email_label": "البريد الإلكتروني",
+  "email_hint": "ahmed@student.edu",
+  "confirm_email_label": "تأكيد البريد الإلكتروني",
+  "confirm_email_hint": "أعد إدخال البريد الإلكتروني",
+  "roll_number_label": "رقم الطالب",
+  "roll_number_hint": "20240015",
+  "password_label": "كلمة المرور",
+  "confirm_password_label": "تأكيد كلمة المرور",
+  "sign_up_button": "إنشاء حساب",
+  "portal_badge": "تسجيل الطلاب",
+  "portal_badge_sub": "أنشئ حسابك على Attendo",
+  "next_button": "التالي"
+},
+"validationRegisterStudent": {
+  "enter_org_code": "أدخل كود المؤسسة",
+  "enter_full_name": "أدخل اسمك بالكامل",
+  "enter_valid_email": "أدخل بريدًا إلكترونيًا صحيحًا",
+  "enter_confirm_email": "يرجى تأكيد البريد الإلكتروني",
+  "emails_no_match": "البريد الإلكتروني غير متطابق",
+  "enter_roll_number": "أدخل رقم الطالب",
+  "password_min_chars": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+  "passwords_not_match": "كلمات المرور غير متطابقة"
+}
 }

@@ -234,7 +234,7 @@ class _RegisterFormState extends State<RegisterForm> {
     context.read<AuthStudentCubit>().register(
       RegisterStudentRequestBody(
         organizationCode: int.parse(_organizationCodeController.text),
-        fullname: _fullNameController.text,
+        fullName: _fullNameController.text,
         email: _emailController.text,
         confirmEmail: _confirmEmailController.text,
         rollNumber: _rollNumberController.text,

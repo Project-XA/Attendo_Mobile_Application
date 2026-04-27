@@ -73,7 +73,8 @@
     "step_org_subtitle": "Log in to your school or company",
     "step_attendance_title": "Take Attendance",
     "step_attendance_subtitle": "Check in with your biometrics",
-    "start_registration": "Start Registration"
+    "start_as_worker": "Start as Worker",
+    "start_as_student": "Start as Student"
   },
   "admin": {
     "panel_title": "Admin Control Panel",
@@ -183,5 +184,57 @@
     "logout_title": "Logout",
     "logout_confirm": "Are you sure you want to logout?",
     "logout_failed": "Logout failed: {0}"
+  },
+
+    "loginStudent": {
+    "welcome_back": "Welcome Back!",
+    "subtitle": "Sign in to continue to Attendo",
+    "email_label": "Email",
+    "email_hint": "Enter your email",
+    "password_label": "Password",
+    "forgot_password": "Forgot Password?",
+    "log_in_button": "Log In",
+    "no_account": "Don't have an account?",
+    "create_account": "Create Account",
+    "portal_badge": "Student Registration",
+    "portal_badge_sub": "Create your Attendo account"
+  },
+  "validation": {
+    "enter_valid_email": "Enter a valid email",
+    "password_min_chars": "Password must be at least 6 characters"
+  },
+ 
+
+"registerStudent": {
+    "create_account": "Create Account",
+    "subtitle": "Fill in your details to get started",
+    "org_code_label": "Organization Code",
+    "org_code_hint": "Enter organization code",
+    "full_name_label": "Full Name",
+    "full_name_hint": "Ahmed Ali",
+    "email_label": "Email",
+    "email_hint": "ahmed@student.edu",
+    "confirm_email_label": "Confirm Email",
+    "confirm_email_hint": "Re-enter your email",
+    "roll_number_label": "Roll Number",
+    "roll_number_hint": "20240015",
+    "password_label": "Password",
+    "confirm_password_label": "Confirm Password",
+    "sign_up_button": "Create Account",
+     "portal_badge": "Student Registration",
+  "portal_badge_sub": "Create your Attendo account",
+  "next_button": "Next"
+  
+
+  },
+   "validationRegisterStudent": {
+    "enter_org_code": "Enter organization code",
+    "enter_full_name": "Enter your full name",
+    "enter_valid_email": "Enter a valid email",
+    "enter_confirm_email": "Please confirm your email",
+    "emails_no_match": "Emails do not match",
+    "enter_roll_number": "Enter your roll number",
+    "password_min_chars": "Password must be at least 6 characters",
+    "passwords_not_match": "Passwords do not match"
   }
 }

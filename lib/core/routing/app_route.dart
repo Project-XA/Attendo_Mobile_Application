@@ -10,12 +10,14 @@ import 'package:mobile_app/core/dependency_injection/init_verify_get_it.dart';
 import 'package:mobile_app/core/dependency_injection/privacy_security_di.dart';
 import 'package:mobile_app/core/dependency_injection/scan_ocr_di.dart';
 import 'package:mobile_app/core/routing/routes.dart';
+import 'package:mobile_app/features/attendance/presentation/views/student_dashboard_screen.dart';
 import 'package:mobile_app/features/auth/presentation/views/forgot_password_screen.dart';
 import 'package:mobile_app/features/auth/presentation/views/verify_reset_password_otp_screen.dart';
+import 'package:mobile_app/features/navigation_screen/presentation/student_navigation.dart';
 import 'package:mobile_app/features/privacy_and_security/presentation/privacy_and_security.dart';
 import 'package:mobile_app/features/session_mangement/presentation/admin_dashboard.dart';
-import 'package:mobile_app/features/profile/presentation/profile_screen.dart';
-import 'package:mobile_app/features/attendance/presentation/user_dashboard_screen.dart';
+import 'package:mobile_app/features/profile/presentation/views/profile_screen.dart';
+import 'package:mobile_app/features/attendance/presentation/views/user_dashboard_screen.dart';
 import 'package:mobile_app/features/navigation_screen/presentation/main_navigation_screen.dart';
 import 'package:mobile_app/features/auth/presentation/views/register_screen.dart';
 import 'package:mobile_app/features/ocr/presentation/scan_id_screen.dart';
@@ -91,6 +93,13 @@ class AppRoute {
 
       case Routes.profileScreen:
         page = const ProfileScreen();
+        break;
+      case Routes.studentDashboardScreen:
+        page = const StudentDashboardScreen();
+        break;
+
+      case Routes.studentNavigation:
+        page = const StudentNavigationScreen();
         break;
 
       case Routes.privacyAndSecurityScreen:

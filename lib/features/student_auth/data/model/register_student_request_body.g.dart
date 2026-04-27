@@ -10,7 +10,7 @@ RegisterStudentRequestBody _$RegisterStudentRequestBodyFromJson(
         Map<String, dynamic> json) =>
     RegisterStudentRequestBody(
       organizationCode: (json['organizationCode'] as num).toInt(),
-      fullname: json['fullname'] as String,
+      fullName: json['fullName'] as String,
       email: json['email'] as String,
       confirmEmail: json['confirmEmail'] as String,
       rollNumber: json['rollNumber'] as String,
@@ -22,7 +22,7 @@ Map<String, dynamic> _$RegisterStudentRequestBodyToJson(
         RegisterStudentRequestBody instance) =>
     <String, dynamic>{
       'organizationCode': instance.organizationCode,
-      'fullname': instance.fullname,
+      'fullName': instance.fullName,
       'email': instance.email,
       'confirmEmail': instance.confirmEmail,
       'rollNumber': instance.rollNumber,

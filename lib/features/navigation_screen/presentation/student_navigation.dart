@@ -1,54 +1,47 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:mobile_app/core/current_user/presentation/cubits/current_user_cubit.dart';
-import 'package:mobile_app/core/current_user/presentation/cubits/current_user_state.dart';
+import 'package:mobile_app/core/current_student/presentation/current_student_cubit.dart';
+import 'package:mobile_app/core/current_student/presentation/current_student_state.dart';
 import 'package:mobile_app/core/dependency_injection/get_it.dart';
-import 'package:mobile_app/core/dependency_injection/init_session_management.dart';
+import 'package:mobile_app/core/dependency_injection/init_current_student.dart';
 import 'package:mobile_app/core/dependency_injection/init_user_attendace.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/features/session_mangement/presentation/admin_dashboard.dart';
-import 'package:mobile_app/features/profile/presentation/views/profile_screen.dart';
-import 'package:mobile_app/features/attendance/presentation/views/user_dashboard_screen.dart';
+import 'package:mobile_app/features/attendance/presentation/views/student_dashboard_screen.dart';
+import 'package:mobile_app/features/profile/presentation/views/student_profile_screen.dart';
 
-class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({super.key});
+class StudentNavigationScreen extends StatefulWidget {
+  const StudentNavigationScreen({super.key});
 
   @override
-  State<MainNavigationScreen> createState() => _MainNavigationScreenState();
+  State<StudentNavigationScreen> createState() =>
+      _StudentNavigationScreenState();
 }
 
-class _MainNavigationScreenState extends State<MainNavigationScreen> {
+class _StudentNavigationScreenState extends State<StudentNavigationScreen> {
   bool _diInitialized = false;
 
-  void _initDI(String role) {
+  void _initDI() {
     if (_diInitialized) return;
-    if (role.toLowerCase() == 'admin') {
-      initSessionManagement();
-    } else {
-      initUserAttendace();
-    }
+    initCurrentStudentDi();
+    initUserAttendace();
     _diInitialized = true;
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: getIt<CurrentUserCubit>()..loadUser(),
-      child: BlocBuilder<CurrentUserCubit, CurrentUserState>(
+      value: getIt<CurrentStudentCubit>()..loadStudent(),
+      child: BlocBuilder<CurrentStudentCubit, CurrentStudentState>(
         builder: (context, state) {
-          // Loading
           if (state.isLoading) {
             return const Scaffold(
               body: Center(child: CircularProgressIndicator()),
             );
           }
 
-          // Error
           if (state.error != null) {
             return Scaffold(
               body: Center(
@@ -70,7 +63,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                     verticalSpace(16),
                     ElevatedButton(
                       onPressed: () =>
-                          context.read<CurrentUserCubit>().loadUser(),
+                          context.read<CurrentStudentCubit>().loadStudent(),
                       child: Text('common.try_again'.tr()),
                     ),
                   ],
@@ -79,57 +72,35 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             );
           }
 
-          final user = state.user;
-
-          if (user == null) {
+          if (state.student == null) {
             return Scaffold(
               body: Center(child: Text('common.no_user_found'.tr())),
             );
           }
 
-          final role = user.organizations?.isNotEmpty == true
-              ? user.organizations!.first.role
-              : null;
+          _initDI();
 
-          if (role == null) {
-            return const Scaffold(
-              body: Center(
-                child: Icon(
-                  Icons.warning_amber_rounded,
-                  size: 60,
-                  color: Colors.orange,
-                ),
-              ),
-            );
-          }
-
-          _initDI(role);
-
-          return _MainNavigationContent(isAdmin: role.toLowerCase() == 'admin');
+          return const _StudentNavigationContent();
         },
       ),
     );
   }
 }
 
-class _MainNavigationContent extends StatefulWidget {
-  final bool isAdmin;
-
-  const _MainNavigationContent({required this.isAdmin});
+class _StudentNavigationContent extends StatefulWidget {
+  const _StudentNavigationContent();
 
   @override
-  State<_MainNavigationContent> createState() => _MainNavigationContentState();
+  State<_StudentNavigationContent> createState() =>
+      _StudentNavigationContentState();
 }
 
-class _MainNavigationContentState extends State<_MainNavigationContent> {
+class _StudentNavigationContentState extends State<_StudentNavigationContent> {
   int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    final screens = <Widget>[
-      widget.isAdmin ? const AdminDashboard() : const UserDashboardScreen(),
-      const ProfileScreen(),
-    ];
+    const screens = <Widget>[StudentDashboardScreen(), StudentProfileScreen()];
 
     return WillPopScope(
       onWillPop: () async {
@@ -156,15 +127,17 @@ class _MainNavigationContentState extends State<_MainNavigationContent> {
       ),
       child: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+        onTap: (index) => setState(() => _currentIndex = index),
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-        selectedItemColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
-        unselectedItemColor: Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
+        backgroundColor: Theme.of(
+          context,
+        ).bottomNavigationBarTheme.backgroundColor,
+        selectedItemColor: Theme.of(
+          context,
+        ).bottomNavigationBarTheme.selectedItemColor,
+        unselectedItemColor: Theme.of(
+          context,
+        ).bottomNavigationBarTheme.unselectedItemColor,
         selectedLabelStyle: TextStyle(
           fontSize: 12.sp,
           fontWeight: FontWeight.w600,

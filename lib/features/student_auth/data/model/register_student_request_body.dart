@@ -4,7 +4,7 @@ part 'register_student_request_body.g.dart';
 @JsonSerializable()
 class RegisterStudentRequestBody {
   final int organizationCode;
-  final String fullname;
+  final String fullName;
   final String email;
   final String confirmEmail;
   final String rollNumber;
@@ -13,7 +13,7 @@ class RegisterStudentRequestBody {
 
   RegisterStudentRequestBody({
     required this.organizationCode,
-    required this.fullname,
+    required this.fullName,
     required this.email,
     required this.confirmEmail,
     required this.rollNumber,
