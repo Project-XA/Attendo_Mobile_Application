@@ -60,7 +60,7 @@ class AdminDashboard extends StatelessWidget {
                     builder: (context, userState) {
                       final latestUser = currentUserCubit.currentUser;
                       return UserHeader(
-                        userName: latestUser?.fullNameEn ?? '',
+                        userName: latestUser?.fullName ?? '',
                         userRole:
                             latestUser?.organizations?.first.role ?? 'Admin',
                         userImage:

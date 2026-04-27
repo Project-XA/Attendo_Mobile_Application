@@ -78,7 +78,7 @@ class TopSection extends StatelessWidget {
 
                   verticalSpace(10.h),
 
-                  UserNameSection(fullNameEn: user.fullNameEn),
+                  UserNameSection(fullNameEn: user.fullName),
 
                   verticalSpace(5.h),
 

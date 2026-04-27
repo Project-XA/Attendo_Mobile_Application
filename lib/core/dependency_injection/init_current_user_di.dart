@@ -1,3 +1,4 @@
+import 'package:mobile_app/core/current_user/domain/use_case/update_profile_image_use_case.dart';
 import 'package:mobile_app/core/dependency_injection/get_it.dart';
 import 'package:mobile_app/core/current_user/data/repo_imp/current_user_repo_imp.dart';
 import 'package:mobile_app/core/current_user/domain/repo/current_user_repo.dart';
@@ -20,9 +21,13 @@ void initCurrentUserDi() {
   registerLazyIfNotRegistered<UpdateUserUseCase>(
     () => UpdateUserUseCase(getIt()),
   );
+  registerLazyIfNotRegistered<UpdateProfileImageUseCase>(
+    () => UpdateProfileImageUseCase(getIt()),
+  );
 
   registerLazyIfNotRegistered<CurrentUserCubit>(
     () => CurrentUserCubit(
+      updateProfileImageUseCase: getIt(),
       getCurrentUserUseCase: getIt(),
       updateUserUseCase: getIt(),
     ),

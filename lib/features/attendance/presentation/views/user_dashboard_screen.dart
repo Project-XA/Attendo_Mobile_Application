@@ -112,7 +112,7 @@ class _UserDashboardState extends State<UserDashboardScreen> {
                           .read<CurrentUserCubit>()
                           .currentUser;
                       return UserHeader(
-                        userName: latestUser?.fullNameEn ?? '',
+                        userName: latestUser?.fullName ?? '',
                         userRole:
                             latestUser?.organizations?.first.role ??
                             'attendance.default_role_student'.tr(),
@@ -176,7 +176,7 @@ class _UserDashboardState extends State<UserDashboardScreen> {
               _checkInCubit.checkIn(
                 session,
                 userId: user.id!,
-                userName: user.fullNameEn,
+                userName: user.fullName,
               );
             },
           );

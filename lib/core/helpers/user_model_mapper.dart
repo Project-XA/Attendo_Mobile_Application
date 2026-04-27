@@ -17,15 +17,8 @@ class UserModelMapper {
       id: apiResponse.userResponse.id,
       email: apiResponse.userResponse.email,
       username: apiResponse.userResponse.username,
-      firstNameEn: nameParts.isNotEmpty ? nameParts.first : '',
-      lastNameEn: nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '',
-      nationalId: localUserData.nationalId,
-      firstNameAr: localUserData.firstNameAr,
-      lastNameAr: localUserData.lastNameAr,
-      address: localUserData.address,
-      birthDate: localUserData.birthDate,
+      fullName: apiResponse.userResponse.fullName,
       profileImage: localUserData.profileImage,
-      idCardImage: localUserData.idCardImage,
       organizations: [
         UserOrgModel(
           organizationId: apiResponse.userResponse.organizationId!,
