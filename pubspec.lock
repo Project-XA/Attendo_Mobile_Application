@@ -539,13 +539,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
-  flutter_tesseract_ocr:
-    dependency: "direct main"
-    description:
-      path: "lib/tesseract_ocr"
-      relative: true
-    source: path
-    version: "0.4.30"
   flutter_test:
     dependency: "direct dev"
     description: flutter

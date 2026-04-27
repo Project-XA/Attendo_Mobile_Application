@@ -1,8 +1,0 @@
-back-bottom
-back-left
-back-right
-back-up
-front-bottom
-front-left
-front-right
-front-up

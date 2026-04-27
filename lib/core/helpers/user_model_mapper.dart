@@ -19,7 +19,6 @@ class UserModelMapper {
       username: apiResponse.userResponse.username,
       firstNameEn: nameParts.isNotEmpty ? nameParts.first : '',
       lastNameEn: nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '',
-      // من الـ local
       nationalId: localUserData.nationalId,
       firstNameAr: localUserData.firstNameAr,
       lastNameAr: localUserData.lastNameAr,

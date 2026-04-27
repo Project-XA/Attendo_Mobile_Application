@@ -7,9 +7,7 @@ import 'package:mobile_app/core/dependency_injection/init_auth_student.dart';
 import 'package:mobile_app/core/dependency_injection/init_current_student.dart';
 import 'package:mobile_app/core/dependency_injection/init_current_user_di.dart';
 import 'package:mobile_app/core/dependency_injection/init_user_attendace.dart';
-import 'package:mobile_app/core/dependency_injection/init_verify_get_it.dart';
 import 'package:mobile_app/core/dependency_injection/privacy_security_di.dart';
-import 'package:mobile_app/core/dependency_injection/scan_ocr_di.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/features/attendance/presentation/views/student_dashboard_screen.dart';
 import 'package:mobile_app/features/auth/presentation/views/forgot_password_screen.dart';
@@ -22,13 +20,10 @@ import 'package:mobile_app/features/profile/presentation/views/profile_screen.da
 import 'package:mobile_app/features/attendance/presentation/views/user_dashboard_screen.dart';
 import 'package:mobile_app/features/navigation_screen/presentation/main_navigation_screen.dart';
 import 'package:mobile_app/features/auth/presentation/views/register_screen.dart';
-import 'package:mobile_app/features/ocr/presentation/scan_id_screen.dart';
 import 'package:mobile_app/features/onboarding/start_page.dart';
 import 'package:mobile_app/features/student_auth/presentation/logic/student_auth_cubit.dart';
 import 'package:mobile_app/features/student_auth/presentation/views/login_student_screen.dart';
 import 'package:mobile_app/features/student_auth/presentation/views/register_student_screen.dart';
-import 'package:mobile_app/features/verification/presentation/logic/verification_cubit.dart';
-import 'package:mobile_app/features/verification/presentation/verification_screen.dart';
 
 class AppRoute {
   Route generateRoute(RouteSettings settings) {
@@ -37,11 +32,6 @@ class AppRoute {
     switch (settings.name) {
       case Routes.startPage:
         page = const StartPage();
-        break;
-
-      case Routes.scanIdScreen:
-        setupScanOcrFeature();
-        page = const ScanIdScreen();
         break;
 
       case Routes.registerScreen:
@@ -76,14 +66,6 @@ class AppRoute {
         page = const MainNavigationScreen();
         break;
 
-      case Routes.verficationScreen:
-        initVerifyScreen();
-        page = BlocProvider(
-          create: (context) => VerificationCubit(getIt(), getIt(), getIt()),
-          child: const VerificationScreen(),
-        );
-
-        break;
       case Routes.homePage:
         initUserAttendace();
         page = const UserDashboardScreen();
