@@ -39,8 +39,6 @@ class UserLocalDataSourceImp extends UserLocalDataSource {
     }
   }
 
-
-
   @override
   Future<bool> hasCurrentUser() async {
     try {
@@ -52,12 +50,7 @@ class UserLocalDataSourceImp extends UserLocalDataSource {
 
   @override
   Future<bool> hasValidToken() async {
-    try {
-      await SecureStorageService.hasValidToken();
-      return true;
-    } catch (e) {
-      return false;
-    }
+    return await SecureStorageService.hasValidToken();
   }
 
   @override
@@ -159,7 +152,11 @@ class UserLocalDataSourceImp extends UserLocalDataSource {
   @override
   Future<void> logout() async {
     try {
+      final user = await getCurrentUser();
+
       await SecureStorageService.deleteToken();
+
+      await userBox.put(_currentUserKey, user);
       await userBox.flush();
     } catch (e) {
       throw CacheException('Failed to logout: $e');
