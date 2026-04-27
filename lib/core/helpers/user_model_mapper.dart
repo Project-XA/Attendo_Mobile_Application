@@ -13,6 +13,7 @@ class UserModelMapper {
     final nameParts = apiResponse.userResponse.fullName.split(' ');
 
     return UserModel(
+      isUniversity: apiResponse.userResponse.isUniversity,
       id: apiResponse.userResponse.id,
       email: apiResponse.userResponse.email,
       username: apiResponse.userResponse.username,

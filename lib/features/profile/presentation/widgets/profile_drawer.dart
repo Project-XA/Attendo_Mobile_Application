@@ -49,6 +49,13 @@ class ProfileDrawer extends StatelessWidget {
 
             _DarkModeToggle(isDark: isDark),
 
+            // _DrawerItem(
+            //   icon: Icons.privacy_tip_rounded,
+            //   label: 'settings.privacy'.tr(),
+            //   onTap: () {
+            //     context.pushNamed(Routes.privacyAndSecurityScreen);
+            //   },
+            // ),
             const Spacer(),
 
             Divider(color: theme.dividerTheme.color),

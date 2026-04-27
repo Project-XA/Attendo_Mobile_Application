@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/features/privacy_and_security/presentation/widgets/action_button.dart' show ActionButton;
+import 'package:mobile_app/features/privacy_and_security/presentation/widgets/action_button.dart';
 import 'package:mobile_app/features/privacy_and_security/presentation/widgets/info_box.dart';
 import 'package:mobile_app/features/privacy_and_security/presentation/widgets/password_field.dart';
 

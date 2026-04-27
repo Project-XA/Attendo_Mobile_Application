@@ -7,10 +7,7 @@ class RegisterResponseBody {
   final UserResponse userResponse;
   final String loginToken;
 
-  RegisterResponseBody({
-    required this.userResponse,
-    required this.loginToken,
-  });
+  RegisterResponseBody({required this.userResponse, required this.loginToken});
 
   factory RegisterResponseBody.fromJson(Map<String, dynamic> json) =>
       _$RegisterResponseBodyFromJson(json);
@@ -27,6 +24,7 @@ class UserResponse {
   final String? phoneNumber;
   final String role;
   final String createdAt;
+  final bool isUniversity;
   final String updatedAt;
   final int? organizationId;
   final String? organizationName;
@@ -37,6 +35,7 @@ class UserResponse {
     required this.fullName,
     required this.userName,
     required this.email,
+    required this.isUniversity,
     this.phoneNumber,
     this.username,
     this.organizationName,

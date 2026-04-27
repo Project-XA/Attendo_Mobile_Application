@@ -46,12 +46,15 @@ class UserModel extends HiveObject {
   String? id;
   @HiveField(12)
   String? username;
+  @HiveField(13)
+  bool? isUniversity;
   
 
   UserModel({
     required this.nationalId,
     required this.firstNameAr,
     required this.lastNameAr,
+   this.isUniversity,
     this.id,
     this.username,
     this.address,
@@ -71,6 +74,7 @@ class UserModel extends HiveObject {
 
   factory UserModel.fromEntity(User user) {
     return UserModel(
+      isUniversity: user.isUniversity,
       id: user.id,
       nationalId: user.nationalId,
       firstNameAr: user.firstNameAr,
@@ -91,6 +95,7 @@ class UserModel extends HiveObject {
 
   User toEntity() {
     return User(
+      isUniversity: isUniversity,
       id: id,
       nationalId: nationalId,
       firstNameAr: firstNameAr,
@@ -117,6 +122,7 @@ class UserModel extends HiveObject {
 
   UserModel copyWithClearedAuth() {
     return UserModel(
+      isUniversity: isUniversity,
       id: id,
       nationalId: nationalId,
       firstNameAr: firstNameAr,
@@ -150,6 +156,7 @@ class UserModel extends HiveObject {
     String? loginToken,
     String? username,
     String? pinCode,
+    bool? isUniversity,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -165,6 +172,7 @@ class UserModel extends HiveObject {
       profileImage: profileImage ?? this.profileImage,
       idCardImage: idCardImage ?? this.idCardImage,
       username: username ?? this.username,
+      isUniversity: isUniversity ?? this.isUniversity,
     );
   }
 }

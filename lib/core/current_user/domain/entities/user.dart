@@ -9,7 +9,7 @@ class User {
   final String? address;
   final String? birthDate;
   final String? idCardImage;
-
+  final bool? isUniversity;
   final String? email;
   final String? firstNameEn;
   final String? lastNameEn;
@@ -21,6 +21,7 @@ class User {
   final String? username;
 
   User({
+    this.isUniversity,
     required this.nationalId,
     required this.firstNameAr,
     required this.lastNameAr,
@@ -52,8 +53,10 @@ class User {
     String? id,
     String? loginToken,
     String? username,
+    bool? isUniversity,
   }) {
     return User(
+      isUniversity: isUniversity ?? this.isUniversity,
       id: id ?? this.id,
       nationalId: nationalId ?? this.nationalId,
       firstNameAr: firstNameAr ?? this.firstNameAr,

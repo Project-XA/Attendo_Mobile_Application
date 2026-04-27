@@ -12,6 +12,7 @@ import 'package:mobile_app/features/session_mangement/domain/use_cases/create_se
 import 'package:mobile_app/features/session_mangement/domain/use_cases/delete_current_session_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/end_session_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/get_all_halls_use_case.dart';
+import 'package:mobile_app/features/session_mangement/domain/use_cases/get_all_sections.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/listen_attendence_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/start_session_server_use_case.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_cubit.dart';
@@ -64,6 +65,9 @@ void initSessionManagement() {
   registerLazyIfNotRegistered<DeleteCurrentSessionUseCase>(
     () => DeleteCurrentSessionUseCase(getIt()),
   );
+  registerLazyIfNotRegistered<GetAllSectionsUseCase>(
+    () => GetAllSectionsUseCase(getIt()),
+  );
 
   // Cubit
   getIt.registerFactory<SessionManagementCubit>(
@@ -74,6 +78,7 @@ void initSessionManagement() {
       listenAttendanceUseCase: getIt(),
       getAllHallsUseCase: getIt(),
       deleteCurrentSessionUseCase: getIt(),
+      getAllSectionsUseCase: getIt(),
     ),
   );
 }

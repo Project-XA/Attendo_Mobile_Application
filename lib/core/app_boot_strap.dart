@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:mobile_app/attendency_app.dart';
 import 'package:mobile_app/core/dependency_injection/get_it.dart';
+import 'package:mobile_app/core/helpers/inital_route_resolver.dart';
 import 'package:mobile_app/core/routing/app_route.dart';
-import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/core/services/auth/onboarding_service.dart';
 import 'package:mobile_app/core/themes/theme_cubit.dart';
 import 'package:mobile_app/features/splash/animated_splash_screen.dart';
@@ -32,35 +32,14 @@ class _AppBootstrapState extends State<AppBootstrap> {
 
   Future<void> _init() async {
     await initCore();
-
     final onboardingService = getIt<OnboardingService>();
-
-    final hasCompletedOCR = await onboardingService.hasCompletedOCR();
-    final hasRegistered = await onboardingService.hasCompletedOnboarding();
-    final isLoggedIn = await onboardingService.isLoggedIn();
-    final hasCompletedVerification = await onboardingService
-        .hasCompletedVerification();
-
-    String initialRoute;
-    String? routeArgument;
-
-    if (!hasCompletedOCR) {
-      initialRoute = Routes.startPage;
-    } else if (!hasCompletedVerification) {
-      initialRoute = Routes.verficationScreen;
-    } else if (!hasRegistered) {
-      initialRoute = Routes.registerScreen;
-    } else if (!isLoggedIn) {
-      initialRoute = Routes.registerScreen;
-    } else {
-      final userRole = await onboardingService.getUserRole();
-      initialRoute = Routes.mainNavigation;
-      routeArgument = userRole ?? 'User';
-    }
+    final (route, argument) = await InitialRouteResolver.resolve(
+      onboardingService,
+    );
 
     setState(() {
-      _initialRoute = initialRoute;
-      _routeArgument = routeArgument;
+      _initialRoute = route;
+      _routeArgument = argument;
       _isInitialized = true;
     });
   }

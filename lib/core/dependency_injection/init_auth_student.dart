@@ -14,7 +14,11 @@ void initAuthStudent() {
   );
 
   registerLazyIfNotRegistered<AuthStudentRepo>(
-    () => AuthStudentRepoImpl(remoteDataSource: getIt()),
+    () => AuthStudentRepoImpl(
+      remoteDataSource: getIt(),
+      localDataSource: getIt(),
+      onboardingService: getIt(),
+    ),
   );
 
   registerLazyIfNotRegistered<StudentLoginUseCase>(
