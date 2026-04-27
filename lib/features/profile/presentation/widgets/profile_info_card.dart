@@ -50,6 +50,21 @@ class FullNameCard extends StatelessWidget {
   }
 }
 
+class CollageCardId extends StatelessWidget {
+  final String collageCardId;
+
+  const CollageCardId({super.key, required this.collageCardId});
+
+  @override
+  Widget build(BuildContext context) {
+    return InfoCard(
+      icon: Icons.badge,
+      label: 'profile.field_college_card_id'.tr(),
+      value: collageCardId,
+      onEdit: null,
+    );
+  }
+}
 
 class LastNameCard extends StatelessWidget {
   final String lastNameAr;
