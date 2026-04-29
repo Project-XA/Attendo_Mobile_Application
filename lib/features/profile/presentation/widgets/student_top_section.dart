@@ -77,7 +77,6 @@ class StudentTopSection extends StatelessWidget {
                   // Email
                   Text(student.email, style: AppTextStyle.font14WhiteMedium),
                   verticalSpace(5.h),
-                  // Roll Number badge بدل role
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                     decoration: BoxDecoration(

@@ -1,17 +1,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/dependency_injection/get_it.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/core/services/UI/extensions.dart';
 import 'package:mobile_app/core/services/auth/onboarding_service.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
-import 'package:mobile_app/core/themes/font_weight_helper.dart';
-import 'package:mobile_app/core/themes/theme_cubit.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/core/themes/theme_transition_manager.dart';
+import 'package:mobile_app/features/profile/presentation/widgets/dark_mode_toggle.dart';
+import 'package:mobile_app/features/profile/presentation/widgets/drawer_item.dart';
+import 'package:mobile_app/features/profile/presentation/widgets/language_tile.dart';
 
 class ProfileDrawer extends StatelessWidget {
   const ProfileDrawer({super.key, required this.drawerController});
@@ -39,7 +38,7 @@ class ProfileDrawer extends StatelessWidget {
             Divider(color: theme.dividerTheme.color),
             verticalSpace(16),
 
-            _DrawerItem(
+            DrawerItem(
               icon: Icons.language_rounded,
               label: 'settings.language'.tr(),
               onTap: () => _showLanguageDialog(context),
@@ -47,7 +46,7 @@ class ProfileDrawer extends StatelessWidget {
 
             verticalSpace(8),
 
-            _DarkModeToggle(isDark: isDark),
+            DarkModeToggle(isDark: isDark),
 
             // _DrawerItem(
             //   icon: Icons.privacy_tip_rounded,
@@ -61,7 +60,7 @@ class ProfileDrawer extends StatelessWidget {
             Divider(color: theme.dividerTheme.color),
             verticalSpace(12),
 
-            _DrawerItem(
+            DrawerItem(
               icon: Icons.logout_rounded,
               label: 'profile.logout_title'.tr(),
               color: Colors.redAccent.shade100,
@@ -94,13 +93,13 @@ class ProfileDrawer extends StatelessWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _LanguageTile(
+            LanguageTile(
               flag: '🇺🇸',
               label: 'settings.language_english'.tr(),
               locale: const Locale('en'),
             ),
             verticalSpace(8),
-            _LanguageTile(
+            LanguageTile(
               flag: '🇪🇬',
               label: 'settings.language_arabic'.tr(),
               locale: const Locale('ar'),
@@ -171,152 +170,6 @@ class ProfileDrawer extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// ─── Dark Mode Toggle Row ────────────────────────────────────
-class _DarkModeToggle extends StatelessWidget {
-  const _DarkModeToggle({required this.isDark});
-
-  final bool isDark;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final itemColor = theme.colorScheme.onSurface;
-
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 8.w),
-      child: Row(
-        children: [
-          Icon(
-            isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-            color: itemColor,
-            size: 22.sp,
-          ),
-          horizontalSpace(16),
-          Expanded(
-            child: Text(
-              'settings.dark_mode'.tr(),
-              style: AppTextStyle.font14GreyMedium.copyWith(
-                color: itemColor,
-                fontSize: 15.sp,
-                fontWeight: FontWeightHelper.medium,
-              ),
-            ),
-          ),
-          Switch(
-            value: isDark,
-            onChanged: (_) {
-              ThemeTransitionManager.show(context: context, isDark: !isDark);
-              context.read<ThemeCubit>().toggleTheme();
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DrawerItem extends StatelessWidget {
-  const _DrawerItem({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.color,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final itemColor = color ?? theme.colorScheme.onSurface;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12.r),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 8.w),
-        child: Row(
-          children: [
-            Icon(icon, color: itemColor, size: 22.sp),
-            horizontalSpace(16),
-            Text(
-              label,
-              style: AppTextStyle.font14GreyMedium.copyWith(
-                color: itemColor,
-                fontSize: 15.sp,
-                fontWeight: FontWeightHelper.medium,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _LanguageTile extends StatelessWidget {
-  const _LanguageTile({
-    required this.flag,
-    required this.label,
-    required this.locale,
-  });
-
-  final String flag;
-  final String label;
-  final Locale locale;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isSelected = context.locale == locale;
-    return InkWell(
-      onTap: () {
-        context.setLocale(locale);
-        Navigator.pop(context);
-      },
-      borderRadius: BorderRadius.circular(10.r),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? theme.colorScheme.onSurface.withOpacity(0.1)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(10.r),
-          border: Border.all(
-            color: isSelected
-                ? theme.colorScheme.onSurface
-                : theme.colorScheme.outline.withOpacity(0.3),
-          ),
-        ),
-        child: Row(
-          children: [
-            Text(flag, style: TextStyle(fontSize: 20.sp)),
-            horizontalSpace(12),
-            Text(
-              label,
-              style: AppTextStyle.font14GreyMedium.copyWith(
-                fontSize: 14.sp,
-                fontWeight: isSelected
-                    ? FontWeightHelper.semiBold
-                    : FontWeightHelper.regular,
-              ),
-            ),
-            const Spacer(),
-            if (isSelected)
-              Icon(
-                Icons.check_circle_rounded,
-                color: theme.colorScheme.onSurface,
-                size: 18.sp,
-              ),
-          ],
-        ),
       ),
     );
   }
