@@ -6,7 +6,7 @@ import 'package:mobile_app/features/auth/data/models/register_request_body.dart'
 abstract class AuthRepo {
   Future<ApiResult<UserModel>> registerUser({
     required RegisterRequestBody request,
-    required UserModel localUserData,
+
   });
 
   Future<ApiResult<String>> sendResetOtp({required String email});

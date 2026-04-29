@@ -24,7 +24,6 @@ class AuthRepoImpl extends AuthRepo {
   @override
   Future<ApiResult<UserModel>> registerUser({
     required RegisterRequestBody request,
-    required UserModel localUserData,
   }) async {
     try {
       final apiResponse = await authRemoteDataSource.registerUser(
@@ -37,7 +36,6 @@ class AuthRepoImpl extends AuthRepo {
 
       final completeUserData = UserModelMapper.fromRegistration(
         apiResponse: apiResponse,
-        localUserData: localUserData,
       );
 
       await localDataSource.saveUserLogin(completeUserData);

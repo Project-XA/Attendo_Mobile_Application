@@ -102,10 +102,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               ),
             );
           }
+          if (role.toLowerCase() == "superadmin") {
+            _initDI("admin");
+          } else {
+            _initDI(role);
+          }
 
-          _initDI(role);
-
-          return _MainNavigationContent(isAdmin: role.toLowerCase() == 'admin');
+          return _MainNavigationContent(
+            isAdmin:
+                role.toLowerCase() == 'admin' ||
+                role.toLowerCase() == 'superadmin',
+          );
         },
       ),
     );
@@ -162,9 +169,15 @@ class _MainNavigationContentState extends State<_MainNavigationContent> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-        selectedItemColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
-        unselectedItemColor: Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
+        backgroundColor: Theme.of(
+          context,
+        ).bottomNavigationBarTheme.backgroundColor,
+        selectedItemColor: Theme.of(
+          context,
+        ).bottomNavigationBarTheme.selectedItemColor,
+        unselectedItemColor: Theme.of(
+          context,
+        ).bottomNavigationBarTheme.unselectedItemColor,
         selectedLabelStyle: TextStyle(
           fontSize: 12.sp,
           fontWeight: FontWeight.w600,

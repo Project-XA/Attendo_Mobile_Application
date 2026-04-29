@@ -1,9 +1,10 @@
 import 'package:mobile_app/core/dependency_injection/get_it.dart';
-import 'package:mobile_app/core/current_user/data/local_data_soruce/user_local_data_source.dart';
 import 'package:mobile_app/core/networking/network_service.dart';
 import 'package:mobile_app/core/utils/register_lazy_if_not_registered.dart';
 import 'package:mobile_app/features/session_mangement/data/data_source/local_session_data_source.dart';
 import 'package:mobile_app/features/session_mangement/data/data_source/remote_session_data_source.dart';
+import 'package:mobile_app/features/session_mangement/data/data_source/session_state_manager.dart';
+import 'package:mobile_app/features/session_mangement/data/helpers/session_cache_helper.dart';
 import 'package:mobile_app/features/session_mangement/data/repo_imp/session_repository_impl.dart';
 import 'package:mobile_app/features/session_mangement/data/service/http_server_service.dart';
 import 'package:mobile_app/features/session_mangement/data/service/network_info_service.dart';
@@ -31,13 +32,20 @@ void initSessionManagement() {
   registerLazyIfNotRegistered<LocalSessionDataSource>(
     () => LocalSessionDataSourceImpl(),
   );
+  getIt.registerLazySingleton(
+    () => SessionCacheHelper(local: getIt(), remote: getIt()),
+  );
+
+  getIt.registerLazySingleton(() => SessionStateManager());
+  // Cubit
 
   registerLazyIfNotRegistered<SessionRepository>(
     () => SessionRepositoryImpl(
-      serverService: getIt<HttpServerService>(),
-      localDataSource: getIt<UserLocalDataSource>(),
-      localSessionDataSource: getIt<LocalSessionDataSource>(),
-      remoteSessionDataSource: getIt<RemoteSessionDataSource>(),
+      serverService: getIt(),
+      localDataSource: getIt(),
+      cacheHelper: getIt(),
+      stateManager: getIt(),
+      remoteSessionDataSource: getIt(),
     ),
   );
 
@@ -69,7 +77,6 @@ void initSessionManagement() {
     () => GetAllSectionsUseCase(getIt()),
   );
 
-  // Cubit
   getIt.registerFactory<SessionManagementCubit>(
     () => SessionManagementCubit(
       createSessionUseCase: getIt(),

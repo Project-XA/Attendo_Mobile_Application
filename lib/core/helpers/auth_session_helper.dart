@@ -12,6 +12,7 @@ class AuthSessionHelper {
     await SecureStorageService.saveToken(token);
     await onboardingService.markOnboardingComplete(role);
     await onboardingService.markVerificationComplete();
+    await onboardingService.markOCRComplete();
     await onboardingService.markLoggedIn(role);
   }
 }

@@ -12,7 +12,6 @@ class RegisterUseCase {
     required String orgId,
     required String email,
     required String password,
-    required UserModel localUserData,
   }) {
     final result = repo.registerUser(
       request: RegisterRequestBody(
@@ -20,7 +19,6 @@ class RegisterUseCase {
         email: email,
         password: password,
       ),
-      localUserData: localUserData,
     );
 
     return result;

@@ -19,14 +19,14 @@ void initAuth() {
     () => AuthRemoteDataSourceImpl(getIt<NetworkService>()),
   );
 
-  getIt.registerLazySingleton<AuthStateService>(() => AuthStateService());
+ // getIt.registerLazySingleton<AuthStateService>(() => AuthStateService());
 
-  getIt.registerLazySingleton<OnboardingService>(
-    () => OnboardingService(
-      getIt<AuthStateService>(),
-      getIt<UserLocalDataSource>(),
-    ),
-  );
+  // getIt.registerLazySingleton<OnboardingService>(
+  //   () => OnboardingService(
+  //     getIt<AuthStateService>(),
+  //     getIt<UserLocalDataSource>(),
+  //   ),
+  // );
 
   registerLazyIfNotRegistered<AuthRepo>(
     () => AuthRepoImpl(

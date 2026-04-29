@@ -43,6 +43,7 @@ class RemoteSessionDataSourceImpl extends RemoteSessionDataSource {
       final response = await networkService.get(
         ApiConst.getAllSections(organizationId),
       );
+      print("get all sections response: ${response.data}");
       final sectionsList = (response.data['data'] as List<dynamic>)
           .map((json) => SectionInfo.fromJson(json as Map<String, dynamic>))
           .toList();

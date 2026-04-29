@@ -2,8 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:mobile_app/core/dependency_injection/get_it.dart';
-import 'package:mobile_app/core/current_user/data/local_data_soruce/user_local_data_source.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/core/services/UI/extensions.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
@@ -36,16 +34,12 @@ class _RegisterFormState extends State<RegisterForm> {
   Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
       try {
-        final localDataSource = getIt<UserLocalDataSource>();
-        final localUserData = await localDataSource.getCurrentUser();
-
         if (!mounted) return;
 
         await context.read<AuthCubit>().register(
           orgId: _orgIdController.text.trim(),
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
-          localUserData: localUserData,
         );
       } catch (e) {
         if (!mounted) return;

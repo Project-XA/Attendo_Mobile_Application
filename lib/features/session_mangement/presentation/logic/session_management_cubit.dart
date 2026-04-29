@@ -112,15 +112,11 @@ class SessionManagementCubit extends Cubit<SessionManagementState> {
     }
   }
 
-  // ─── Tab ───────────────────────────────────────────────────
-
   void changeTab(int index) {
     final s = state;
     if (s is SessionManagementIdle) emit(s.copyWith(selectedTabIndex: index));
     if (s is SessionState) emit(s.copyWith(selectedTabIndex: index));
   }
-
-  // ─── Session Lifecycle ─────────────────────────────────────
 
   Future<void> createAndStartSession({
     required String name,

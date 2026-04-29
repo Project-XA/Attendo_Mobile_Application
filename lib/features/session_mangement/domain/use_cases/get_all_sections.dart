@@ -8,6 +8,7 @@ class GetAllSectionsUseCase {
   GetAllSectionsUseCase(this._repository);
 
   Future<GetAllSectionsResponse> call() async {
+    print("calling get all sections use case");
     return await _repository.getAllSections();
   }
 }

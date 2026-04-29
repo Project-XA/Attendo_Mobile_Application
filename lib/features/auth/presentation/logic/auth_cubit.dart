@@ -17,7 +17,6 @@ class AuthCubit extends Cubit<AuthState> {
     required String orgId,
     required String email,
     required String password,
-    required UserModel localUserData,
   }) async {
     emit(state.copyWith(status: AuthStatus.loading, error: null));
 
@@ -25,7 +24,6 @@ class AuthCubit extends Cubit<AuthState> {
       orgId: orgId,
       email: email,
       password: password,
-      localUserData: localUserData,
     );
 
     result.when(
