@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mobile_app/core/current_student/data/model/student_model_hive.dart';
@@ -11,6 +14,7 @@ import 'package:mobile_app/features/session_mangement/data/models/local_models/c
 import 'package:mobile_app/features/session_mangement/data/models/local_models/cache_sections_data.dart';
 import 'package:mobile_app/features/session_mangement/data/models/local_models/hall_model.dart';
 import 'package:mobile_app/features/session_mangement/data/models/local_models/section_model.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,12 +31,26 @@ Future<void> main() async {
   Hive.registerAdapter(SectionModelAdapter());
   Hive.registerAdapter(CacheSectionsDataAdapter());
   final themeBox = await Hive.openBox<bool>('themePrefs');
-  runApp(
-    EasyLocalization(
-      supportedLocales: const [Locale('en'), Locale('ar')],
-      path: 'assets/translations',
-      fallbackLocale: const Locale('en'),
-      child: AppBootstrap(themeBox: themeBox),
-    ),
-  );
+
+  if (kReleaseMode) {
+    runZonedGuarded(
+      () async {
+        await SentryFlutter.init((options) {
+          options.dsn = const String.fromEnvironment('SENTRY_DSN');
+        });
+      },
+      (exception, stackTrace) async {
+        await Sentry.captureException(exception, stackTrace: stackTrace);
+      },
+    );
+  } else {
+    runApp(
+      EasyLocalization(
+        supportedLocales: const [Locale('en'), Locale('ar')],
+        path: 'assets/translations',
+        fallbackLocale: const Locale('en'),
+        child: AppBootstrap(themeBox: themeBox),
+      ),
+    );
+  }
 }

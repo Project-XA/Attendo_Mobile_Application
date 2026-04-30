@@ -85,6 +85,7 @@
   },
   "sessions": {
     "org_hall_section": "قاعة المؤسسة",
+    "org_section_section": "قسم المؤسسة",
     "connection_method_section": "طريقة الاتصال",
     "connection_wifi": "واي فاي",
     "session_start_time_section": "وقت بدء الجلسة",
@@ -99,6 +100,7 @@
     "failed_load_halls": "فشل تحميل القاعات",
     "no_halls": "لا توجد قاعات متاحة",
     "select_hall_hint": "اختر قاعة",
+    "select_section_hint": "اختر السكشن",
     "hall_option": "{0} (السعة: {1})",
     "select_time_toast": "يرجى اختيار وقت",
     "past_time_title": "تم اختيار وقت سابق",

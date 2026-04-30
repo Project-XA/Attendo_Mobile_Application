@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/utils/app_assets.dart';
-import 'package:mobile_app/core/widgets/adaptive_image.dart'; 
+import 'package:mobile_app/core/widgets/adaptive_image.dart';
 
 class UserHeader extends StatelessWidget {
   final String userName;
@@ -29,10 +29,7 @@ class UserHeader extends StatelessWidget {
           ),
           child: Row(
             children: [
-              _UserAvatar(
-                userImage: userImage,
-                isSmallScreen: isSmallScreen,
-              ),
+              _UserAvatar(userImage: userImage, isSmallScreen: isSmallScreen),
               SizedBox(width: isSmallScreen ? 10.w : 12.w),
               Expanded(
                 child: _UserInfo(
@@ -54,10 +51,7 @@ class _UserAvatar extends StatelessWidget {
   final String? userImage;
   final bool isSmallScreen;
 
-  const _UserAvatar({
-    required this.userImage,
-    required this.isSmallScreen,
-  });
+  const _UserAvatar({required this.userImage, required this.isSmallScreen});
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +114,7 @@ class _UserInfo extends StatelessWidget {
         Text(
           userRole,
           style: TextStyle(
-            color: AppColors.mainTextDarkColor.withOpacity(0.8),
+            color: AppColors.mainTextBlackColor.withOpacity(0.8),
             fontSize: isSmallScreen ? 11.sp : 14.sp,
             fontWeight: FontWeight.w400,
           ),

@@ -85,6 +85,7 @@
   },
   "sessions": {
     "org_hall_section": "ORGANIZATION HALL",
+    "org_section_section":"ORGANIZATOIN SECTION",
     "connection_method_section": "CONNECTION METHOD",
     "connection_wifi": "WiFi",
     "session_start_time_section": "SESSION START TIME",
@@ -99,6 +100,7 @@
     "failed_load_halls": "Failed to load halls",
     "no_halls": "No halls available",
     "select_hall_hint": "Select Hall",
+    "select_section_hint":"Select Section",
     "hall_option": "{0} (Capacity: {1})",
     "select_time_toast": "Please select a time",
     "past_time_title": "Past Time Selected",

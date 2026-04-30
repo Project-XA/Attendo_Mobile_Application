@@ -1,7 +1,6 @@
 import 'package:mobile_app/core/dependency_injection/get_it.dart';
 import 'package:mobile_app/core/current_user/data/local_data_soruce/user_local_data_source.dart';
 import 'package:mobile_app/core/networking/network_service.dart';
-import 'package:mobile_app/core/services/auth/auth_state_service.dart';
 import 'package:mobile_app/core/services/auth/onboarding_service.dart';
 import 'package:mobile_app/core/utils/register_lazy_if_not_registered.dart';
 import 'package:mobile_app/features/auth/data/data_source/auth_remote_data_source.dart';
@@ -18,15 +17,6 @@ void initAuth() {
   registerLazyIfNotRegistered<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(getIt<NetworkService>()),
   );
-
- // getIt.registerLazySingleton<AuthStateService>(() => AuthStateService());
-
-  // getIt.registerLazySingleton<OnboardingService>(
-  //   () => OnboardingService(
-  //     getIt<AuthStateService>(),
-  //     getIt<UserLocalDataSource>(),
-  //   ),
-  // );
 
   registerLazyIfNotRegistered<AuthRepo>(
     () => AuthRepoImpl(
