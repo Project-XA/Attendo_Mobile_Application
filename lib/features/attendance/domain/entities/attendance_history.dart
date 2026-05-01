@@ -1,3 +1,7 @@
+import 'package:hive/hive.dart';
+
+part 'attendance_history.g.dart';
+
 class AttendanceHistory {
   final String id;
   final String sessionId;
@@ -5,6 +9,7 @@ class AttendanceHistory {
   final String location;
   final DateTime checkInTime;
   final AttendanceStatus status;
+  final DateTime lastUpdated;
 
   AttendanceHistory({
     required this.id,
@@ -13,7 +18,16 @@ class AttendanceHistory {
     required this.location,
     required this.checkInTime,
     required this.status,
+    required this.lastUpdated,
   });
 }
 
-enum AttendanceStatus { present, late, absent }
+@HiveType(typeId: 11)
+enum AttendanceStatus {
+  @HiveField(0)
+  present,
+  @HiveField(1)
+  late,
+  @HiveField(2)
+  absent,
+}

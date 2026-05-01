@@ -5,6 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/current_user/presentation/cubits/current_user_cubit.dart';
 import 'package:mobile_app/core/current_user/presentation/cubits/current_user_state.dart';
 import 'package:mobile_app/core/dependency_injection/get_it.dart';
+import 'package:mobile_app/core/routing/routes.dart';
+import 'package:mobile_app/core/services/UI/extensions.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/utils/app_assets.dart';
@@ -54,9 +56,7 @@ class _UserDashboardState extends State<UserDashboardScreen> {
       ],
       child: BlocListener<CheckInCubit, CheckInState>(
         listener: _onCheckInStateChanged,
-        child: Scaffold(
-          body: _buildBody(),
-        ),
+        child: Scaffold(body: _buildBody()),
       ),
     );
   }
@@ -199,9 +199,20 @@ class _UserDashboardState extends State<UserDashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'attendance.my_attendance'.tr(),
-          style: AppTextStyle.font18GreyBold,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'attendance.my_attendance'.tr(),
+              style: AppTextStyle.font18GreyBold,
+            ),
+            TextButton(
+              onPressed: () {
+                context.pushNamed(Routes.userAnalysisScreen);
+              },
+              child: Text("View more", style: AppTextStyle.font18GreyBold),
+            ),
+          ],
         ),
         verticalSpace(12.h),
         AttendanceStatsCard(

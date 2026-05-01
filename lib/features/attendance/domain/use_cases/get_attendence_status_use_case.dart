@@ -14,7 +14,6 @@ class GetAttendanceStatsUseCase {
     return await repository.getCachedStatsOnly();
   }
 
-  /// ⭐ أضف الـ method ده
   Future<void> saveToCache(AttendanceStats stats) async {
     return await repository.saveStatsToCache(stats);
   }
