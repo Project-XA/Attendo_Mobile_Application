@@ -39,32 +39,35 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return BlocListener<PrivacySecurityCubit, PrivacySecurityState>(
       listener: (context, state) {
-        if (state.isSuccess &&
-            state.activeAction == PrivacyAction.changePassword) {
-          context.read<PrivacySecurityCubit>().closeSection();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('privacy.password_changed_success'.tr()),
-              backgroundColor: AppColors.buttonGreenColor,
-            ),
-          );
-        } else if (state.activeAction == PrivacyAction.deactivate ||
-            state.activeAction == PrivacyAction.delete) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.of(
-              context,
-            ).pushNamedAndRemoveUntil(Routes.startPage, (route) => false);
-          });
+        if (state.isSuccess) {
+          if (state.activeAction == PrivacyAction.changePassword) {
+            context.read<PrivacySecurityCubit>().closeSection();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('privacy.password_changed_success'.tr()),
+                backgroundColor: AppColors.buttonGreenColor,
+              ),
+            );
+          } else if (state.activeAction == PrivacyAction.deactivate ||
+              state.activeAction == PrivacyAction.delete) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                Routes.startPage,
+                (route) => false,
+              );
+            });
+          }
         }
         if (state.errorMessage != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.errorMessage!),
-              backgroundColor: Colors.red,
+              backgroundColor: colorScheme.error,
             ),
           );
         }
@@ -83,14 +86,13 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
             ),
           ),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: colorScheme.onSurface),
+            icon: const Icon(Icons.arrow_back_ios),
             onPressed: () => Navigator.pop(context),
           ),
         ),
         body: BlocBuilder<PrivacySecurityCubit, PrivacySecurityState>(
           builder: (context, state) {
             final cubit = context.read<PrivacySecurityCubit>();
-
             return SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
               child: Column(
@@ -101,31 +103,22 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                   PrivacyCard(
                     children: [
                       PrivacyTile(
-                        iconBg: AppColors.buttonFilledDarkColor,
                         icon: Icons.lock_outline_rounded,
-                        iconColor: AppColors.buttonBlueTextDarkColor,
                         title: 'privacy.change_password'.tr(),
                         subtitle: 'privacy.change_password_sub'.tr(),
-                        isExpanded:
-                            state.activeAction == PrivacyAction.changePassword,
+                        isExpanded: state.activeAction == PrivacyAction.changePassword,
                         onTap: () =>
                             state.activeAction == PrivacyAction.changePassword
-                            ? cubit.closeSection()
-                            : cubit.openSection(PrivacyAction.changePassword),
+                                ? cubit.closeSection()
+                                : cubit.openSection(PrivacyAction.changePassword),
                         expandedChild: ChangePasswordForm(
                           isLoading:
                               state.isLoading &&
-                              state.activeAction ==
-                                  PrivacyAction.changePassword,
-                          onSubmit: (current, newPass) => cubit.changePassword(
-                            currentPassword: current,
-                            newPassword: newPass,
-                          ),
+                              state.activeAction == PrivacyAction.changePassword,
                         ),
                       ),
                     ],
                   ),
-
                   verticalSpace(24),
                   SectionLabel(label: 'privacy.section_account'.tr()),
                   verticalSpace(8),
@@ -133,16 +126,14 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                     children: [
                       PrivacyTile(
                         icon: Icons.pause_circle_outline_rounded,
-                        iconBg: const Color(0xFFFFF8E1),
-                        iconColor: const Color(0xFFE65100),
+                        tileVariant: PrivacyTileVariant.warning,
                         title: 'privacy.deactivate'.tr(),
                         subtitle: 'privacy.deactivate_sub'.tr(),
-                        isExpanded:
-                            state.activeAction == PrivacyAction.deactivate,
+                        isExpanded: state.activeAction == PrivacyAction.deactivate,
                         onTap: () =>
                             state.activeAction == PrivacyAction.deactivate
-                            ? cubit.closeSection()
-                            : cubit.openSection(PrivacyAction.deactivate),
+                                ? cubit.closeSection()
+                                : cubit.openSection(PrivacyAction.deactivate),
                         expandedChild: DeactivateSection(
                           isLoading:
                               state.isLoading &&
@@ -153,15 +144,14 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                       ),
                       PrivacyTile(
                         icon: Icons.delete_outline_rounded,
-                        iconBg: const Color(0xFFFFF5F5),
-                        iconColor: const Color(0xFFE53935),
+                        tileVariant: PrivacyTileVariant.danger,
                         title: 'privacy.delete'.tr(),
                         subtitle: 'privacy.delete_sub'.tr(),
-                        titleColor: const Color(0xFFE53935),
                         isExpanded: state.activeAction == PrivacyAction.delete,
-                        onTap: () => state.activeAction == PrivacyAction.delete
-                            ? cubit.closeSection()
-                            : cubit.openSection(PrivacyAction.delete),
+                        onTap: () =>
+                            state.activeAction == PrivacyAction.delete
+                                ? cubit.closeSection()
+                                : cubit.openSection(PrivacyAction.delete),
                         expandedChild: DeleteSection(
                           isLoading:
                               state.isLoading &&

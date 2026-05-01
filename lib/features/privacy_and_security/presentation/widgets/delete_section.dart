@@ -1,17 +1,21 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
+import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/features/privacy_and_security/presentation/widgets/action_button.dart';
 import 'package:mobile_app/features/privacy_and_security/presentation/widgets/info_box.dart';
 import 'package:mobile_app/features/privacy_and_security/presentation/widgets/password_field.dart';
 
 class DeleteSection extends StatefulWidget {
-  const DeleteSection({required this.isLoading, required this.onConfirm, super.key});
+  const DeleteSection({
+    required this.isLoading,
+    required this.onConfirm,
+    super.key,
+  });
 
   final bool isLoading;
-  final void Function(String password) onConfirm; 
+  final void Function(String password) onConfirm;
 
   @override
   State<DeleteSection> createState() => _DeleteSectionState();
@@ -47,27 +51,36 @@ class _DeleteSectionState extends State<DeleteSection> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         InfoBox(
-          color: const Color(0xFFFFF5F5),
-          textColor: const Color(0xFFC62828),
+          color: isDark
+              ? AppColors.elevatedSurfaceDarkColor
+              : AppColors.statusGreenBackgroundColor,
+          textColor: isDark
+              ? AppColors.subTextDarkColor
+              : colorScheme.error,
+          borderColor: isDark
+              ? AppColors.borderDarkColor
+              : colorScheme.error.withOpacity(0.3),
           message: 'privacy.delete_info'.tr(),
-          borderColor: const Color(0xFFFFD0D0),
         ),
         verticalSpace(14),
         Text(
           'privacy.delete_confirm_label'.tr(),
-          style: TextStyle(fontSize: 12.sp, color: const Color(0xFF555555)),
+          style: TextStyle(fontSize: 12.sp, color: colorScheme.outline),
         ),
         verticalSpace(6),
         TextField(
           controller: _confirmCtrl,
+          style: TextStyle(fontSize: 13.sp, color: colorScheme.onSurface),
           decoration: InputDecoration(
             hintText: 'privacy.delete_confirm_word'.tr(),
           ),
-          style: TextStyle(fontSize: 13.sp),
         ),
         verticalSpace(10),
         PasswordField(
@@ -80,10 +93,10 @@ class _DeleteSectionState extends State<DeleteSection> {
         ActionButton(
           label: 'privacy.delete_btn'.tr(),
           isLoading: widget.isLoading,
-          color: const Color(0xFFE53935),
           outlined: true,
           enabled: _canDelete,
-          onTap: () => widget.onConfirm(_passCtrl.text), 
+          onTap: () => widget.onConfirm(_passCtrl.text),
+          variant: ActionButtonVariant.danger,
         ),
       ],
     );

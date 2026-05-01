@@ -6,12 +6,12 @@ import 'package:mobile_app/core/networking/api_result.dart';
 import 'package:mobile_app/core/networking/network_service.dart';
 
 abstract class PsRemoteDataSource {
+  Future<ApiResult<void>> deactivateAccount(String password);
+  Future<ApiResult<void>> deleteAccount(String password);
   Future<ApiResult<void>> changePassword(
     String currentPassword,
     String newPassword,
   );
-  Future<ApiResult<void>> deactivateAccount(String password);
-  Future<ApiResult<void>> deleteAccount(String password);
 }
 
 class PsRemoteDataSourceImpl implements PsRemoteDataSource {
@@ -28,7 +28,7 @@ class PsRemoteDataSourceImpl implements PsRemoteDataSource {
         'current_password': currentPassword,
         'new_password': newPassword,
       };
-      await networkService.patch(ApiConst.changePassword, body);
+      await networkService.patch(ApiConst.deactivateAccount, body);
       return ApiResult.success(null);
     } on DioException catch (e) {
       return ApiResult.error(ApiErrorHandler.handle(e));
@@ -36,7 +36,6 @@ class PsRemoteDataSourceImpl implements PsRemoteDataSource {
       return ApiResult.error(ApiErrorFactory.defaultError);
     }
   }
-
 
   @override
   Future<ApiResult<void>> deactivateAccount(String password) async {

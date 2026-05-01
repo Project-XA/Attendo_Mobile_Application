@@ -1,7 +1,7 @@
+
 import 'package:mobile_app/core/networking/api_result.dart';
 import 'package:mobile_app/features/privacy_and_security/data/data_source/ps_remote_data_source.dart';
 import 'package:mobile_app/features/privacy_and_security/domain/repo/privacy_security_repo.dart';
-
 
 class PrivacySecurityRepoImpl extends PrivacySecurityRepo {
   final PsRemoteDataSource psRemoteDataSource;
@@ -18,7 +18,6 @@ class PrivacySecurityRepoImpl extends PrivacySecurityRepo {
     );
   }
 
-
   @override
   Future<ApiResult<void>> deactivateAccount(String password) async {
     return await psRemoteDataSource.deactivateAccount(password);
@@ -28,5 +27,4 @@ class PrivacySecurityRepoImpl extends PrivacySecurityRepo {
   Future<ApiResult<void>> deleteAccount(String password) async {
     return await psRemoteDataSource.deleteAccount(password);
   }
-
 }

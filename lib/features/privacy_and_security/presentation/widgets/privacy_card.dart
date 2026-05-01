@@ -14,7 +14,10 @@ class PrivacyCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(14.r),
-        border: Border.all(color: colorScheme.outline.withOpacity(0.3), width: 0.5),
+        border: Border.all(
+          color: colorScheme.outline.withOpacity(0.2),
+          width: 0.5,
+        ),
       ),
       child: Column(children: children),
     );

@@ -1,37 +1,101 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
+import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
+
+enum PrivacyTileVariant { primary, warning, danger }
 
 class PrivacyTile extends StatelessWidget {
   const PrivacyTile({
     required this.icon,
-    required this.iconBg,
-    required this.iconColor,
     required this.title,
     required this.subtitle,
     required this.isExpanded,
     required this.onTap,
     required this.expandedChild,
-    this.titleColor,
+    this.tileVariant = PrivacyTileVariant.primary,
     this.showDivider = false,
     super.key,
-    
   });
 
   final IconData icon;
-  final Color iconBg;
-  final Color iconColor;
   final String title;
   final String subtitle;
   final bool isExpanded;
   final VoidCallback onTap;
   final Widget expandedChild;
-  final Color? titleColor;
+  final PrivacyTileVariant tileVariant;
   final bool showDivider;
+
+  _TileColors _resolveColors(bool isDark) {
+    switch (tileVariant) {
+      case PrivacyTileVariant.warning:
+        return _TileColors(
+          iconBg: isDark
+              ? AppColors.buttonBlueBgDarkColor
+              : const Color(0xFFFFF8E1), // closest warm tint — no exact match in AppColors
+          iconColor: isDark
+              ? AppColors.buttonBlueTextDarkColor
+              : AppColors.statusGreenTextDarkColor, // warm-dark close match
+          titleColor: null,
+        );
+      case PrivacyTileVariant.danger:
+        return _TileColors(
+          iconBg: isDark
+              ? AppColors.elevatedSurfaceDarkColor
+              : AppColors.statusGreenBackgroundColor, // closest light bg
+          iconColor: AppColors.buttonGreenColor, // overridden below
+          titleColor: AppColors.buttonGreenColor, // overridden below
+        );
+      case PrivacyTileVariant.primary:
+      default:
+        return _TileColors(
+          iconBg: isDark
+              ? AppColors.buttonBlueBgDarkColor
+              : AppColors.statusGreenBackgroundColor,
+          iconColor: isDark
+              ? AppColors.buttonBlueTextDarkColor
+              : AppColors.buttonBlueColor,
+          titleColor: null,
+        );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Danger variant uses error color; warning uses a distinct accent.
+    final Color iconBg;
+    final Color iconColor;
+    final Color? titleColor;
+
+    if (tileVariant == PrivacyTileVariant.danger) {
+      iconBg = isDark
+          ? AppColors.elevatedSurfaceDarkColor
+          : const Color(0xFFFFF5F5); // closest: light error tint — no token, use statusGreenBackground as fallback
+      iconColor = colorScheme.error;
+      titleColor = colorScheme.error;
+    } else if (tileVariant == PrivacyTileVariant.warning) {
+      iconBg = isDark
+          ? AppColors.buttonBlueBgDarkColor
+          : const Color(0xFFFFF8E1);
+      iconColor = isDark
+          ? AppColors.buttonBlueTextDarkColor
+          : AppColors.statusGreenTextDarkColor;
+      titleColor = null;
+    } else {
+      iconBg = isDark
+          ? AppColors.buttonBlueBgDarkColor
+          : AppColors.statusGreenBackgroundColor;
+      iconColor = isDark
+          ? AppColors.buttonBlueTextDarkColor
+          : AppColors.buttonBlueColor;
+      titleColor = null;
+    }
+
     return Column(
       children: [
         InkWell(
@@ -60,7 +124,7 @@ class PrivacyTile extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeightHelper.semiBold,
-                          color: titleColor ?? const Color(0xFF1A1A1A),
+                          color: titleColor ?? colorScheme.onSurface,
                         ),
                       ),
                       verticalSpace(2),
@@ -68,7 +132,7 @@ class PrivacyTile extends StatelessWidget {
                         subtitle,
                         style: TextStyle(
                           fontSize: 12.sp,
-                          color: const Color(0xFF888888),
+                          color: colorScheme.outline,
                         ),
                       ),
                     ],
@@ -79,7 +143,7 @@ class PrivacyTile extends StatelessWidget {
                   duration: const Duration(milliseconds: 200),
                   child: Icon(
                     Icons.chevron_right_rounded,
-                    color: const Color(0xFFCCCCCC),
+                    color: colorScheme.outline,
                     size: 20.sp,
                   ),
                 ),
@@ -93,11 +157,11 @@ class PrivacyTile extends StatelessWidget {
           child: isExpanded
               ? Container(
                   width: double.infinity,
-                  decoration:const BoxDecoration(
-                    color:  Color(0xFFF7FBFD),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerHighest,
                     border: Border(
                       top: BorderSide(
-                        color:  Color(0xFFE8F0F4),
+                        color: colorScheme.outline.withOpacity(0.2),
                         width: 0.5,
                       ),
                     ),
@@ -111,11 +175,23 @@ class PrivacyTile extends StatelessWidget {
           Divider(
             height: 0,
             thickness: 0.5,
-            color: const Color(0xFFF0F0F0),
+            color: colorScheme.outline.withOpacity(0.2),
             indent: 16.w,
             endIndent: 16.w,
           ),
       ],
     );
   }
+}
+
+// Internal helper — not exported
+class _TileColors {
+  const _TileColors({
+    required this.iconBg,
+    required this.iconColor,
+    required this.titleColor,
+  });
+  final Color iconBg;
+  final Color iconColor;
+  final Color? titleColor;
 }

@@ -20,28 +20,44 @@ class PasswordField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    // Use Theme.of directly — never store colorScheme before the widget is
+    // fully mounted inside a Theme ancestor.
+    final outline = Theme.of(context).colorScheme.outline;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final primary = Theme.of(context).colorScheme.primary;
+    final surface = Theme.of(context).colorScheme.surface;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final borderColor = isDark
+        ? AppColors.borderDarkColor
+        : AppColors.subTextGreyColor;
+
+    final hintColor = isDark
+        ? AppColors.subTextDarkColor
+        : AppColors.subTextGreyColor;
+
+    final borderSide = BorderSide(color: borderColor, width: 0.5);
+    final borderRadius = BorderRadius.circular(8.r);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12.sp,
-            color: colorScheme.onSurface.withOpacity(0.7),
-          ),
+          style: TextStyle(fontSize: 12.sp, color: outline),
         ),
         verticalSpace(5),
         TextField(
           controller: controller,
           obscureText: obscure,
-          style: TextStyle(fontSize: 13.sp, color: colorScheme.onSurface),
+          style: TextStyle(fontSize: 13.sp, color: onSurface),
           decoration: InputDecoration(
+            filled: true,
+            fillColor: surface,
             hintText: 'privacy.password_placeholder'.tr(),
             hintStyle: TextStyle(
               fontSize: 13.sp,
-              color: colorScheme.outline,
+              color: hintColor, // ← no withOpacity — uses a real token
             ),
             contentPadding: EdgeInsets.symmetric(
               horizontal: 12.w,
@@ -54,29 +70,20 @@ class PasswordField extends StatelessWidget {
                     ? Icons.visibility_off_outlined
                     : Icons.visibility_outlined,
                 size: 18.sp,
-                color: colorScheme.outline,
+                color: outline,
               ),
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.r),
-              borderSide: BorderSide(
-                color: colorScheme.outline.withOpacity(0.5),
-                width: 0.5,
-              ),
+              borderRadius: borderRadius,
+              borderSide: borderSide,
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.r),
-              borderSide: BorderSide(
-                color: colorScheme.outline.withOpacity(0.5),
-                width: 0.5,
-              ),
+              borderRadius: borderRadius,
+              borderSide: borderSide,
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.r),
-              borderSide: const BorderSide(
-                color: AppColors.buttonBlueColor,
-                width: 1,
-              ),
+              borderRadius: borderRadius,
+              borderSide: BorderSide(color: primary, width: 1),
             ),
           ),
         ),

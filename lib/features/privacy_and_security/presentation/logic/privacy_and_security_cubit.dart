@@ -4,7 +4,6 @@ import 'package:mobile_app/features/privacy_and_security/domain/use_cases/deacti
 import 'package:mobile_app/features/privacy_and_security/domain/use_cases/delete_acccount_use_case.dart';
 import 'package:mobile_app/features/privacy_and_security/presentation/logic/privacy_and_secuirty_state.dart';
 
-
 class PrivacySecurityCubit extends Cubit<PrivacySecurityState> {
   PrivacySecurityCubit({
     required this.deactivateAccountUseCase,

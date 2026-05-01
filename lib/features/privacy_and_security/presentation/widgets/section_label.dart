@@ -10,6 +10,8 @@ class SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: EdgeInsets.only(left: 4.w),
       child: Text(
@@ -17,7 +19,9 @@ class SectionLabel extends StatelessWidget {
         style: TextStyle(
           fontSize: 11.sp,
           fontWeight: FontWeightHelper.semiBold,
-          color: AppColors.buttonBlueColor,
+          color: isDark
+              ? AppColors.buttonBlueTextDarkColor
+              : AppColors.buttonBlueColor,
           letterSpacing: 0.8,
         ),
       ),

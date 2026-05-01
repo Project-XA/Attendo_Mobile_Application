@@ -43,7 +43,9 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
       return;
     }
     if (_newCtrl.text != _confirmCtrl.text) {
-      setState(() => _validationError = 'privacy.error_password_mismatch'.tr());
+      setState(
+        () => _validationError = 'privacy.error_password_mismatch'.tr(),
+      );
       return;
     }
     if (_newCtrl.text.length < 8) {
@@ -56,12 +58,19 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         InfoBox(
-          color: const Color(0xFFE8F4F8),
-          textColor: AppColors.buttonBlueColor,
+          color: isDark
+              ? AppColors.buttonBlueBgDarkColor
+              : AppColors.statusGreenBackgroundColor,
+          textColor: isDark
+              ? AppColors.buttonBlueTextDarkColor
+              : AppColors.buttonBlueColor,
           message: 'privacy.password_hint'.tr(),
         ),
         verticalSpace(14),
@@ -85,21 +94,20 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
           obscure: _obscureConfirm,
           onToggle: () => setState(() => _obscureConfirm = !_obscureConfirm),
         ),
-
         if (_validationError != null) ...[
           verticalSpace(8),
           Text(
             _validationError!,
-            style: TextStyle(fontSize: 12.sp, color: Colors.red),
+            style: TextStyle(
+              fontSize: 12.sp,
+              color: colorScheme.error,
+            ),
           ),
         ],
-
         verticalSpace(14),
         ActionButton(
           label: 'privacy.update_password'.tr(),
           isLoading: widget.isLoading,
-          color: AppColors.buttonBlueColor,
-          enabled: true,
           onTap: _submit,
         ),
       ],
