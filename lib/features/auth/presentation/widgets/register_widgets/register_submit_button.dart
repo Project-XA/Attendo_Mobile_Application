@@ -22,7 +22,7 @@ class RegisterSubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = text ?? 'add_account'.tr();
+    final label = text ?? 'auth.add_account'.tr();
     return CustomAppButton(
       onPressed: isLoading ? null : onPressed,
       backgroundColor: AppColors.mainTextBlackColor,

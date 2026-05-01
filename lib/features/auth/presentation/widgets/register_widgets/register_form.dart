@@ -46,7 +46,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('failed_to_get_user_data'.tr(args: [e.toString()])),
+            content: Text('auth.failed_to_get_user_data'.tr(args: [e.toString()])),
             backgroundColor: Colors.red,
           ),
         );
@@ -61,7 +61,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('registered_successfully'.tr(args: [userRole])),
+        content: Text('auth.registered_successfully'.tr(args: [userRole])),
         backgroundColor: Colors.green,
         duration: const Duration(seconds: 2),
       ),

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/dependency_injection/get_it.dart';
+import 'package:mobile_app/core/routing/routes.dart';
+import 'package:mobile_app/core/services/UI/extensions.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/features/auth/presentation/logic/auth_cubit.dart';
@@ -16,18 +17,12 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => getIt<AuthCubit>(),
-      child: WillPopScope(
-        onWillPop: () async {
-          SystemNavigator.pop();
-          return false;
-        },
-        child: Scaffold(
-          backgroundColor: AppColors.mainBackgroundWhiteColor,
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [_buildTopSection(context), _buildMainContent()],
-              ),
+      child: Scaffold(
+        backgroundColor: AppColors.mainBackgroundWhiteColor,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [_buildTopSection(context), _buildMainContent()],
             ),
           ),
         ),
@@ -44,7 +39,6 @@ class RegisterScreen extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             AppColors.mainSurfaceBlackColor,
-            // ignore: deprecated_member_use
             AppColors.mainSurfaceBlackColor.withOpacity(0.8),
           ],
         ),
@@ -55,9 +49,18 @@ class RegisterScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          verticalSpace(20.h),
+          verticalSpace(10.h),
+
+          Align(
+            alignment: Alignment.centerLeft,
+            child: IconButton(
+              onPressed: () => context.pushReplacmentNamed(Routes.startPage),
+              icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+            ),
+          ),
 
           const RegisterHeader(),
+
           verticalSpace(20.h),
         ],
       ),

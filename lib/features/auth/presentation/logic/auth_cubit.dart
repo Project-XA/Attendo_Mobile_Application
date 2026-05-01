@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_app/core/current_user/data/models/user_model.dart';
 import 'package:mobile_app/features/auth/domain/use_cases/register_use_case.dart';
 import 'package:mobile_app/features/auth/domain/use_cases/forgot_password_use_case.dart';
 import 'auth_state.dart';

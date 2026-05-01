@@ -27,7 +27,7 @@ class RegisterFormFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionTitle(title: 'account_information'.tr()),
+        SectionTitle(title: 'auth.account_information'.tr()),
         verticalSpace(15.h),
         _buildOrgIdField(),
         verticalSpace(15.h),
@@ -44,14 +44,17 @@ class RegisterFormFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        FieldLabel(label: 'org_id_label'.tr(), icon: Icons.business_rounded),
+        FieldLabel(
+          label: 'auth.organization_id'.tr(),
+          icon: Icons.business_rounded,
+        ),
         verticalSpace(8.h),
         CustomTextField(
           controller: orgIdController,
-          hintText: 'org_id_hint'.tr(),
+          hintText: 'auth.hint_org_id'.tr(),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'org_id_required'.tr();
+              return 'auth.val_org_id_required'.tr();
             }
             return null;
           },
@@ -64,18 +67,18 @@ class RegisterFormFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        FieldLabel(label: 'email_label'.tr(), icon: Icons.email_rounded),
+        FieldLabel(label: 'auth.email_label'.tr(), icon: Icons.email_rounded),
         verticalSpace(8.h),
         CustomTextField(
           controller: emailController,
           keyboardType: TextInputType.emailAddress,
-          hintText: 'email_hint'.tr(),
+          hintText: 'auth.hint_email'.tr(),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'email_required'.tr();
+              return 'auth.val_email_required'.tr();
             }
             if (!_isEmailValid(value)) {
-              return 'email_invalid'.tr();
+              return 'auth.val_email_invalid'.tr();
             }
             return null;
           },
@@ -92,7 +95,7 @@ class RegisterFormFields extends StatelessWidget {
           context.pushNamed(Routes.forgotPasswordScreen);
         },
         child: Text(
-          'forgot_password'.tr(),
+          'auth.forgot_password_link'.tr(),
           style: TextStyle(
             fontSize: 13.sp,
             fontWeight: FontWeight.w500,

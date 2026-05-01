@@ -31,7 +31,7 @@ class RegisterHeader extends StatelessWidget {
           ),
           verticalSpace(15.h),
           Text(
-            'register_header_title'.tr(),
+            'auth.create_account_title'.tr(),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 32.sp,
@@ -42,7 +42,7 @@ class RegisterHeader extends StatelessWidget {
           ),
           verticalSpace(10.h),
           Text(
-            'register_header_subtitle'.tr(),
+            'auth.create_account_subtitle'.tr(),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 15.sp,
