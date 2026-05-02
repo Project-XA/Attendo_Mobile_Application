@@ -33,7 +33,7 @@ void privacySecurityDi() {
     ),
   );
 
-  registerLazyIfNotRegistered<PrivacySecurityCubit>(
+  getIt.registerFactory<PrivacySecurityCubit>(
     () => PrivacySecurityCubit(
       changePasswordUseCase: getIt<ChangePasswordUseCase>(),
       deactivateAccountUseCase: getIt<DeactivateAccountUseCase>(),

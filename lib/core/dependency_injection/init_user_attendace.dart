@@ -1,7 +1,7 @@
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:mobile_app/core/current_user/data/remote_data_source/user_remote_data_source.dart';
 import 'package:mobile_app/core/dependency_injection/get_it.dart';
 import 'package:mobile_app/core/services/auth/authentication_service.dart';
+import 'package:mobile_app/features/attendance/data/data_source/attendance_history_local_data_source.dart';
 import 'package:mobile_app/features/attendance/data/data_source/attendance_local_data_source.dart';
 import 'package:mobile_app/features/attendance/data/data_source/attendance_remote_data_source.dart';
 import 'package:mobile_app/features/attendance/data/repos_imp/session_discovery_repo_impl.dart';
@@ -67,16 +67,19 @@ void initUserAttendace() {
     );
   }
 
-  if (!getIt.isRegistered<UserAttendanceRepository>()) {
-    getIt.registerLazySingleton<UserAttendanceRepository>(
-      () => UserAttendanceRepositoryImpl(
-        userRemoteDataSource: getIt<UserRemoteDataSource>(),
-        attendanceService: getIt<AttendanceService>(),
-        deviceInfo: getIt<DeviceInfoPlugin>(),
-        localDataSource: getIt<AttendanceLocalDataSource>(),
-      ),
-    );
-  }
+  getIt.registerLazySingleton<AttendanceHistoryLocalDataSource>(
+    () => AttendanceHistoryLocalDataSourceImpl(),
+  );
+
+  getIt.registerLazySingleton<UserAttendanceRepository>(
+    () => UserAttendanceRepositoryImpl(
+      attendanceService: getIt(),
+      deviceInfo: getIt(),
+      userRemoteDataSource: getIt(),
+      localDataSource: getIt(),
+      historyLocalDataSource: getIt(),
+    ),
+  );
 
   if (!getIt.isRegistered<StartDiscoveryUseCase>()) {
     getIt.registerLazySingleton<StartDiscoveryUseCase>(

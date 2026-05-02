@@ -35,8 +35,7 @@ class ActionButton extends StatelessWidget {
             ? AppColors.buttonBlueTextDarkColor
             : AppColors.statusGreenTextDarkColor;
       case ActionButtonVariant.primary:
-      default:
-        return isDark
+      return isDark
             ? AppColors.buttonBlueTextDarkColor
             : AppColors.buttonBlueColor;
     }

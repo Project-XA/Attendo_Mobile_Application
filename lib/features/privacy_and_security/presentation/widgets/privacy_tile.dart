@@ -28,40 +28,6 @@ class PrivacyTile extends StatelessWidget {
   final PrivacyTileVariant tileVariant;
   final bool showDivider;
 
-  _TileColors _resolveColors(bool isDark) {
-    switch (tileVariant) {
-      case PrivacyTileVariant.warning:
-        return _TileColors(
-          iconBg: isDark
-              ? AppColors.buttonBlueBgDarkColor
-              : const Color(0xFFFFF8E1), // closest warm tint — no exact match in AppColors
-          iconColor: isDark
-              ? AppColors.buttonBlueTextDarkColor
-              : AppColors.statusGreenTextDarkColor, // warm-dark close match
-          titleColor: null,
-        );
-      case PrivacyTileVariant.danger:
-        return _TileColors(
-          iconBg: isDark
-              ? AppColors.elevatedSurfaceDarkColor
-              : AppColors.statusGreenBackgroundColor, // closest light bg
-          iconColor: AppColors.buttonGreenColor, // overridden below
-          titleColor: AppColors.buttonGreenColor, // overridden below
-        );
-      case PrivacyTileVariant.primary:
-      default:
-        return _TileColors(
-          iconBg: isDark
-              ? AppColors.buttonBlueBgDarkColor
-              : AppColors.statusGreenBackgroundColor,
-          iconColor: isDark
-              ? AppColors.buttonBlueTextDarkColor
-              : AppColors.buttonBlueColor,
-          titleColor: null,
-        );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -75,7 +41,9 @@ class PrivacyTile extends StatelessWidget {
     if (tileVariant == PrivacyTileVariant.danger) {
       iconBg = isDark
           ? AppColors.elevatedSurfaceDarkColor
-          : const Color(0xFFFFF5F5); // closest: light error tint — no token, use statusGreenBackground as fallback
+          : const Color(
+              0xFFFFF5F5,
+            ); // closest: light error tint — no token, use statusGreenBackground as fallback
       iconColor = colorScheme.error;
       titleColor = colorScheme.error;
     } else if (tileVariant == PrivacyTileVariant.warning) {
@@ -182,16 +150,4 @@ class PrivacyTile extends StatelessWidget {
       ],
     );
   }
-}
-
-// Internal helper — not exported
-class _TileColors {
-  const _TileColors({
-    required this.iconBg,
-    required this.iconColor,
-    required this.titleColor,
-  });
-  final Color iconBg;
-  final Color iconColor;
-  final Color? titleColor;
 }

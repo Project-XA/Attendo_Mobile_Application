@@ -6,6 +6,7 @@ import 'package:mobile_app/core/dependency_injection/init_auth.dart';
 import 'package:mobile_app/core/dependency_injection/init_auth_student.dart';
 import 'package:mobile_app/core/dependency_injection/init_current_student.dart';
 import 'package:mobile_app/core/dependency_injection/init_current_user_di.dart';
+import 'package:mobile_app/core/dependency_injection/init_user_analysis.dart';
 import 'package:mobile_app/core/dependency_injection/init_user_attendace.dart';
 import 'package:mobile_app/core/dependency_injection/privacy_security_di.dart';
 import 'package:mobile_app/core/routing/routes.dart';
@@ -24,6 +25,8 @@ import 'package:mobile_app/features/onboarding/start_page.dart';
 import 'package:mobile_app/features/student_auth/presentation/logic/student_auth_cubit.dart';
 import 'package:mobile_app/features/student_auth/presentation/views/login_student_screen.dart';
 import 'package:mobile_app/features/student_auth/presentation/views/register_student_screen.dart';
+import 'package:mobile_app/features/user_analysis/presentation/logic/user_analysis_cubit.dart';
+import 'package:mobile_app/features/user_analysis/presentation/user_analysis_screen.dart';
 
 class AppRoute {
   Route generateRoute(RouteSettings settings) {
@@ -77,6 +80,14 @@ class AppRoute {
 
       case Routes.profileScreen:
         page = const ProfileScreen();
+        break;
+
+      case Routes.userAnalysisScreen:
+        initUserAnalysis();
+        page = BlocProvider(
+          create: (context) => getIt<UserAnalysisCubit>(),
+          child: const UserAnalysisScreen(),
+        );
         break;
       case Routes.studentDashboardScreen:
         page = const StudentDashboardScreen();

@@ -186,6 +186,8 @@
     "logout_title": "تسجيل الخروج",
     "logout_confirm": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
     "logout_failed": "فشل تسجيل الخروج",
+    "field_roll_number": "رقم القيد",
+    "field_organization": "الجهة / المؤسسة",
     "privacy": "سياسة الخصوصية"
   },
  
@@ -238,5 +240,37 @@
   "enter_roll_number": "أدخل رقم الطالب",
   "password_min_chars": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
   "passwords_not_match": "كلمات المرور غير متطابقة"
-}
+},
+"privacy": {
+    "title": "الخصوصية والأمان",
+    "section_security": "الأمان",
+    "section_account": "إدارة الحساب",
+
+    "change_password": "تغيير كلمة المرور",
+    "change_password_sub": "تحديث كلمة المرور الحالية",
+    "password_hint": "يجب أن تتكون كلمة المرور الجديدة من 8 أحرف على الأقل.",
+    "current_password": "كلمة المرور الحالية",
+    "new_password": "كلمة المرور الجديدة",
+    "confirm_password": "تأكيد كلمة المرور الجديدة",
+    "password_placeholder": "أدخل كلمة المرور",
+    "update_password": "تحديث كلمة المرور",
+    "password_changed_success": "تم تحديث كلمة المرور بنجاح.",
+
+    "error_fill_all": "يرجى تعبئة جميع الحقول.",
+    "error_password_mismatch": "كلمتا المرور الجديدتان غير متطابقتين.",
+    "error_password_short": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
+
+    "deactivate": "تعطيل الحساب",
+    "deactivate_sub": "تعطيل حسابك مؤقتاً",
+    "deactivate_info": "سيؤدي تعطيل حسابك إلى إخفاء ملفك الشخصي وبياناتك حتى تقوم بتسجيل الدخول مجدداً. يمكنك إعادة التفعيل في أي وقت.",
+    "deactivate_btn": "تعطيل الحساب",
+    "confirm_with_password": "التأكيد بكلمة المرور",
+
+    "delete": "حذف الحساب",
+    "delete_sub": "إزالة حسابك نهائياً",
+    "delete_info": "حذف حسابك إجراء دائم ولا يمكن التراجع عنه. سيتم مسح جميع بياناتك ومنشوراتك وسجلك للأبد.",
+    "delete_confirm_label": "اكتب \"احذف\" للتأكيد",
+    "delete_confirm_word": "احذف",
+    "delete_btn": "حذف حسابي"
+  }
 }

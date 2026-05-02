@@ -155,13 +155,16 @@
     "verify_otp_subtitle": "We sent an OTP to {0}. Enter it below and choose a new password.",
     "otp_label": "OTP",
     "hint_otp": "123456",
+    "org_id_label":"Organization Code",
     "val_otp_required": "OTP is required",
     "val_otp_short": "OTP is too short",
     "new_password_label": "New Password",
     "hint_new_password": "Enter new password",
     "val_new_password_required": "New password is required",
     "val_password_min_length": "Password must be at least 8 characters",
-    "reset_password": "Reset Password"
+    "reset_password": "Reset Password",
+    "email_hint":"Enter your email",
+    "email_label":"Email"
   },
   "settings": {
     "title": "Settings",
@@ -186,7 +189,9 @@
     "logout_title": "Logout",
     "logout_confirm": "Are you sure you want to logout?",
     "privacy": "Privacy Policy",
-    "logout_failed": "Logout failed"
+    "logout_failed": "Logout failed",
+    "field_organization": "Organization",
+    "field_roll_number": "Roll Number"
   },
 
     "loginStudent": {
@@ -241,5 +246,39 @@
     "enter_roll_number": "Enter your roll number",
     "password_min_chars": "Password must be at least 6 characters",
     "passwords_not_match": "Passwords do not match"
+  },
+
+  "privacy": {
+    "title": "Privacy & Security",
+    "section_security": "Security",
+    "section_account": "Account Management",
+
+    "change_password": "Change Password",
+    "change_password_sub": "Update your current password",
+    "password_hint": "Your new password must be at least 8 characters long.",
+    "current_password": "Current Password",
+    "new_password": "New Password",
+    "confirm_password": "Confirm New Password",
+    "password_placeholder": "Enter password",
+    "update_password": "Update Password",
+    "password_changed_success": "Password updated successfully.",
+
+    "error_fill_all": "Please fill in all fields.",
+    "error_password_mismatch": "New passwords do not match.",
+    "error_password_short": "Password must be at least 8 characters.",
+
+    "deactivate": "Deactivate Account",
+    "deactivate_sub": "Temporarily disable your account",
+    "deactivate_info": "Deactivating your account will hide your profile and data until you log back in. You can reactivate at any time.",
+    "deactivate_btn": "Deactivate Account",
+    "confirm_with_password": "Confirm with Password",
+
+    "delete": "Delete Account",
+    "delete_sub": "Permanently remove your account",
+    "delete_info": "Deleting your account is permanent and cannot be undone. All your data, posts, and history will be erased forever.",
+    "delete_confirm_label": "Type \"DELETE\" to confirm",
+    "delete_confirm_word": "DELETE",
+    "delete_btn": "Delete My Account"
   }
+
 }
