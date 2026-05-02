@@ -1,8 +1,10 @@
 import 'package:mobile_app/core/current_user/data/local_data_soruce/user_local_data_source.dart';
+import 'package:mobile_app/core/networking/api_error_handler.dart';
 import 'package:mobile_app/core/networking/api_error_model.dart';
 import 'package:mobile_app/features/session_mangement/data/data_source/session_state_manager.dart';
 import 'package:mobile_app/features/session_mangement/data/helpers/session_cache_helper.dart';
-import 'package:mobile_app/features/session_mangement/data/models/remote_models/create_session/create_session_request_model.dart';
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/create_session/create_hall_session_request_model.dart';
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/create_session/create_section_session_request_model.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_sections/get_all_sections_response.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/save_attendance/save_attendance_request.dart';
@@ -11,6 +13,7 @@ import 'package:mobile_app/features/session_mangement/data/models/attendency_rec
 import 'package:mobile_app/features/session_mangement/data/service/http_server_service.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/server_info.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/session.dart';
+import 'package:mobile_app/features/session_mangement/domain/entities/session_creation_params.dart';
 import 'package:mobile_app/features/session_mangement/domain/repos/session_repository.dart';
 import 'package:mobile_app/features/session_mangement/data/data_source/remote_session_data_source.dart';
 
@@ -33,21 +36,29 @@ class SessionRepositoryImpl implements SessionRepository {
        _stateManager = stateManager,
        _remoteSessionDataSource = remoteSessionDataSource;
 
+  // ─── Helpers ──────────────────────────────────────────────
+
   Future<int> _getOrganizationId() async {
-    final userData = await _localDataSource.getCurrentUser();
-    final orgId = userData.organizations?.isNotEmpty == true
-        ? userData.organizations!.first.organizationId
-        : null;
+    try {
+      final userData = await _localDataSource.getCurrentUser();
+      final orgId = userData.organizations?.isNotEmpty == true
+          ? userData.organizations!.first.organizationId
+          : null;
 
-    if (orgId == null) {
-      throw const ApiErrorModel(
-        message: 'Invalid organization ID',
-        type: ApiErrorType.defaultError,
-        statusCode: 400,
-      );
+      if (orgId == null) {
+        throw const ApiErrorModel(
+          message: 'Invalid organization ID',
+          type: ApiErrorType.defaultError,
+          statusCode: 400,
+        );
+      }
+
+      return orgId;
+    } on ApiErrorModel {
+      rethrow;
+    } catch (e) {
+      throw ApiErrorHandler.handle(e);
     }
-
-    return orgId;
   }
 
   void _validateSession(int sessionId) {
@@ -61,54 +72,30 @@ class SessionRepositoryImpl implements SessionRepository {
   }
 
   Future<void> _stopAndClearSession() async {
-    await _serverService.stopServer();
-    _stateManager.updateStatus(SessionStatus.ended);
-    _stateManager.clear();
+    try {
+      await _serverService.stopServer();
+      _stateManager.updateStatus(SessionStatus.ended);
+      _stateManager.clear();
+    } on ApiErrorModel {
+      rethrow;
+    } catch (e) {
+      throw ApiErrorHandler.handle(e);
+    }
   }
 
-  @override
-  Future<Session> createSession({
-    required String name,
-    required String location,
-    required String connectionMethod,
-    required DateTime startAt,
-    required DateTime endAt,
-    required double allowedRadius,
-    required String networkSSID,
-    required String networkBSSID,
-    required double latitude,
-    required double longitude,
-    required int? hallId,
-  }) async {
-    final userData = await _localDataSource.getCurrentUser();
-    final organizationId = await _getOrganizationId();
-
-    final sessionId = await _remoteSessionDataSource.createSession(
-      CreateSessionRequestModel(
-        organizationId: organizationId,
-        sessionName: name,
-        createdBy: userData.id!,
-        hallName: location,
-        connectionType: connectionMethod,
-        longitude: longitude,
-        latitude: latitude,
-        allowedRadius: allowedRadius,
-        networkSSID: networkSSID,
-        networkBSSID: networkBSSID,
-        startAt: startAt.toIso8601String(),
-        endAt: endAt.toIso8601String(),
-        hallId: hallId!,
-      ),
-    );
-
+  Session _buildSession(
+    SessionCreationParams params,
+    int sessionId,
+    int organizationId,
+  ) {
     final session = Session(
       id: sessionId,
-      name: name,
+      name: params.name,
       organizationId: organizationId,
-      location: location,
-      connectionMethod: connectionMethod,
-      startTime: startAt,
-      durationMinutes: endAt.difference(startAt).inMinutes,
+      location: params.location,
+      connectionMethod: params.connectionMethod,
+      startTime: params.startAt,
+      durationMinutes: params.endAt.difference(params.startAt).inMinutes,
       status: SessionStatus.inactive,
       connectedClients: 0,
       attendanceList: [],
@@ -116,42 +103,136 @@ class SessionRepositoryImpl implements SessionRepository {
 
     _stateManager.setSession(
       session,
-      latitude: latitude,
-      longitude: longitude,
-      allowedRadius: allowedRadius,
+      latitude: params.latitude,
+      longitude: params.longitude,
+      allowedRadius: params.allowedRadius,
     );
 
     return session;
   }
 
+  // ─── Create Session ────────────────────────────────────────
+
   @override
-  Future<ServerInfo> startSessionServer(int sessionId) async {
-    _validateSession(sessionId);
+  Future<Session> createSessionHall({
+    required SessionCreationParams params,
+    required int? hallId,
+  }) async {
+    try {
+      final userData = await _localDataSource.getCurrentUser();
+      final organizationId = await _getOrganizationId();
 
-    final session = _stateManager.currentSession!;
+      final sessionId = await _remoteSessionDataSource.createSessionHall(
+        CreateHallSessionRequestModel(
+          organizationId: organizationId,
+          sessionName: params.name,
+          createdBy: userData.id!,
+          hallName: params.location,
+          connectionType: params.connectionMethod,
+          longitude: params.longitude,
+          latitude: params.latitude,
+          allowedRadius: params.allowedRadius,
+          networkSSID: params.networkSSID,
+          networkBSSID: params.networkBSSID,
+          startAt: params.startAt.toIso8601String(),
+          endAt: params.endAt.toIso8601String(),
+          hallId: hallId!,
+        ),
+      );
 
-    final serverInfo = await _serverService.startServer(
-      sessionId,
-      session,
-      latitude: _stateManager.latitude,
-      longitude: _stateManager.longitude,
-      allowedRadius: _stateManager.allowedRadius,
-      orgainzationId: session.organizationId,
-    );
-
-    _stateManager.updateStatus(SessionStatus.active);
-    return serverInfo;
+      return _buildSession(params, sessionId, organizationId);
+    } on ApiErrorModel {
+      rethrow;
+    } catch (e) {
+      throw ApiErrorHandler.handle(e);
+    }
   }
 
   @override
+  Future<Session> createSessionSection({
+    required SessionCreationParams params,
+    required int? sectionId,
+  }) async {
+    try {
+      final userData = await _localDataSource.getCurrentUser();
+      final organizationId = await _getOrganizationId();
+
+      final sessionId = await _remoteSessionDataSource.createSessionSection(
+        CreateSectionSessionRequestModel(
+          organizationId: organizationId,
+          sessionName: params.name,
+          createdBy: userData.id!,
+          sectionName: params.location,
+          connectionType: params.connectionMethod,
+          longitude: params.longitude,
+          latitude: params.latitude,
+          allowedRadius: params.allowedRadius,
+          networkSSID: params.networkSSID,
+          networkBSSID: params.networkBSSID,
+          startAt: params.startAt.toIso8601String(),
+          endAt: params.endAt.toIso8601String(),
+          sectionId: sectionId!,
+        ),
+      );
+
+      return _buildSession(params, sessionId, organizationId);
+    } on ApiErrorModel {
+      rethrow;
+    } catch (e) {
+      throw ApiErrorHandler.handle(e);
+    }
+  }
+
+  // ─── Server ────────────────────────────────────────────────
+
+  @override
+  Future<ServerInfo> startSessionServer(int sessionId) async {
+    try {
+      _validateSession(sessionId);
+
+      final session = _stateManager.currentSession!;
+
+      final serverInfo = await _serverService.startServer(
+        sessionId,
+        session,
+        latitude: _stateManager.latitude,
+        longitude: _stateManager.longitude,
+        allowedRadius: _stateManager.allowedRadius,
+        orgainzationId: session.organizationId,
+      );
+
+      _stateManager.updateStatus(SessionStatus.active);
+      return serverInfo;
+    } on ApiErrorModel {
+      rethrow;
+    } catch (e) {
+      throw ApiErrorHandler.handle(e);
+    }
+  }
+
+  // ─── End & Delete ──────────────────────────────────────────
+
+  @override
   Future<void> endSession(int sessionId) async {
-    _validateSession(sessionId);
-    await _stopAndClearSession();
+    try {
+      _validateSession(sessionId);
+      await _stopAndClearSession();
+    } on ApiErrorModel {
+      rethrow;
+    } catch (e) {
+      throw ApiErrorHandler.handle(e);
+    }
   }
 
   @override
   Future<void> deleteCurrentSession() async {
-    await _stopAndClearSession();
+    try {
+      await _stopAndClearSession();
+    } on ApiErrorModel {
+      rethrow;
+    } catch (e) {
+      throw ApiErrorHandler.handle(e);
+    }
   }
 
   @override
@@ -159,7 +240,7 @@ class SessionRepositoryImpl implements SessionRepository {
     return _stateManager.currentSession;
   }
 
-  // ─── Attendance ──────────────────────────────────────────
+  // ─── Attendance ────────────────────────────────────────────
 
   @override
   Stream<AttendanceRecord> getAttendanceStream() {
@@ -183,18 +264,38 @@ class SessionRepositoryImpl implements SessionRepository {
   Future<SaveAttendanceResponse> saveAttendance(
     SaveAttendanceRequest request,
   ) async {
-    return _remoteSessionDataSource.saveAttendance(request);
+    try {
+      return await _remoteSessionDataSource.saveAttendance(request);
+    } on ApiErrorModel {
+      rethrow;
+    } catch (e) {
+      throw ApiErrorHandler.handle(e);
+    }
   }
+
+  // ─── Halls & Sections ──────────────────────────────────────
 
   @override
   Future<GetAllHallsResponse> getAllHalls() async {
-    final orgId = await _getOrganizationId();
-    return _cacheHelper.getHalls(orgId);
+    try {
+      final orgId = await _getOrganizationId();
+      return await _cacheHelper.getHalls(orgId);
+    } on ApiErrorModel {
+      rethrow;
+    } catch (e) {
+      throw ApiErrorHandler.handle(e);
+    }
   }
 
   @override
   Future<GetAllSectionsResponse> getAllSections() async {
-    final orgId = await _getOrganizationId();
-    return _cacheHelper.getSections(orgId);
+    try {
+      final orgId = await _getOrganizationId();
+      return await _cacheHelper.getSections(orgId);
+    } on ApiErrorModel {
+      rethrow;
+    } catch (e) {
+      throw ApiErrorHandler.handle(e);
+    }
   }
 }

@@ -1,5 +1,7 @@
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/create_session_target.dart';
 import 'package:mobile_app/features/session_mangement/data/service/network_info_service.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/session.dart';
+import 'package:mobile_app/features/session_mangement/domain/entities/session_creation_params.dart';
 import 'package:mobile_app/features/session_mangement/domain/repos/session_repository.dart';
 
 class CreateSessionUseCase {
@@ -15,25 +17,33 @@ class CreateSessionUseCase {
     required DateTime startTime,
     required int durationMinutes,
     required double allowedRadius,
-    required int? hallId,
+    required CreateSessionTarget target,
   }) async {
     final networkInfo = await _networkInfoService.getNetworkAndLocationInfo();
-
     final startAt = startTime.toUtc();
-    final endAt = startAt.add(Duration(minutes: durationMinutes));
 
-    return await _repository.createSession(
+    final params = SessionCreationParams(
       name: name,
       location: location,
       connectionMethod: connectionMethod,
       startAt: startAt,
-      endAt: endAt,
+      endAt: startAt.add(Duration(minutes: durationMinutes)),
       allowedRadius: allowedRadius,
       networkSSID: networkInfo.ssid,
       networkBSSID: networkInfo.bssid,
       latitude: networkInfo.latitude,
       longitude: networkInfo.longitude,
-      hallId: hallId,
     );
+
+    return switch (target) {
+      SectionTarget(:final sectionId) => await _repository.createSessionSection(
+        params: params,
+        sectionId: sectionId,
+      ),
+      HallTarget(:final hallId) => await _repository.createSessionHall(
+        params: params,
+        hallId: hallId,
+      ),
+    };
   }
 }

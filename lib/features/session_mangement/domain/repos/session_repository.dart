@@ -5,21 +5,19 @@ import 'package:mobile_app/features/session_mangement/data/models/remote_models/
 import 'package:mobile_app/features/session_mangement/domain/entities/server_info.dart';
 import 'package:mobile_app/features/session_mangement/data/models/attendency_record.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/session.dart';
+import 'package:mobile_app/features/session_mangement/domain/entities/session_creation_params.dart';
 
 abstract class SessionRepository {
-  Future<Session> createSession({
-    required String name,
-    required String location,
-    required String connectionMethod,
-    required DateTime startAt,
-    required DateTime endAt,
+  Future<Session> createSessionHall({
+    required SessionCreationParams params,
     required int? hallId,
-    required double allowedRadius,
-    required String networkSSID,
-    required String networkBSSID,
-    required double latitude,
-    required double longitude,
   });
+
+  Future<Session> createSessionSection({
+    required int? sectionId,
+    required SessionCreationParams params,
+  });
+
   Future<GetAllSectionsResponse> getAllSections();
 
   Future<ServerInfo> startSessionServer(int sessionId);

@@ -1,7 +1,8 @@
 import 'package:mobile_app/core/networking/api_const.dart';
 import 'package:mobile_app/core/networking/api_error_handler.dart';
 import 'package:mobile_app/core/networking/network_service.dart';
-import 'package:mobile_app/features/session_mangement/data/models/remote_models/create_session/create_session_request_model.dart';
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/create_session/create_hall_session_request_model.dart';
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/create_session/create_section_session_request_model.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_halls/get_all_halls_response.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/get_all_sections/get_all_sections_response.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/save_attendance/save_attendance_request.dart';
@@ -12,7 +13,10 @@ abstract class RemoteSessionDataSource {
   Future<GetAllSectionsResponse> getAllSections(int organizationId);
 
   Future<SaveAttendanceResponse> saveAttendance(SaveAttendanceRequest request);
-  Future<int> createSession(CreateSessionRequestModel createSessionRequest);
+  Future<int> createSessionHall(CreateHallSessionRequestModel createSessionRequest);
+  Future<int> createSessionSection(
+    CreateSectionSessionRequestModel createSessionRequest,
+  );
 }
 
 class RemoteSessionDataSourceImpl extends RemoteSessionDataSource {
@@ -43,7 +47,6 @@ class RemoteSessionDataSourceImpl extends RemoteSessionDataSource {
       final response = await networkService.get(
         ApiConst.getAllSections(organizationId),
       );
-      print("get all sections response: ${response.data}");
       final sectionsList = (response.data['data'] as List<dynamic>)
           .map((json) => SectionInfo.fromJson(json as Map<String, dynamic>))
           .toList();
@@ -54,8 +57,25 @@ class RemoteSessionDataSourceImpl extends RemoteSessionDataSource {
   }
 
   @override
-  Future<int> createSession(
-    CreateSessionRequestModel createSessionRequest,
+  Future<int> createSessionHall(
+    CreateHallSessionRequestModel createSessionRequest,
+  ) async {
+    try {
+      final response = await networkService.post(
+        ApiConst.createSession,
+        createSessionRequest.toJson(),
+      );
+
+      final sessionId = response.data['data']['sessionId'] as int;
+      return sessionId;
+    } catch (e) {
+      throw ApiErrorHandler.handle(e);
+    }
+  }
+
+  @override
+  Future<int> createSessionSection(
+    CreateSectionSessionRequestModel createSessionRequest,
   ) async {
     try {
       final response = await networkService.post(

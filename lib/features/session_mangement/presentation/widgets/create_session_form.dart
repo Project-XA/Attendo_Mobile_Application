@@ -11,6 +11,7 @@ import 'package:mobile_app/core/services/UI/toast_service.dart';
 import 'package:mobile_app/core/services/location/location_helper.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/widgets/custom_app_button.dart';
+import 'package:mobile_app/features/session_mangement/data/models/remote_models/create_session_target.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_cubit.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_state.dart';
 import 'package:mobile_app/features/session_mangement/presentation/widgets/session_form_field.dart';
@@ -119,7 +120,9 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
       startTime: _selectedTime!,
       durationMinutes: int.parse(_durationController.text.trim()),
       allowedRadius: double.parse(_allowedRadiusController.text.trim()),
-      hallId: _selectedHallId,
+      target: _isUniversity
+          ? SectionTarget(_selectedHallId!)
+          : HallTarget(_selectedHallId!),
     );
   }
 
@@ -132,7 +135,6 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
     }
   }
 
-  // ─── Build ─────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {

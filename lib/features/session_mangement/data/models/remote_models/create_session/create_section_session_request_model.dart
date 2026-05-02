@@ -1,12 +1,12 @@
 import 'package:json_annotation/json_annotation.dart';
-part 'create_session_request_model.g.dart';
+part 'create_section_session_request_model.g.dart';
 
 @JsonSerializable()
-class CreateSessionRequestModel {
+class CreateSectionSessionRequestModel {
   final int organizationId;
   final String sessionName;
   final String createdBy;
-  final String hallName;
+  final String sectionName;
   final String connectionType;
   final double longitude;
   final double latitude;
@@ -15,13 +15,13 @@ class CreateSessionRequestModel {
   final String networkBSSID;
   final String startAt;
   final String endAt;
-  final int hallId;
+  final int sectionId;
 
-  CreateSessionRequestModel({
+  CreateSectionSessionRequestModel({
     required this.organizationId,
     required this.sessionName,
     required this.createdBy,
-    required this.hallName,
+    required this.sectionName,
     required this.connectionType,
     required this.longitude,
     required this.latitude,
@@ -30,11 +30,12 @@ class CreateSessionRequestModel {
     required this.networkBSSID,
     required this.startAt,
     required this.endAt,
-    required this.hallId,
+    required this.sectionId,
   });
 
-  factory CreateSessionRequestModel.fromJson(Map<String, dynamic> json) =>
-      _$CreateSessionRequestModelFromJson(json);
-
-  Map<String, dynamic> toJson() => _$CreateSessionRequestModelToJson(this);
+  factory CreateSectionSessionRequestModel.fromJson(
+    Map<String, dynamic> json,
+  ) => _$CreateSectionSessionRequestModelFromJson(json);
+  Map<String, dynamic> toJson() =>
+      _$CreateSectionSessionRequestModelToJson(this);
 }

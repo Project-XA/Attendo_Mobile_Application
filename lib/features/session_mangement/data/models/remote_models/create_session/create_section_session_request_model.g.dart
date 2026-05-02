@@ -1,18 +1,18 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'create_session_request_model.dart';
+part of 'create_section_session_request_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-CreateSessionRequestModel _$CreateSessionRequestModelFromJson(
+CreateSectionSessionRequestModel _$CreateSectionSessionRequestModelFromJson(
         Map<String, dynamic> json) =>
-    CreateSessionRequestModel(
+    CreateSectionSessionRequestModel(
       organizationId: (json['organizationId'] as num).toInt(),
       sessionName: json['sessionName'] as String,
       createdBy: json['createdBy'] as String,
-      hallName: json['hallName'] as String,
+      sectionName: json['sectionName'] as String,
       connectionType: json['connectionType'] as String,
       longitude: (json['longitude'] as num).toDouble(),
       latitude: (json['latitude'] as num).toDouble(),
@@ -21,16 +21,16 @@ CreateSessionRequestModel _$CreateSessionRequestModelFromJson(
       networkBSSID: json['networkBSSID'] as String,
       startAt: json['startAt'] as String,
       endAt: json['endAt'] as String,
-      hallId: (json['hallId'] as num).toInt(),
+      sectionId: (json['sectionId'] as num).toInt(),
     );
 
-Map<String, dynamic> _$CreateSessionRequestModelToJson(
-        CreateSessionRequestModel instance) =>
+Map<String, dynamic> _$CreateSectionSessionRequestModelToJson(
+        CreateSectionSessionRequestModel instance) =>
     <String, dynamic>{
       'organizationId': instance.organizationId,
       'sessionName': instance.sessionName,
       'createdBy': instance.createdBy,
-      'hallName': instance.hallName,
+      'sectionName': instance.sectionName,
       'connectionType': instance.connectionType,
       'longitude': instance.longitude,
       'latitude': instance.latitude,
@@ -39,5 +39,5 @@ Map<String, dynamic> _$CreateSessionRequestModelToJson(
       'networkBSSID': instance.networkBSSID,
       'startAt': instance.startAt,
       'endAt': instance.endAt,
-      'hallId': instance.hallId,
+      'sectionId': instance.sectionId,
     };
