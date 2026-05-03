@@ -54,10 +54,7 @@ class _StudentAvatar extends StatelessWidget {
   final String? userImage;
   final bool isSmallScreen;
 
-  const _StudentAvatar({
-    required this.userImage,
-    required this.isSmallScreen,
-  });
+  const _StudentAvatar({required this.userImage, required this.isSmallScreen});
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +106,7 @@ class _StudentInfo extends StatelessWidget {
         Text(
           userName,
           style: TextStyle(
-            color: AppColors.mainBackgroundDarkColor,
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: isSmallScreen ? 14.sp : 16.sp,
             fontWeight: FontWeight.bold,
           ),
@@ -119,16 +116,10 @@ class _StudentInfo extends StatelessWidget {
         verticalSpace(2.h),
         Row(
           children: [
-            Icon(
-              Icons.badge_outlined,
-              size: isSmallScreen ? 11.sp : 13.sp,
-              color: AppColors.mainTextDarkColor.withOpacity(0.6),
-            ),
-            horizontalSpace(4.w),
             Text(
               rollNumber,
               style: TextStyle(
-                color: AppColors.mainTextDarkColor.withOpacity(0.8),
+                color: Theme.of(context).colorScheme.outline,
                 fontSize: isSmallScreen ? 11.sp : 13.sp,
                 fontWeight: FontWeight.w400,
               ),

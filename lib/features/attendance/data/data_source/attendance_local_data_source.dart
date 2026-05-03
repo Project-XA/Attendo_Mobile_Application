@@ -54,7 +54,7 @@ class AttendanceLocalDataSourceImpl implements AttendanceLocalDataSource {
       final model = AttendanceStatsModel.fromEntity(stats);
       await box.put(_statsKey, model);
     } catch (e) {
-      // Handle error silently
+      print('Cache error: $e'); 
     }
   }
 

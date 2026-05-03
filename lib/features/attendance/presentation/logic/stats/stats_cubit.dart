@@ -19,6 +19,7 @@ class StatsCubit extends Cubit<StatsState> {
 
       if (cachedStats != null) {
         _cachedStats = cachedStats;
+      
         if (!isClosed) {
           emit(StatsLoaded(stats: cachedStats));
         }
@@ -34,16 +35,14 @@ class StatsCubit extends Cubit<StatsState> {
         emit(StatsLoaded(stats: freshStats));
       }
     } catch (_) {
-      if (!isClosed) {
+      if (!isClosed && _cachedStats == null) {
         emit(
           StatsLoaded(
-            stats:
-                _cachedStats ??
-                AttendanceStats(
-                  totalSessions: 0,
-                  attendedSessions: 0,
-                  attendancePercentage: 0.0,
-                ),
+            stats: AttendanceStats(
+              totalSessions: 0,
+              attendedSessions: 0,
+              attendancePercentage: 0.0,
+            ),
             hasError: true,
           ),
         );

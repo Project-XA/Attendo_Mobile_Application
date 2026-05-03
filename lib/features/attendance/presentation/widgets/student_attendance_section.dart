@@ -36,7 +36,10 @@ class StudentAttendanceSection extends StatelessWidget {
               onPressed: () {
                 context.pushNamed(Routes.userAnalysisScreen);
               },
-              child: Text("View more", style: AppTextStyle.font18GreyBold),
+              child: Text(
+                'attendance.view_more'.tr(),
+                style: AppTextStyle.font18GreyBold,
+              ),
             ),
           ],
         ),

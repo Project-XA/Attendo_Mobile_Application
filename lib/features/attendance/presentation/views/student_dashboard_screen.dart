@@ -102,7 +102,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                           context.read<CurrentStudentCubit>().state.student;
                       return StudentHeader(
                         userName: latestStudent?.fullName ?? '',
-                        rollNumber: latestStudent?.rollNumber ?? '',
+                        rollNumber: 'Student',
                         userImage: latestStudent?.profileImage,
                       );
                     },
