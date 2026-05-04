@@ -11,6 +11,7 @@ import 'package:mobile_app/core/dependency_injection/init_user_attendace.dart';
 import 'package:mobile_app/core/dependency_injection/privacy_security_di.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/features/attendance/presentation/views/student_dashboard_screen.dart';
+import 'package:mobile_app/features/auth/presentation/logic/auth_cubit.dart';
 import 'package:mobile_app/features/auth/presentation/views/forgot_password_screen.dart';
 import 'package:mobile_app/features/auth/presentation/views/verify_reset_password_otp_screen.dart';
 import 'package:mobile_app/features/navigation_screen/presentation/student_navigation.dart';
@@ -57,7 +58,10 @@ class AppRoute {
         );
         break;
       case Routes.forgotPasswordScreen:
-        page = const ForgotPasswordScreen();
+        page = BlocProvider(
+          create: (context) => getIt<AuthCubit>(),
+          child: const ForgotPasswordScreen(),
+        );
         break;
 
       case Routes.verifyResetPasswordOtpScreen:

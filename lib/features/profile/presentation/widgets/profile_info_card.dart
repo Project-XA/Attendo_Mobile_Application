@@ -50,6 +50,22 @@ class FullNameCard extends StatelessWidget {
   }
 }
 
+class OrganizationNameCard extends StatelessWidget {
+  final String organizationName;
+
+  const OrganizationNameCard({super.key, required this.organizationName});
+
+  @override
+  Widget build(BuildContext context) {
+    return InfoCard(
+      icon: Icons.business,
+      label: 'profile.field_organization'.tr(),
+      value: organizationName,
+      onEdit: null,
+    );
+  }
+}
+
 class CollageCardId extends StatelessWidget {
   final String collageCardId;
 

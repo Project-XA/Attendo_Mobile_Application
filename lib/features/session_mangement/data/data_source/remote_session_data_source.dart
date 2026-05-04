@@ -13,7 +13,9 @@ abstract class RemoteSessionDataSource {
   Future<GetAllSectionsResponse> getAllSections(int organizationId);
 
   Future<SaveAttendanceResponse> saveAttendance(SaveAttendanceRequest request);
-  Future<int> createSessionHall(CreateHallSessionRequestModel createSessionRequest);
+  Future<int> createSessionHall(
+    CreateHallSessionRequestModel createSessionRequest,
+  );
   Future<int> createSessionSection(
     CreateSectionSessionRequestModel createSessionRequest,
   );
@@ -79,7 +81,7 @@ class RemoteSessionDataSourceImpl extends RemoteSessionDataSource {
   ) async {
     try {
       final response = await networkService.post(
-        ApiConst.createSession,
+        ApiConst.createSessionSection,
         createSessionRequest.toJson(),
       );
 

@@ -62,7 +62,8 @@
     "val_session_id_required": "Session ID is required",
     "val_user_info_required": "User information is required",
     "organization_placeholder": "Organization",
-    "loading_dashboard": "Loading attendance dashboard"
+    "loading_dashboard": "Loading attendance dashboard",
+    "view_more":"View More"
   },
   "onboarding": {
     "welcome_title": "Welcome to Attendo",
@@ -171,7 +172,9 @@
     "language": "Language",
     "language_english": "English",
     "language_arabic": "Arabic",
-    "dark_mode": "Dark Mode"
+    "dark_mode": "Dark Mode",
+    "privacy":"Privacy Policy"
+
   },
   "profile": {
     "title": "Profile",

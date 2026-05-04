@@ -78,24 +78,26 @@ class StudentTopSection extends StatelessWidget {
                   Text(student.email, style: AppTextStyle.font14WhiteMedium),
                   verticalSpace(5.h),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 6.h,
+                    ),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.2),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onPrimary.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(20.r),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.badge_outlined,
-                          color: Colors.white,
-                          size: 12.sp,
-                        ),
-                        horizontalSpace(4.w),
-                        Text(
-                          student.rollNumber,
-                          style: AppTextStyle.font12WhiteMedium,
-                        ),
+                        // Icon(
+                        //   Icons.badge_outlined,
+                        //   color: Colors.white,
+                        //   size: 12.sp,
+                        // ),
+                        // horizontalSpace(4.w),
+                        Text("Student", style: AppTextStyle.font12WhiteMedium),
                       ],
                     ),
                   ),

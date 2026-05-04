@@ -9,7 +9,10 @@ import 'package:mobile_app/core/current_user/data/Auth_services/auth_state_model
 import 'package:mobile_app/core/app_boot_strap.dart';
 import 'package:mobile_app/core/current_user/data/models/user_org_model.dart';
 import 'package:mobile_app/core/current_user/data/models/user_model.dart';
+import 'package:mobile_app/features/attendance/data/models/attendance_history_model.dart';
+import 'package:mobile_app/features/attendance/data/models/local_models/attendance_history_cache_model.dart';
 import 'package:mobile_app/features/attendance/data/models/local_models/attendance_stats_model.dart';
+import 'package:mobile_app/features/attendance/domain/entities/attendance_history.dart';
 import 'package:mobile_app/features/session_mangement/data/models/local_models/cache_halls_data.dart';
 import 'package:mobile_app/features/session_mangement/data/models/local_models/cache_sections_data.dart';
 import 'package:mobile_app/features/session_mangement/data/models/local_models/hall_model.dart';
@@ -30,18 +33,24 @@ Future<void> main() async {
   Hive.registerAdapter(StudentModelHiveAdapter());
   Hive.registerAdapter(SectionModelAdapter());
   Hive.registerAdapter(CacheSectionsDataAdapter());
+  Hive.registerAdapter(AttendanceHistoryCacheModelAdapter());
+  Hive.registerAdapter(AttendanceHistoryModelAdapter());
+  Hive.registerAdapter(AttendanceStatusAdapter());
   final themeBox = await Hive.openBox<bool>('themePrefs');
 
   if (kReleaseMode) {
-    runZonedGuarded(
-      () async {
-        await SentryFlutter.init((options) {
-          options.dsn = const String.fromEnvironment('SENTRY_DSN');
-        });
+    await SentryFlutter.init(
+      (options) {
+        options.dsn = const String.fromEnvironment('SENTRY_DSN');
       },
-      (exception, stackTrace) async {
-        await Sentry.captureException(exception, stackTrace: stackTrace);
-      },
+      appRunner: () => runApp(
+        EasyLocalization(
+          supportedLocales: const [Locale('en'), Locale('ar')],
+          path: 'assets/translations',
+          fallbackLocale: const Locale('en'),
+          child: AppBootstrap(themeBox: themeBox),
+        ),
+      ),
     );
   } else {
     runApp(

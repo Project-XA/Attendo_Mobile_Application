@@ -8,21 +8,21 @@ class UserAnalysisCubit extends Cubit<UserAnalysisState> {
   UserAnalysisCubit({
     required GetAttendanceStatsUseCase getAttendanceStatsUseCase,
     required GetAttendanceHistoryUseCase getAttendanceHistoryUseCase,
-  })  : _useCase = getAttendanceStatsUseCase,
-        _historyUseCase = getAttendanceHistoryUseCase,
-        super(const UserAnalysisInitial());
+  }) : _useCase = getAttendanceStatsUseCase,
+       _historyUseCase = getAttendanceHistoryUseCase,
+       super(const UserAnalysisInitial());
 
   final GetAttendanceStatsUseCase _useCase;
   final GetAttendanceHistoryUseCase _historyUseCase;
 
-  // ─── Page size for history pagination ────────────────────────────────────
   static const int _pageSize = 5;
 
-
   Future<void> loadStats() async {
+    if (isClosed) return;
     emit(const UserAnalysisLoading());
 
     final cached = await _useCase.callFromCache();
+    if (isClosed) return;
     if (cached != null) {
       emit(UserAnalysisCacheLoaded(stats: cached));
     }
@@ -31,18 +31,21 @@ class UserAnalysisCubit extends Cubit<UserAnalysisState> {
       final fresh = await _useCase.call();
       await _useCase.saveToCache(fresh);
 
-      // Preserve history data if we already had a loaded state
       final currentHistory = state is UserAnalysisLoaded
           ? (state as UserAnalysisLoaded).history
           : <AttendanceHistory>[];
 
-      emit(UserAnalysisLoaded(
-        stats: fresh,
-        history: currentHistory,
-        hasMoreHistory: currentHistory.isNotEmpty &&
-            currentHistory.length >= _pageSize,
-      ));
+      if (isClosed) return;
+      emit(
+        UserAnalysisLoaded(
+          stats: fresh,
+          history: currentHistory,
+          hasMoreHistory:
+              currentHistory.isNotEmpty && currentHistory.length >= _pageSize,
+        ),
+      );
     } catch (e) {
+      if (isClosed) return;
       if (cached != null) {
         emit(UserAnalysisLoaded(stats: cached));
       } else {
@@ -68,16 +71,17 @@ class UserAnalysisCubit extends Cubit<UserAnalysisState> {
       final all = await _historyUseCase.call();
       final page = all.take(_pageSize).toList();
 
-      emit(current.copyWith(
-        isHistoryLoading: false,
-        history: page,
-        hasMoreHistory: all.length > _pageSize,
-      ));
+      emit(
+        current.copyWith(
+          isHistoryLoading: false,
+          history: page,
+          hasMoreHistory: all.length > _pageSize,
+        ),
+      );
     } catch (e) {
-      emit(current.copyWith(
-        isHistoryLoading: false,
-        historyError: e.toString(),
-      ));
+      emit(
+        current.copyWith(isHistoryLoading: false, historyError: e.toString()),
+      );
     }
   }
 
@@ -94,16 +98,17 @@ class UserAnalysisCubit extends Cubit<UserAnalysisState> {
       final nextEnd = current.history.length + _pageSize;
       final nextPage = all.take(nextEnd).toList();
 
-      emit(current.copyWith(
-        isHistoryLoading: false,
-        history: nextPage,
-        hasMoreHistory: all.length > nextEnd,
-      ));
+      emit(
+        current.copyWith(
+          isHistoryLoading: false,
+          history: nextPage,
+          hasMoreHistory: all.length > nextEnd,
+        ),
+      );
     } catch (e) {
-      emit(current.copyWith(
-        isHistoryLoading: false,
-        historyError: e.toString(),
-      ));
+      emit(
+        current.copyWith(isHistoryLoading: false, historyError: e.toString()),
+      );
     }
   }
 

@@ -35,13 +35,15 @@ class ProfileImagePickerSheet extends StatelessWidget {
                 label: 'profile.camera'.tr(),
                 onTap: () async {
                   Navigator.pop(context);
-                  final image = await picker.pickImage(
-                    source: ImageSource.camera,
-                    imageQuality: 80,
-                  );
-                  if (image != null) {
-                    onImagePicked(File(image.path));
-                  }
+                  try {
+                    final image = await picker.pickImage(
+                      source: ImageSource.camera,
+                      imageQuality: 80,
+                    );
+                    if (image != null) {
+                      onImagePicked(File(image.path));
+                    }
+                  } catch (_) {}
                 },
               ),
               ImageSourceOption(
@@ -49,13 +51,15 @@ class ProfileImagePickerSheet extends StatelessWidget {
                 label: 'profile.gallery'.tr(),
                 onTap: () async {
                   Navigator.pop(context);
-                  final image = await picker.pickImage(
-                    source: ImageSource.gallery,
-                    imageQuality: 80,
-                  );
-                  if (image != null) {
-                    onImagePicked(File(image.path));
-                  }
+                  try {
+                    final image = await picker.pickImage(
+                      source: ImageSource.gallery,
+                      imageQuality: 80,
+                    );
+                    if (image != null) {
+                      onImagePicked(File(image.path));
+                    }
+                  } catch (_) {}
                 },
               ),
             ],

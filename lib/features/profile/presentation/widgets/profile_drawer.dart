@@ -49,7 +49,7 @@ class ProfileDrawer extends StatelessWidget {
             DarkModeToggle(isDark: isDark),
 
             DrawerItem(
-              icon: Icons.privacy_tip_rounded,
+              icon: Icons.security_rounded,
               label: 'settings.privacy'.tr(),
               onTap: () {
                 context.pushNamed(Routes.privacyAndSecurityScreen);

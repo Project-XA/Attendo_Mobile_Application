@@ -83,75 +83,87 @@ class _UserDashboardState extends State<UserDashboardScreen> {
   Widget _buildBody() {
     return BlocBuilder<CheckInCubit, CheckInState>(
       builder: (context, checkInState) {
-        if (checkInState is! CheckInIdle) {
-          return CheckInView(state: checkInState);
-        }
+        return Stack(
+          children: [
+            // ======= الـ Dashboard الأساسي دايمًا موجود =======
+            BlocBuilder<StatsCubit, StatsState>(
+              builder: (context, statsState) {
+                final user = context.read<CurrentUserCubit>().currentUser;
 
-        return BlocBuilder<StatsCubit, StatsState>(
-          builder: (context, statsState) {
-            final user = context.read<CurrentUserCubit>().currentUser;
+                if (statsState is StatsInitial ||
+                    statsState is StatsLoading ||
+                    user == null) {
+                  return const UserDashboardShimmer();
+                }
 
-            if (statsState is StatsInitial ||
-                statsState is StatsLoading ||
-                user == null) {
-              return const UserDashboardShimmer();
-            }
+                final isSmallScreen = MediaQuery.of(context).size.width < 360;
+                final orgName = user.organizations?.first.organizationName
+                    ?.trim();
+                final orgSubtitle = (orgName != null && orgName.isNotEmpty)
+                    ? orgName
+                    : 'attendance.organization_placeholder'.tr();
 
-            final isSmallScreen = MediaQuery.of(context).size.width < 360;
-            final orgName = user.organizations?.first.organizationName?.trim();
-            final orgSubtitle = (orgName != null && orgName.isNotEmpty)
-                ? orgName
-                : 'attendance.organization_placeholder'.tr();
-
-            return SafeArea(
-              child: Column(
-                children: [
-                  BlocBuilder<CurrentUserCubit, CurrentUserState>(
-                    builder: (context, _) {
-                      final latestUser = context
-                          .read<CurrentUserCubit>()
-                          .currentUser;
-                      return UserHeader(
-                        userName: latestUser?.fullName ?? '',
-                        userRole:
-                            latestUser?.organizations?.first.role ??
-                            'attendance.default_role_student'.tr(),
-                        userImage:
-                            latestUser?.profileImage ?? Assets.assetsImagesUser,
-                      );
-                    },
-                  ),
-                  verticalSpace(20),
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isSmallScreen ? 12.w : 20.w,
-                      vertical: 8.h,
-                    ),
-                    child: InfoCard(
-                      title: 'attendance.welcome_title'.tr(),
-                      subtitle: orgSubtitle,
-                      description: 'attendance.welcome_description'.tr(),
-                    ),
-                  ),
-                  verticalSpace(20.h),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildActiveSessionCard(context),
-                          verticalSpace(20.h),
-                          _buildMyAttendanceSection(statsState),
-                          verticalSpace(20.h),
-                        ],
+                return SafeArea(
+                  child: Column(
+                    children: [
+                      BlocBuilder<CurrentUserCubit, CurrentUserState>(
+                        builder: (context, _) {
+                          final latestUser = context
+                              .read<CurrentUserCubit>()
+                              .currentUser;
+                          return UserHeader(
+                            userName: latestUser?.fullName ?? '',
+                            userRole:
+                                latestUser?.organizations?.first.role ??
+                                'attendance.default_role_student'.tr(),
+                            userImage:
+                                latestUser?.profileImage ??
+                                Assets.assetsImagesUser,
+                          );
+                        },
                       ),
-                    ),
+                      verticalSpace(20),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isSmallScreen ? 12.w : 20.w,
+                          vertical: 8.h,
+                        ),
+                        child: InfoCard(
+                          title: 'attendance.welcome_title'.tr(),
+                          subtitle: orgSubtitle,
+                          description: 'attendance.welcome_description'.tr(),
+                        ),
+                      ),
+                      verticalSpace(20.h),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildActiveSessionCard(context),
+                              verticalSpace(20.h),
+                              _buildMyAttendanceSection(statsState),
+                              verticalSpace(20.h),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                );
+              },
+            ),
+
+            // ======= CheckIn Overlay فوق الـ Dashboard =======
+            if (checkInState is! CheckInIdle)
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.4),
+                  child: CheckInView(state: checkInState),
+                ),
               ),
-            );
-          },
+          ],
         );
       },
     );
@@ -177,6 +189,7 @@ class _UserDashboardState extends State<UserDashboardScreen> {
                 session,
                 userId: user.id!,
                 userName: user.fullName,
+                context: context,
               );
             },
           );
@@ -210,7 +223,10 @@ class _UserDashboardState extends State<UserDashboardScreen> {
               onPressed: () {
                 context.pushNamed(Routes.userAnalysisScreen);
               },
-              child: Text("attendance.view_more".tr(), style: AppTextStyle.font18GreyBold),
+              child: Text(
+                "attendance.view_more".tr(),
+                style: AppTextStyle.font18GreyBold,
+              ),
             ),
           ],
         ),

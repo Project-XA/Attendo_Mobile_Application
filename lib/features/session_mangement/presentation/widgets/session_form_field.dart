@@ -307,7 +307,6 @@ class _SessionFormFieldsState extends State<SessionFormFields> {
   }
 
   // ─── Empty State ───────────────────────────────────────────
-
   Widget _buildEmptyState(String message) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 15.h),
@@ -322,6 +321,13 @@ class _SessionFormFieldsState extends State<SessionFormFields> {
           SizedBox(width: 8.w),
           Expanded(
             child: Text(message, style: AppTextStyle.font13Orange700Medium),
+          ),
+          IconButton(
+            onPressed: widget.onRefreshHalls,
+            icon: Icon(Icons.refresh, color: Colors.orange, size: 20.sp),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            tooltip: 'common.retry'.tr(),
           ),
         ],
       ),

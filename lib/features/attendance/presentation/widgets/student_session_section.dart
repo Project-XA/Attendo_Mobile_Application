@@ -39,6 +39,7 @@ class StudentSessionSection extends StatelessWidget {
                 session,
                 userId: student.appUserId,
                 userName: student.fullName,
+                context: context
               );
             },
           );

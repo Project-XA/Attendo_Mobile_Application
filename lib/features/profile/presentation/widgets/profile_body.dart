@@ -25,16 +25,19 @@ class ProfileBody extends StatelessWidget {
             children: [
               Text(
                 'profile.personal_information'.tr(),
-                style: AppTextStyle.font18BlackBold.copyWith(color: Theme.of(context).colorScheme.onSurface),
+                style: AppTextStyle.font18Bold.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
               verticalSpace(15.h),
               FullNameCard(fullName: user.fullName),
               verticalSpace(12.h),
               if (user.email != null) EmailCard(email: user.email!),
               verticalSpace(12.h),
-              CollageCardId(
-                collageCardId:
-                    user.collegeCardId ?? 'profile.not_available'.tr(),
+              OrganizationNameCard(
+                organizationName:
+                    user.organizations?.first.organizationName ??
+                    'profile.not_available'.tr(),
               ),
             ],
           ),

@@ -15,8 +15,20 @@ class CheckInView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 24.w),
         padding: EdgeInsets.all(32.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
         child: switch (state) {
           CheckInLoading() => _buildLoadingState(),
           CheckInSuccess(:final session, :final checkInTime) =>
@@ -30,6 +42,7 @@ class CheckInView extends StatelessWidget {
 
   Widget _buildLoadingState() {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const CircularProgressIndicator(),
@@ -49,6 +62,7 @@ class CheckInView extends StatelessWidget {
 
   Widget _buildSuccessState(NearbySession session, DateTime checkInTime) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(Icons.check_circle, color: Colors.green, size: 100.sp),
@@ -99,63 +113,33 @@ class CheckInView extends StatelessWidget {
   }
 
   Widget _buildFailedState(CheckInFailureReason reason) {
-    final color = switch (reason) {
-      CheckInFailureReason.alreadyCheckedIn => Colors.orange,
-      CheckInFailureReason.outsideZone => Colors.blue,
-      _ => Colors.red,
-    };
-
-    final icon = switch (reason) {
-      CheckInFailureReason.alreadyCheckedIn => Icons.info,
-      CheckInFailureReason.outsideZone => Icons.location_off,
-      _ => Icons.error,
-    };
-
-    final title = switch (reason) {
-      CheckInFailureReason.alreadyCheckedIn =>
-        'attendance.check_in_fail_already_title'.tr(),
-      CheckInFailureReason.outsideZone =>
-        'attendance.check_in_fail_zone_title'.tr(),
-      _ => 'attendance.check_in_fail_generic_title'.tr(),
-    };
-
-    final message = switch (reason) {
-      CheckInFailureReason.alreadyCheckedIn =>
-        'attendance.check_in_fail_already_msg'.tr(),
-      CheckInFailureReason.outsideZone =>
-        'attendance.check_in_fail_zone_msg'.tr(),
-      CheckInFailureReason.networkError =>
-        'attendance.check_in_fail_network_msg'.tr(),
-      CheckInFailureReason.unknown =>
-        'attendance.check_in_fail_unknown_msg'.tr(),
-    };
-
     return Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, color: color, size: 100.sp),
+        Icon(reason.icon, color: reason.color, size: 100.sp),
         verticalSpace(24.h),
         Text(
-          title,
+          reason.title,
           style: AppTextStyle.font14GreyMedium.copyWith(
             fontSize: 24.sp,
             fontWeight: FontWeightHelper.bold,
-            color: color,
+            color: reason.color,
           ),
         ),
         verticalSpace(12.h),
         Container(
           padding: EdgeInsets.all(16.w),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: reason.color.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(color: color.withOpacity(0.3)),
+            border: Border.all(color: reason.color.withOpacity(0.3)),
           ),
           child: Text(
-            message,
+            reason.message,
             style: AppTextStyle.font14GreyMedium.copyWith(
               fontSize: 14.sp,
-              color: color,
+              color: reason.color,
             ),
             textAlign: TextAlign.center,
           ),

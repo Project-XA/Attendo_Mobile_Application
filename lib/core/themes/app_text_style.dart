@@ -18,6 +18,10 @@ class AppTextStyle {
     color: AppColors.subTextGreyColor,
   );
 
+static const TextStyle font18Bold = TextStyle(
+  fontSize: 18,
+  fontWeight: FontWeight.bold,
+);
   static TextStyle font14GreyRegular = font14Grey.copyWith();
 
   static TextStyle font14GreyMedium = font14Grey.copyWith(

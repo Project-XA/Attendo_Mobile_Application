@@ -62,7 +62,8 @@
     "val_session_id_required": "معرّف الجلسة مطلوب",
     "val_user_info_required": "معلومات المستخدم مطلوبة",
     "organization_placeholder": "المؤسسة",
-    "loading_dashboard": "جاري تحميل لوحة الحضور"
+    "loading_dashboard": "جاري تحميل لوحة الحضور",
+    "view_more":"مشاهدة المزيد"
   },
   "onboarding": {
     "welcome_title": "مرحبًا بك في أتندو",
@@ -168,7 +169,8 @@
     "language": "اللغة",
     "language_english": "الإنجليزية",
     "language_arabic": "العربية",
-    "dark_mode": "الوضع الداكن"
+    "dark_mode": "الوضع الداكن",
+    "privacy":"سياسة الخصوصية"
   },
   "profile": {
     "title": "الملف الشخصي",

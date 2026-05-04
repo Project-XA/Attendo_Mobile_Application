@@ -60,6 +60,10 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final logoSize = size.width * 1.1;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final logo = isDark
+        ? Assets.assetsImagesAttendoWhiteLogo
+        : Assets.assetsImagesAttendoDarkLogo;
 
     return Scaffold(
       body: Center(
@@ -70,16 +74,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
               opacity: _fadeAnimation,
               child: ScaleTransition(
                 scale: _scaleAnimation,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      Assets.assetsImagesAttendoDarkLogo,
-                      width: logoSize,
-                      height: logoSize,
-                    ),
-                  ],
-                ),
+                child: Image.asset(logo, width: logoSize, height: logoSize),
               ),
             );
           },

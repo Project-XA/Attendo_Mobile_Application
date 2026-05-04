@@ -25,7 +25,9 @@ class StudentProfileBody extends StatelessWidget {
             children: [
               Text(
                 'profile.personal_information'.tr(),
-                style: AppTextStyle.font18BlackBold,
+                style: AppTextStyle.font18Bold.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
               verticalSpace(15.h),
               InfoCard(

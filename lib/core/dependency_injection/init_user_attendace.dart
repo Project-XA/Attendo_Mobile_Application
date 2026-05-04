@@ -1,5 +1,6 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:mobile_app/core/dependency_injection/get_it.dart';
+import 'package:mobile_app/core/services/auth/authentication_manager.dart';
 import 'package:mobile_app/core/services/auth/authentication_service.dart';
 import 'package:mobile_app/features/attendance/data/data_source/attendance_history_local_data_source.dart';
 import 'package:mobile_app/features/attendance/data/data_source/attendance_local_data_source.dart';
@@ -137,9 +138,21 @@ void initUserAttendace() {
     );
   }
 
+  if (!getIt.isRegistered<AuthenticationManager>()) {
+    getIt.registerLazySingleton<AuthenticationManager>(
+      () => AuthenticationManager(
+        biometricService: getIt<AuthenticationService>(),
+        pinService: getIt<AuthenticationService>(),
+      ),
+    );
+  }
+
   if (!getIt.isRegistered<CheckInCubit>()) {
     getIt.registerFactory<CheckInCubit>(
-      () => CheckInCubit(checkInUseCase: getIt<CheckInUseCase>()),
+      () => CheckInCubit(
+        checkInUseCase: getIt<CheckInUseCase>(),
+        authManager: getIt<AuthenticationManager>(),
+      ),
     );
   }
 }

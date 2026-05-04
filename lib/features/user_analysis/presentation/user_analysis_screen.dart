@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
+import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/features/user_analysis/presentation/logic/user_analysis_cubit.dart';
 import 'package:mobile_app/features/user_analysis/presentation/logic/user_analysis_state.dart';
 import 'package:mobile_app/features/user_analysis/presentation/widgets/attendance_history_section.dart';
@@ -34,8 +36,25 @@ class _UserAnalysisViewState extends State<_UserAnalysisView> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Attendance Analysis')),
+      appBar: AppBar(
+        title: Text(
+          'Attendance Analysis',
+          style: TextStyle(
+            fontSize: 18.sp,
+            fontWeight: FontWeightHelper.semiBold,
+            color: colorScheme.onSurface,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: BlocBuilder<UserAnalysisCubit, UserAnalysisState>(
         builder: (context, state) {
           return switch (state) {

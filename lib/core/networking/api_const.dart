@@ -4,7 +4,8 @@ class ApiConst {
   static const String forgotPassword = 'Account/Forgot-Password';
   static const String verifyResetPasswordOtp =
       'Account/verify-reset-password-otp';
-  static const String createSession = 'Session/Create-Session';
+  static const String createSessionSection = 'Session/Create-section-Session';
+  static const String createSession = "Session/Create-session";
   static const String refreshToken = "null";
   static const String userStatistics = "user/statistics";
   static const String changePassword = "Account/Change-Password";
