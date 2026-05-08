@@ -38,8 +38,16 @@ class AdminDashboard extends StatelessWidget {
       child: Scaffold(
         body: BlocBuilder<SessionManagementCubit, SessionManagementState>(
           builder: (context, adminState) {
-            if (adminState is SessionManagementLoading ||
-                adminState is SessionManagementInitial) {
+            // Show shimmer only on true initial state (before any load attempt)
+            if (adminState is SessionManagementInitial) {
+              return const AdminHomeShimmer();
+            }
+
+            // Show shimmer while halls or sections are loading for the first time
+            if (adminState is SessionManagementIdle &&
+                (adminState.isLoadingHalls || adminState.isLoadingSections) &&
+                adminState.halls == null &&
+                adminState.sections == null) {
               return const AdminHomeShimmer();
             }
 
@@ -84,7 +92,7 @@ class AdminDashboard extends StatelessWidget {
                           description: 'admin.panel_description'.tr(),
                         ),
                         verticalSpace(16.h),
-                        _buildToggleTabs(adminState),
+                        _buildToggleTabs(),
                       ],
                     ),
                   ),
@@ -130,11 +138,8 @@ class AdminDashboard extends StatelessWidget {
     );
   }
 
-  Widget _buildToggleTabs(SessionManagementState state) {
-    final selectedIndex = state is SessionManagementStateWithTab
-        ? state.selectedTabIndex
-        : 0;
-
+  // Fix: no longer accepts a stale state parameter — reads fresh state inside
+  Widget _buildToggleTabs() {
     return BlocBuilder<SessionManagementCubit, SessionManagementState>(
       buildWhen: (previous, current) {
         if (previous is SessionManagementStateWithTab &&
@@ -144,6 +149,11 @@ class AdminDashboard extends StatelessWidget {
         return true;
       },
       builder: (context, state) {
+        // Read selectedIndex directly from the fresh state inside the builder
+        final selectedIndex = state is SessionManagementStateWithTab
+            ? state.selectedTabIndex
+            : 0;
+
         return ToggleTabs(
           tabs: [
             'admin.tab_manage_sessions'.tr(),

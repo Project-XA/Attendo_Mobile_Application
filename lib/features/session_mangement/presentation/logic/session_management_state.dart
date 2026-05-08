@@ -13,18 +13,11 @@ final class SessionManagementInitial extends SessionManagementState {
   const SessionManagementInitial();
 }
 
-final class SessionManagementLoading extends SessionManagementState {
-  const SessionManagementLoading();
-}
-
-final class SessionManagementError extends SessionManagementState {
-  final String message;
-  const SessionManagementError(this.message);
-}
+// SessionManagementLoading removed — loading is now handled
+// via isLoadingHalls / isLoadingSections flags inside SessionManagementIdle.
 
 sealed class SessionManagementStateWithTab extends SessionManagementState {
   final int selectedTabIndex;
-
   const SessionManagementStateWithTab({this.selectedTabIndex = 0});
 }
 
@@ -112,11 +105,10 @@ final class SessionState extends SessionManagementStateWithTab {
       operation == SessionOperation.creating ||
       operation == SessionOperation.starting ||
       operation == SessionOperation.ending ||
-      operation == SessionOperation.deleting; // NEW
+      operation == SessionOperation.deleting;
 
   bool get isActive => operation == SessionOperation.active;
-
-  bool get isDeleted => operation == SessionOperation.deleted; // NEW
+  bool get isDeleted => operation == SessionOperation.deleted;
 
   SessionState copyWith({
     Session? session,
@@ -132,9 +124,7 @@ final class SessionState extends SessionManagementStateWithTab {
       session: session ?? this.session,
       operation: operation ?? this.operation,
       serverInfo: serverInfo ?? this.serverInfo,
-      latestRecord: clearLatestRecord
-          ? null
-          : (latestRecord ?? this.latestRecord),
+      latestRecord: clearLatestRecord ? null : (latestRecord ?? this.latestRecord),
       selectedTabIndex: selectedTabIndex ?? this.selectedTabIndex,
       showWarning: showWarning ?? this.showWarning,
       showNetworkError: showNetworkError ?? this.showNetworkError,

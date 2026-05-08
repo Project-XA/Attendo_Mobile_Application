@@ -273,7 +273,6 @@ class SessionRepositoryImpl implements SessionRepository {
     }
   }
 
-  // ─── Halls & Sections ──────────────────────────────────────
 
   @override
   Future<GetAllHallsResponse> getAllHalls() async {

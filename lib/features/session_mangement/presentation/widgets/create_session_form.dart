@@ -12,6 +12,7 @@ import 'package:mobile_app/core/services/location/location_helper.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/widgets/custom_app_button.dart';
 import 'package:mobile_app/features/session_mangement/data/models/remote_models/create_session_target.dart';
+import 'package:mobile_app/features/session_mangement/domain/entities/create_and_start_sessoin_params.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_cubit.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_state.dart';
 import 'package:mobile_app/features/session_mangement/presentation/widgets/session_form_field.dart';
@@ -52,8 +53,6 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
     _allowedRadiusController.dispose();
     super.dispose();
   }
-
-  // ─── Validation ────────────────────────────────────────────
 
   TimeValidation? _validateSelectedTime(TimeOfDay selectedTime) {
     final now = DateTime.now();
@@ -113,7 +112,7 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
   }
 
   void _startSession() {
-    context.read<SessionManagementCubit>().createAndStartSession(
+    final params = CreateAndStartSessoinParams(
       name: _sessionNameController.text.trim(),
       location: _selectedHallName ?? '',
       connectionMethod: _selectedWifiOption ?? 'WiFi',
@@ -124,6 +123,7 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
           ? SectionTarget(_selectedHallId!)
           : HallTarget(_selectedHallId!),
     );
+    context.read<SessionManagementCubit>().createAndStartSession(params);
   }
 
   void _onRefresh() {
@@ -134,7 +134,6 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
       cubit.loadHalls();
     }
   }
-
 
   @override
   Widget build(BuildContext context) {

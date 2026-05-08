@@ -1,4 +1,5 @@
 import 'package:mobile_app/features/session_mangement/data/models/attendency_record.dart';
+import 'package:mobile_app/features/session_mangement/domain/entities/create_and_start_sessoin_params.dart';
 
 class Session {
   final int id;
@@ -25,6 +26,22 @@ class Session {
     this.organizationId,
   });
 
+  /// Placeholder session for optimistic UI
+  factory Session.placeholder(CreateAndStartSessoinParams params) {
+    return Session(
+      id: 0,
+      name: params.name,
+      location: params.location,
+      connectionMethod: params.connectionMethod,
+      startTime: DateTime.now(), 
+      durationMinutes: params.durationMinutes,
+      status: SessionStatus.inactive,
+      connectedClients: 0,
+      attendanceList: const [],
+      organizationId: null,
+    );
+  }
+
   Session copyWith({
     int? id,
     String? name,
@@ -35,7 +52,7 @@ class Session {
     SessionStatus? status,
     int? connectedClients,
     List<AttendanceRecord>? attendanceList,
-    int? organizationId
+    int? organizationId,
   }) {
     return Session(
       id: id ?? this.id,
@@ -47,8 +64,9 @@ class Session {
       status: status ?? this.status,
       connectedClients: connectedClients ?? this.connectedClients,
       attendanceList: attendanceList ?? this.attendanceList,
-      organizationId: organizationId ?? this.organizationId
+      organizationId: organizationId ?? this.organizationId,
     );
   }
 }
+
 enum SessionStatus { inactive, active, ended }
