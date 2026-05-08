@@ -16,6 +16,8 @@ import 'package:mobile_app/features/session_mangement/domain/use_cases/get_all_h
 import 'package:mobile_app/features/session_mangement/domain/use_cases/get_all_sections.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/listen_attendence_use_case.dart';
 import 'package:mobile_app/features/session_mangement/domain/use_cases/start_session_server_use_case.dart';
+import 'package:mobile_app/features/session_mangement/presentation/logic/session_attendance_manager.dart';
+import 'package:mobile_app/features/session_mangement/presentation/logic/session_lifcycle_handler.dart';
 import 'package:mobile_app/features/session_mangement/presentation/logic/session_management_cubit.dart';
 
 void initSessionManagement() {
@@ -77,15 +79,25 @@ void initSessionManagement() {
     () => GetAllSectionsUseCase(getIt()),
   );
 
+  registerLazyIfNotRegistered<SessionLifecycleHandler>(
+    () => SessionLifecycleHandler(
+      createSession: getIt(),
+      deleteSession: getIt(),
+      startServer: getIt(),
+      endSession: getIt(),
+    ),
+  );
+
+  registerLazyIfNotRegistered<SessionAttendanceManager>(
+    () => SessionAttendanceManager(getIt()),
+  );
+
   getIt.registerFactory<SessionManagementCubit>(
     () => SessionManagementCubit(
-      createSessionUseCase: getIt(),
-      startSessionServerUseCase: getIt(),
-      endSessionUseCase: getIt(),
-      listenAttendanceUseCase: getIt(),
-      getAllHallsUseCase: getIt(),
-      deleteCurrentSessionUseCase: getIt(),
-      getAllSectionsUseCase: getIt(),
+      getAllHalls: getIt(),
+      getAllSections: getIt(),
+      attendance: getIt(),
+      lifecycle: getIt(),
     ),
   );
 }

@@ -61,7 +61,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('auth.registered_successfully'.tr(args: [userRole])),
+        content: Text('auth.register_success'.tr(args: [userRole])),
         backgroundColor: Colors.green,
         duration: const Duration(seconds: 2),
       ),

@@ -22,11 +22,11 @@ class _PasswordFieldState extends State<PasswordField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        FieldLabel(label: 'password_label'.tr(), icon: Icons.lock_rounded),
+        FieldLabel(label: 'auth.password'.tr(), icon: Icons.lock_rounded),
         verticalSpace(8.h),
         CustomTextField(
           controller: widget.controller,
-          hintText: 'password_hint'.tr(),
+          hintText: 'auth.hint_password'.tr(),
           obscureText: !_isPasswordVisible,
           suffixIcon: IconButton(
             onPressed: () {
@@ -44,7 +44,7 @@ class _PasswordFieldState extends State<PasswordField> {
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'password_required'.tr();
+              return 'auth.val_password_required'.tr();
             }
             return null;
           },
