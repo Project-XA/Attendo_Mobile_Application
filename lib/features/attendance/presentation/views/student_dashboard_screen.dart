@@ -10,7 +10,6 @@ import 'package:mobile_app/features/attendance/presentation/logic/check_in/check
 import 'package:mobile_app/features/attendance/presentation/logic/discover/discover_cubit.dart';
 import 'package:mobile_app/features/attendance/presentation/logic/stats/stats_cubit.dart';
 import 'package:mobile_app/features/attendance/presentation/logic/stats/stats_state.dart';
-import 'package:mobile_app/features/attendance/presentation/widgets/check_in_view.dart';
 import 'package:mobile_app/features/attendance/presentation/widgets/student_attendance_section.dart';
 import 'package:mobile_app/features/attendance/presentation/widgets/student_header.dart';
 import 'package:mobile_app/features/attendance/presentation/widgets/student_info_card.dart';
@@ -73,94 +72,74 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   }
 
   Widget _buildBody() {
-    return BlocBuilder<CheckInCubit, CheckInState>(
-      builder: (context, checkInState) {
-        return Stack(
-          children: [
-            // ======= الـ Dashboard الأساسي دايمًا موجود =======
-            BlocBuilder<StatsCubit, StatsState>(
-              builder: (context, statsState) {
-                final student = context
-                    .read<CurrentStudentCubit>()
-                    .state
-                    .student;
+    return BlocBuilder<StatsCubit, StatsState>(
+      builder: (context, statsState) {
+        final student = context.read<CurrentStudentCubit>().state.student;
 
-                if (statsState is StatsInitial ||
-                    statsState is StatsLoading ||
-                    student == null) {
-                  return const UserDashboardShimmer();
-                }
+        if (statsState is StatsInitial ||
+            statsState is StatsLoading ||
+            student == null) {
+          return const UserDashboardShimmer();
+        }
 
-                final isSmallScreen = MediaQuery.of(context).size.width < 360;
+        final isSmallScreen = MediaQuery.of(context).size.width < 360;
 
-                return SafeArea(
-                  child: Column(
-                    children: [
-                      BlocBuilder<CurrentStudentCubit, CurrentStudentState>(
-                        builder: (context, _) {
-                          final latestStudent = context
-                              .read<CurrentStudentCubit>()
-                              .state
-                              .student;
-                          return StudentHeader(
-                            userName: latestStudent?.fullName ?? '',
-                            rollNumber: 'Student',
-                            userImage: latestStudent?.profileImage,
-                          );
-                        },
-                      ),
-                      verticalSpace(20),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: isSmallScreen ? 12.w : 20.w,
-                          vertical: 8.h,
-                        ),
-                        child: StudentInfoCard(
-                          organizationName: student.organizationName,
-                          rollNumber: student.rollNumber,
-                          email: student.email,
-                        ),
-                      ),
-                      verticalSpace(20.h),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          padding: EdgeInsets.symmetric(horizontal: 16.w),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              StudentSessionSection(
-                                discoveryCubit: _discoveryCubit,
-                                checkInCubit: _checkInCubit,
-                              ),
-                              verticalSpace(20.h),
-                              StudentAttendanceSection(
-                                stats: statsState is StatsLoaded
-                                    ? statsState.stats
-                                    : null,
-                                hasError: statsState is StatsLoaded
-                                    ? statsState.hasError
-                                    : false,
-                                onRetry: () => _statsCubit.loadStats(),
-                              ),
-                              verticalSpace(20.h),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-
-            if (checkInState is! CheckInIdle)
-              Positioned.fill(
-                child: Container(
-                  color: Colors.black.withOpacity(0.4),
-                  child: CheckInView(state: checkInState),
+        return SafeArea(
+          child: Column(
+            children: [
+              BlocBuilder<CurrentStudentCubit, CurrentStudentState>(
+                builder: (context, _) {
+                  final latestStudent = context
+                      .read<CurrentStudentCubit>()
+                      .state
+                      .student;
+                  return StudentHeader(
+                    userName: latestStudent?.fullName ?? '',
+                    rollNumber: 'Student',
+                    userImage: latestStudent?.profileImage,
+                  );
+                },
+              ),
+              verticalSpace(20),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isSmallScreen ? 12.w : 20.w,
+                  vertical: 8.h,
+                ),
+                child: StudentInfoCard(
+                  organizationName: student.organizationName,
+                  rollNumber: student.rollNumber,
+                  email: student.email,
                 ),
               ),
-          ],
+              verticalSpace(20.h),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      StudentSessionSection(
+                        discoveryCubit: _discoveryCubit,
+                        checkInCubit: _checkInCubit,
+                      ),
+                      verticalSpace(20.h),
+                      StudentAttendanceSection(
+                        stats: statsState is StatsLoaded
+                            ? statsState.stats
+                            : null,
+                        hasError: statsState is StatsLoaded
+                            ? statsState.hasError
+                            : false,
+                        onRetry: () => _statsCubit.loadStats(),
+                      ),
+                      verticalSpace(20.h),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         );
       },
     );

@@ -6,16 +6,61 @@ import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/core/widgets/custom_app_button.dart';
 import 'package:mobile_app/features/attendance/domain/entities/nearby_session.dart';
+import 'package:mobile_app/features/attendance/presentation/logic/check_in/check_in_state.dart';
+import 'package:mobile_app/features/attendance/presentation/widgets/button_state_content.dart';
+import 'package:mobile_app/features/attendance/presentation/widgets/session_info_tile.dart';
 
 class ActiveSessionCard extends StatelessWidget {
   final NearbySession session;
   final void Function(NearbySession) onCheckIn;
+  final CheckInState checkInState;
 
   const ActiveSessionCard({
     super.key,
     required this.session,
     required this.onCheckIn,
+    this.checkInState = const CheckInIdle(),
   });
+
+  // ─── Button helpers ───────────────────────────────────────────────
+
+  Color get _buttonBgColor => switch (checkInState) {
+    CheckInSuccess() => Colors.green.shade100,
+    CheckInFailed(:final reason) => reason.color.withOpacity(0.15),
+    _ => AppColors.mainBackgroundWhiteColor,
+  };
+
+  Widget get _buttonChild => switch (checkInState) {
+    CheckInLoading() => SizedBox(
+      key: const ValueKey('loading'),
+      width: 22.sp,
+      height: 22.sp,
+      child: const CircularProgressIndicator(
+        strokeWidth: 2.5,
+        color: AppColors.mainTextBlackColor,
+      ),
+    ),
+    CheckInSuccess() => ButtonStatusContent(
+      key: const ValueKey('success'),
+      icon: Icons.check_circle,
+      color: Colors.green.shade700,
+      label: 'attendance.check_in_success_title'.tr(),
+    ),
+    CheckInFailed(:final reason) => ButtonStatusContent(
+      key: const ValueKey('failed'),
+      icon: reason.icon,
+      color: reason.color,
+      label: reason.title,
+    ),
+    _ => ButtonStatusContent(
+      key: const ValueKey('idle'),
+      icon: Icons.check_circle,
+      color: AppColors.mainTextBlackColor,
+      label: 'attendance.check_in_now'.tr(),
+    ),
+  };
+
+  // ─── Build ────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +89,7 @@ class ActiveSessionCard extends StatelessWidget {
           verticalSpace(16.h),
           _buildSessionInfo(),
           verticalSpace(16.h),
-          _buildCheckInButton(context),
+          _buildCheckInButton(),
         ],
       ),
     );
@@ -101,79 +146,59 @@ class ActiveSessionCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildInfoRow(
-            Icons.event_note,
-            'attendance.session_label'.tr(),
-            session.name,
+          SessionInfoTile(
+            icon: Icons.event_note,
+            label: 'attendance.session_label'.tr(),
+            value: session.name,
           ),
           verticalSpace(8.h),
-          _buildInfoRow(
-            Icons.location_on,
-            'attendance.location_label'.tr(),
-            session.location,
+          SessionInfoTile(
+            icon: Icons.location_on,
+            label: 'attendance.location_label'.tr(),
+            value: session.location,
           ),
           verticalSpace(8.h),
-          _buildInfoRow(
-            Icons.access_time,
-            'attendance.time_label'.tr(),
-            '${DateFormat('hh:mm a').format(session.startTime)} - ${DateFormat('hh:mm a').format(session.endTime)}',
+          SessionInfoTile(
+            icon: Icons.access_time,
+            label: 'attendance.time_label'.tr(),
+            value:
+                '${DateFormat('hh:mm a').format(session.startTime)} - ${DateFormat('hh:mm a').format(session.endTime)}',
           ),
           verticalSpace(8.h),
-          _buildInfoRow(
-            Icons.people,
-            'attendance.attendees_label'.tr(),
-            'attendance.attendees_value'.tr(args: ['${session.attendeeCount}']),
+          SessionInfoTile(
+            icon: Icons.people,
+            label: 'attendance.attendees_label'.tr(),
+            value: 'attendance.attendees_value'.tr(
+              args: ['${session.attendeeCount}'],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Row(
-      children: [
-        Icon(
-          icon,
-          color: AppColors.onDarkForegroundWhiteColor.withOpacity(0.7),
-          size: 16.sp,
-        ),
-        horizontalSpace(8.w),
-        Text(label, style: AppTextStyle.font12WhiteMedium),
-        horizontalSpace(8.w),
-        Expanded(
-          child: Text(
-            value,
-            style: AppTextStyle.font13WhiteMedium,
-            textAlign: TextAlign.end,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
+  Widget _buildCheckInButton() {
+    final isDisabled =
+        checkInState is CheckInLoading || checkInState is CheckInSuccess;
 
-  Widget _buildCheckInButton(BuildContext context) {
-    return CustomAppButton(
-      onPressed: () => onCheckIn(session),
-      backgroundColor: AppColors.mainBackgroundWhiteColor,
-      borderRadius: 20.r,
-      width: double.infinity,
-      height: 50.h,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.check_circle,
-            color: AppColors.mainTextBlackColor,
-            size: 20.sp,
-          ),
-          horizontalSpace(8.w),
-          Text(
-            'attendance.check_in_now'.tr(),
-            style: AppTextStyle.font16BlackBold,
-          ),
-        ],
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      decoration: BoxDecoration(
+        color: _buttonBgColor,
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+      child: CustomAppButton(
+        onPressed: isDisabled ? null : () => onCheckIn(session),
+        backgroundColor: Colors.transparent,
+        borderRadius: 20.r,
+        width: double.infinity,
+        height: 50.h,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          switchInCurve: Curves.easeIn,
+          switchOutCurve: Curves.easeOut,
+          child: _buttonChild,
+        ),
       ),
     );
   }
