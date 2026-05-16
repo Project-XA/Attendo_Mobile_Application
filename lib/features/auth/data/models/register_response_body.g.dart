@@ -17,7 +17,7 @@ RegisterResponseBody _$RegisterResponseBodyFromJson(
 Map<String, dynamic> _$RegisterResponseBodyToJson(
         RegisterResponseBody instance) =>
     <String, dynamic>{
-      'userResponse': instance.userResponse,
+      'userResponse': instance.userResponse.toJson(),
       'loginToken': instance.loginToken,
     };
 

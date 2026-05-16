@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'register_response_body.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class RegisterResponseBody {
   final UserResponse userResponse;
   final String loginToken;
@@ -15,7 +15,7 @@ class RegisterResponseBody {
   Map<String, dynamic> toJson() => _$RegisterResponseBodyToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class UserResponse {
   final String id;
   final String fullName;
