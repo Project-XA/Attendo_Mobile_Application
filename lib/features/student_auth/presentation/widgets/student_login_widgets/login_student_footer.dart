@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/core/services/UI/extensions.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
+import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/core/widgets/custom_app_button.dart';
 import 'package:mobile_app/features/student_auth/presentation/logic/student_auth_cubit.dart';
@@ -17,6 +17,7 @@ class LoginStudentFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       children: [
         // Forgot Password
@@ -32,7 +33,7 @@ class LoginStudentFooter extends StatelessWidget {
             child: Text(
               'loginStudent.forgot_password'.tr(),
               style: TextStyle(
-                color: AppColors.mainBackgroundDarkColor,
+                color: colorScheme.primary,
                 fontSize: 13.sp,
                 fontWeight: FontWeightHelper.semiBold,
               ),
@@ -40,7 +41,7 @@ class LoginStudentFooter extends StatelessWidget {
           ),
         ),
 
-        SizedBox(height: 28.h),
+        verticalSpace(28),
 
         // Login Button
         BlocBuilder<AuthStudentCubit, AuthStudentState>(
@@ -50,14 +51,14 @@ class LoginStudentFooter extends StatelessWidget {
               onPressed: state.status == AuthStudentStatus.loading
                   ? null
                   : onLoginPressed,
-              backgroundColor: AppColors.mainBackgroundDarkColor,
+              backgroundColor: colorScheme.primary,
               borderRadius: 16,
               child: state.status == AuthStudentStatus.loading
                   ? const CircularProgressIndicator(color: Colors.white)
                   : Text(
                       'loginStudent.log_in_button'.tr(),
                       style: TextStyle(
-                        color: AppColors.mainBackgroundWhiteColor,
+                        color: colorScheme.onPrimary,
                         fontSize: 16.sp,
                         fontWeight: FontWeightHelper.semiBold,
                       ),
@@ -66,7 +67,7 @@ class LoginStudentFooter extends StatelessWidget {
           },
         ),
 
-        SizedBox(height: 24.h),
+        verticalSpace(24),
 
         // Sign Up Row
         Row(
@@ -75,14 +76,13 @@ class LoginStudentFooter extends StatelessWidget {
             Text(
               'loginStudent.no_account'.tr(),
               style: TextStyle(
-                color: AppColors.subTextDarkColor,
+                color: colorScheme.outline,
                 fontSize: 14.sp,
                 fontWeight: FontWeightHelper.regular,
               ),
             ),
             TextButton(
-              onPressed: () =>
-                  context.pushNamed(Routes.registerStudentScreen),
+              onPressed: () => context.pushNamed(Routes.registerStudentScreen),
               style: TextButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 6.w),
                 minimumSize: Size.zero,
@@ -91,7 +91,7 @@ class LoginStudentFooter extends StatelessWidget {
               child: Text(
                 'loginStudent.create_account'.tr(),
                 style: TextStyle(
-                  color: AppColors.mainBackgroundDarkColor,
+                  color: colorScheme.primary,
                   fontSize: 14.sp,
                   fontWeight: FontWeightHelper.semiBold,
                 ),
@@ -100,7 +100,7 @@ class LoginStudentFooter extends StatelessWidget {
           ],
         ),
 
-        SizedBox(height: 16.h),
+        verticalSpace(16),
       ],
     );
   }

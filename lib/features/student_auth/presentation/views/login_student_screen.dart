@@ -46,8 +46,6 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -67,7 +65,7 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.mainBackgroundWhiteColor,
+        backgroundColor: colorScheme.surface,
         appBar: AppBar(
           backgroundColor: colorScheme.surface,
           elevation: 0,
@@ -81,10 +79,9 @@ class _LoginStudentScreenState extends State<LoginStudentScreen> {
           ),
           leading: IconButton(
             onPressed: () => context.pop(),
-            icon: const Icon(
+            icon:  Icon(
               Icons.arrow_back_ios_new,
-              color: AppColors.mainBackgroundDarkColor,
-              size: 18,
+            color: colorScheme.onSurface,              size: 18,
             ),
           ),
         ),

@@ -25,12 +25,17 @@ class LoginStudentFormFields extends StatefulWidget {
 class _LoginStudentFormFieldsState extends State<LoginStudentFormFields> {
   bool _obscurePassword = true;
 
-  static const _fieldBg = Color(0xFFF5F5F5);
-  static const _fieldBorder = Color(0xFFE0E0E0);
-  static const _fieldIcon = Color(0xFFBDBDBD);
+  
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    final fieldBg = colorScheme.surfaceContainerHighest;
+    final fieldBorder = colorScheme.outline;
+    final fieldIcon = colorScheme.outline;
+    final fieldText = colorScheme.onSurface;
+    final focusBorderColor = colorScheme.primary;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -46,16 +51,16 @@ class _LoginStudentFormFieldsState extends State<LoginStudentFormFields> {
           controller: widget.organizationCodeController,
           hintText: 'loginStudent.org_code_hint'.tr(),
           borderRadius: 14.r,
-          backgroundColor: _fieldBg,
-          enabledBorderColor: _fieldBorder,
-          focusedBorderColor: AppColors.mainBackgroundDarkColor,
+          backgroundColor: fieldBg,
+          enabledBorderColor: fieldBorder,
+          focusedBorderColor: focusBorderColor,
           textStyle: TextStyle(
-            color: AppColors.mainBackgroundDarkColor,
+            color: fieldText,
             fontSize: 14.sp,
           ),
-          label: const Icon(
+          label: Icon(
             Icons.apartment_outlined,
-            color: _fieldIcon,
+            color: fieldIcon,
             size: 20,
           ),
           validator: (val) => val == null || val.isEmpty
@@ -75,15 +80,15 @@ class _LoginStudentFormFieldsState extends State<LoginStudentFormFields> {
           controller: widget.emailController,
           hintText: 'loginStudent.email_hint'.tr(),
           borderRadius: 14.r,
-          backgroundColor: _fieldBg,
-          enabledBorderColor: _fieldBorder,
-          focusedBorderColor: AppColors.mainBackgroundDarkColor,
+          backgroundColor: fieldBg,
+          enabledBorderColor: fieldBorder,
+          focusedBorderColor: focusBorderColor,
           textStyle: TextStyle(
-            color: AppColors.mainBackgroundDarkColor,
+            color: fieldText,
             fontSize: 14.sp,
           ),
           keyboardType: TextInputType.emailAddress,
-          label: const Icon(Icons.email_outlined, color: _fieldIcon, size: 20),
+          label:  Icon(Icons.email_outlined, color: fieldIcon, size: 20),
           validator: (val) => val == null || !val.contains('@')
               ? 'validation.enter_valid_email'.tr()
               : null,
@@ -104,17 +109,17 @@ class _LoginStudentFormFieldsState extends State<LoginStudentFormFields> {
           controller: widget.passwordController,
           hintText: '••••••••',
           borderRadius: 14.r,
-          backgroundColor: _fieldBg,
-          enabledBorderColor: _fieldBorder,
-          focusedBorderColor: AppColors.mainBackgroundDarkColor,
+          backgroundColor: fieldBg,
+          enabledBorderColor: fieldBorder,
+          focusedBorderColor: focusBorderColor,
           textStyle: TextStyle(
-            color: AppColors.mainBackgroundDarkColor,
+            color: fieldText,
             fontSize: 14.sp,
           ),
           obscureText: _obscurePassword,
-          label: const Icon(
+          label:  Icon(
             Icons.lock_outline_rounded,
-            color: _fieldIcon,
+            color: fieldIcon,
             size: 20,
           ),
           suffixIcon: IconButton(
@@ -122,7 +127,7 @@ class _LoginStudentFormFieldsState extends State<LoginStudentFormFields> {
               _obscurePassword
                   ? Icons.visibility_off_outlined
                   : Icons.visibility_outlined,
-              color: _fieldIcon,
+              color: fieldIcon,
               size: 20,
             ),
             onPressed: () =>

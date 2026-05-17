@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/font_weight_helper.dart';
 
 class StudentBadge extends StatelessWidget {
@@ -9,15 +8,17 @@ class StudentBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Align(
       alignment: AlignmentDirectional.centerStart,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
         decoration: BoxDecoration(
-          color: AppColors.mainBackgroundDarkColor.withOpacity(0.06),
+          color: colorScheme.primary.withOpacity(0.06),
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-            color: AppColors.mainBackgroundDarkColor.withOpacity(0.12),
+            color: colorScheme.primary.withOpacity(0.12),
             width: 1.2,
           ),
         ),
@@ -27,13 +28,13 @@ class StudentBadge extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(6.r),
               decoration: BoxDecoration(
-                color: AppColors.mainBackgroundDarkColor,
+                color: colorScheme.primary,
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Icon(
                 Icons.school_rounded,
                 size: 16.sp,
-                color: AppColors.mainBackgroundWhiteColor,
+                color: colorScheme.onPrimary,
               ),
             ),
             SizedBox(width: 10.w),
@@ -44,7 +45,7 @@ class StudentBadge extends StatelessWidget {
                 Text(
                   'loginStudent.portal_badge'.tr(),
                   style: TextStyle(
-                    color: AppColors.mainBackgroundDarkColor,
+                    color: colorScheme.onSurface,
                     fontSize: 14.sp,
                     fontWeight: FontWeightHelper.semiBold,
                   ),
@@ -52,7 +53,7 @@ class StudentBadge extends StatelessWidget {
                 Text(
                   'loginStudent.portal_badge_sub'.tr(),
                   style: TextStyle(
-                    color: AppColors.subTextGreyColor,
+                    color: colorScheme.outline,
                     fontSize: 11.sp,
                     fontWeight: FontWeightHelper.regular,
                   ),
