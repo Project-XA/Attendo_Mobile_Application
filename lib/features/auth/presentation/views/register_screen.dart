@@ -5,20 +5,20 @@ import 'package:mobile_app/core/dependency_injection/get_it.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/core/services/UI/extensions.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/features/auth/presentation/logic/auth_cubit.dart';
 import '../widgets/register_widgets/register_header.dart';
 import '../widgets/register_widgets/register_form.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return BlocProvider(
       create: (context) => getIt<AuthCubit>(),
       child: Scaffold(
-        backgroundColor: AppColors.mainBackgroundWhiteColor,
+        backgroundColor: colorScheme.surface,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -34,13 +34,10 @@ class RegisterScreen extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            AppColors.mainSurfaceBlackColor,
-            AppColors.mainSurfaceBlackColor.withOpacity(0.8),
-          ],
+          colors: [Color(0xFF1A1A1A), Color(0xFF2C2C2C)],
         ),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(30.r),
@@ -50,7 +47,6 @@ class RegisterScreen extends StatelessWidget {
       child: Column(
         children: [
           verticalSpace(10.h),
-
           Align(
             alignment: Alignment.centerLeft,
             child: IconButton(
@@ -58,9 +54,7 @@ class RegisterScreen extends StatelessWidget {
               icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
             ),
           ),
-
           const RegisterHeader(),
-
           verticalSpace(20.h),
         ],
       ),

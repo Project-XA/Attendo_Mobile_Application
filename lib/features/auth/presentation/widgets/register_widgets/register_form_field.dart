@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/routing/routes.dart';
 import 'package:mobile_app/core/services/UI/extensions.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/features/auth/presentation/widgets/register_widgets/custom_text_field.dart';
 import 'package:mobile_app/features/auth/presentation/widgets/register_widgets/field_label.dart';
 import 'package:mobile_app/features/auth/presentation/widgets/register_widgets/password_field.dart';
@@ -86,25 +85,24 @@ class RegisterFormFields extends StatelessWidget {
       ],
     );
   }
+Widget _buildForgotPasswordButton(BuildContext context) {
+  final colorScheme = Theme.of(context).colorScheme;
 
-  Widget _buildForgotPasswordButton(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: TextButton(
-        onPressed: () {
-          context.pushNamed(Routes.forgotPasswordScreen);
-        },
-        child: Text(
-          'auth.forgot_password_link'.tr(),
-          style: TextStyle(
-            fontSize: 13.sp,
-            fontWeight: FontWeight.w500,
-            color: AppColors.mainTextBlackColor.withOpacity(0.7),
-          ),
+  return Align(
+    alignment: Alignment.centerRight,
+    child: TextButton(
+      onPressed: () => context.pushNamed(Routes.forgotPasswordScreen),
+      child: Text(
+        'auth.forgot_password_link'.tr(),
+        style: TextStyle(
+          fontSize: 13.sp,
+          fontWeight: FontWeight.w500,
+          color: colorScheme.primary.withOpacity(0.8),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   bool _isEmailValid(String email) {
     return RegExp(

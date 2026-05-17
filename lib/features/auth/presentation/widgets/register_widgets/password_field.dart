@@ -30,15 +30,13 @@ class _PasswordFieldState extends State<PasswordField> {
           obscureText: !_isPasswordVisible,
           suffixIcon: IconButton(
             onPressed: () {
-              setState(() {
-                _isPasswordVisible = !_isPasswordVisible;
-              });
+              setState(() => _isPasswordVisible = !_isPasswordVisible);
             },
             icon: Icon(
               _isPasswordVisible
                   ? Icons.visibility_rounded
                   : Icons.visibility_off_rounded,
-              color: Colors.grey.shade500,
+              color: Theme.of(context).colorScheme.outline,
               size: 22.sp,
             ),
           ),
