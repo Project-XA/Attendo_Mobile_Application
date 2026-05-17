@@ -179,11 +179,12 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
                   onRefreshHalls: _onRefresh,
                 ),
                 verticalSpace(25.h),
+                // The start session button
                 CustomAppButton(
                   onPressed: isLoading ? null : _handleStartSession,
                   backgroundColor: isLoading
-                      ? Colors.grey
-                      : Theme.of(context).colorScheme.onSurface,
+                      ? Theme.of(context).colorScheme.outline.withOpacity(0.4)
+                      : Theme.of(context).colorScheme.primary,
                   borderRadius: 20.r,
                   width: double.infinity,
                   height: 45.h,
@@ -192,7 +193,7 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
                           height: 20.h,
                           width: 20.w,
                           child: CircularProgressIndicator(
-                            color: Theme.of(context).colorScheme.surface,
+                            color: Theme.of(context).colorScheme.onSurface,
                             strokeWidth: 2,
                           ),
                         )

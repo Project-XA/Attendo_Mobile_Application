@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 import 'package:mobile_app/features/session_mangement/data/models/attendency_record.dart';
 
@@ -24,7 +23,7 @@ class AttendanceListWidget extends StatelessWidget {
       slivers: [
         if (showStats) ...[
           SliverToBoxAdapter(child: verticalSpace(20.h)),
-          SliverToBoxAdapter(child: _buildAttendanceStats()),
+          SliverToBoxAdapter(child: _buildAttendanceStats(context)),
           SliverToBoxAdapter(child: verticalSpace(20.h)),
         ],
         _buildAttendanceSliver(),
@@ -33,17 +32,14 @@ class AttendanceListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildAttendanceStats() {
+  Widget _buildAttendanceStats(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w),
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            AppColors.mainSurfaceBlackColor,
-            // ignore: deprecated_member_use
-            AppColors.mainSurfaceBlackColor.withOpacity(0.8),
-          ],
+          colors: [colorScheme.primary, colorScheme.primary.withOpacity(0.8)],
         ),
         borderRadius: BorderRadius.circular(16.r),
       ),
@@ -51,6 +47,7 @@ class AttendanceListWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildStatItem(
+            context,
             'Total Attendance',
             attendanceList.length.toString(),
             Icons.check_circle_outline,
@@ -58,10 +55,10 @@ class AttendanceListWidget extends StatelessWidget {
           Container(
             width: 1,
             height: 40.h,
-            // ignore: deprecated_member_use
-            color: AppColors.mainBackgroundWhiteColor.withOpacity(0.3),
+            color: colorScheme.onPrimary.withOpacity(0.3),
           ),
           _buildStatItem(
+            context,
             'Unique Users',
             _getUniqueUsersCount().toString(),
             Icons.people,
@@ -71,10 +68,16 @@ class AttendanceListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String label, String value, IconData icon) {
+  Widget _buildStatItem(
+    BuildContext context,
+    String label,
+    String value,
+    IconData icon,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       children: [
-        Icon(icon, color: AppColors.mainBackgroundWhiteColor, size: 28.sp),
+        Icon(icon, color: colorScheme.onPrimary, size: 28.sp),
         verticalSpace(8.h),
         Text(value, style: AppTextStyle.font24WhiteBold),
         verticalSpace(4.h),
@@ -114,9 +117,12 @@ class AttendanceListWidget extends StatelessWidget {
           final record = attendanceList[index];
           return Column(
             children: [
-              _buildAttendanceItem(record, index + 1),
+              _buildAttendanceItem(context, record, index + 1),
               if (index < attendanceList.length - 1)
-                Divider(height: 1.h, color: Colors.grey.shade300),
+                Divider(
+                  height: 1.h,
+                  color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                ),
             ],
           );
         }, childCount: attendanceList.length),
@@ -124,11 +130,16 @@ class AttendanceListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildAttendanceItem(AttendanceRecord record, int number) {
+  Widget _buildAttendanceItem(
+    BuildContext context,
+    AttendanceRecord record,
+    int number,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
       decoration: BoxDecoration(
-        color: AppColors.mainBackgroundWhiteColor,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(8.r),
       ),
       child: Row(
@@ -137,8 +148,8 @@ class AttendanceListWidget extends StatelessWidget {
           Container(
             width: 32.w,
             height: 32.h,
-            decoration: const BoxDecoration(
-              color: AppColors.mainTextBlackColor,
+            decoration: BoxDecoration(
+              color: colorScheme.primary,
               shape: BoxShape.circle,
             ),
             child: Center(

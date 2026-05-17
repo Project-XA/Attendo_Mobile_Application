@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
+import 'package:mobile_app/core/themes/font_weight_helper.dart';
 
 class EmptyAttendanceView extends StatelessWidget {
   final bool isActive;
@@ -22,7 +23,11 @@ class EmptyAttendanceView extends StatelessWidget {
           verticalSpace(16.h),
           Text(
             isActive ? 'Waiting for Attendance' : 'No Attendance Recorded',
-            style: AppTextStyle.font18BlackBold,
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeightHelper.bold,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           verticalSpace(8.h),
           Text(

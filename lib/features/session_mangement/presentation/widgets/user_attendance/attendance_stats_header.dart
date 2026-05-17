@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
+import 'package:mobile_app/core/themes/font_weight_helper.dart';
 
 class AttendanceStatsHeader extends StatelessWidget {
   final int totalCount;
@@ -16,15 +16,16 @@ class AttendanceStatsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: AppColors.mainBackgroundWhiteColor,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: colorScheme.outline.withOpacity(0.3)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: colorScheme.shadow.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -51,7 +52,14 @@ class AttendanceStatsHeader extends StatelessWidget {
                 ],
               ),
               verticalSpace(4.h),
-              Text('$totalCount', style: AppTextStyle.font32BlackBold),
+              Text(
+                '$totalCount',
+                style: TextStyle(
+                  fontSize: 32.sp,
+                  fontWeight: FontWeightHelper.bold,
+                  color: colorScheme.onSurface,
+                ),
+              ),
             ],
           ),
 

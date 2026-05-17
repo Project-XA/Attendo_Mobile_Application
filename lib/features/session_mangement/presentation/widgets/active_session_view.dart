@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
+import 'package:mobile_app/core/themes/font_weight_helper.dart';
 import 'package:mobile_app/core/widgets/custom_app_button.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/server_info.dart';
 import 'package:mobile_app/features/session_mangement/domain/entities/session.dart';
@@ -142,15 +143,15 @@ class ActiveSessionView extends StatelessWidget {
   }
 
   Widget _buildActionButtons(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8.w),
       child: Row(
         children: [
-          // End Session Button
           Expanded(
             child: CustomAppButton(
               onPressed: () => _showEndSessionDialog(context),
-              backgroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: colorScheme.primary, // ✅ already correct
               borderRadius: 20.r,
               height: 45.h,
               child: Text(
@@ -159,27 +160,25 @@ class ActiveSessionView extends StatelessWidget {
               ),
             ),
           ),
-
           horizontalSpace(12.w),
-
-          // Delete Session Button
           Expanded(
             child: GestureDetector(
               onTap: () => _showDeleteSessionDialog(context),
               child: Container(
                 height: 45.h,
                 decoration: BoxDecoration(
-                  color: AppColors.mainBackgroundWhiteColor,
-                  border: Border.all(
-                    color: AppColors.mainTextBlackColor,
-                    width: 2,
-                  ),
+                  color: colorScheme.surface,
+                  border: Border.all(color: colorScheme.primary, width: 2),
                   borderRadius: BorderRadius.circular(20.r),
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   'common.delete'.tr(),
-                  style: AppTextStyle.font16BlackMedium,
+                  style: TextStyle(
+                    color: colorScheme.primary,
+                    fontSize: 16.sp,
+                    fontWeight: FontWeightHelper.medium,
+                  ),
                 ),
               ),
             ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_app/core/services/UI/spacing.dart';
-import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/app_text_style.dart';
 
 class AttendanceCardWidget extends StatelessWidget {
@@ -19,30 +18,33 @@ class AttendanceCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+      final colorScheme = Theme.of(context).colorScheme;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       margin: EdgeInsets.only(bottom: 12.h),
-      decoration: BoxDecoration(
+     decoration: BoxDecoration(
+      color: isLatest
+          ? Colors.green.shade50        
+          : colorScheme.surface,        
+      borderRadius: BorderRadius.circular(12.r),
+      border: Border.all(
         color: isLatest
-            ? Colors.green.shade50
-            : AppColors.mainBackgroundWhiteColor,
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: isLatest ? Colors.green.shade300 : Colors.grey.shade200,
-          width: isLatest ? 2 : 1,
-        ),
+            ? Colors.green.shade300     
+            : colorScheme.outline, 
+        width: isLatest ? 2 : 1,
+      ),
         boxShadow: [
           if (isLatest)
-            BoxShadow(
-              color: Colors.green.withOpacity(0.2),
+          const  BoxShadow(
+              color: Colors.green,
               blurRadius: 8,
-              offset: const Offset(0, 2),
+              offset:  Offset(0, 2),
             )
           else
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+          const  BoxShadow(
+              color: Colors.black,
               blurRadius: 4,
-              offset: const Offset(0, 2),
+              offset:  Offset(0, 2),
             ),
         ],
       ),
@@ -50,7 +52,7 @@ class AttendanceCardWidget extends StatelessWidget {
         padding: EdgeInsets.all(12.w),
         child: Row(
           children: [
-            _buildNumberBadge(),
+            _buildNumberBadge(context),
             horizontalSpace(12.w),
             Expanded(child: _buildUserInfo()),
             _buildTimeInfo(),
@@ -60,13 +62,13 @@ class AttendanceCardWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildNumberBadge() {
+  Widget _buildNumberBadge(BuildContext context) {
+      final colorScheme = Theme.of(context).colorScheme;
     return Container(
       width: 36.w,
       height: 36.w,
       decoration: BoxDecoration(
-        color: isLatest ? Colors.green : AppColors.mainTextBlackColor,
-        shape: BoxShape.circle,
+      color: isLatest ? Colors.green : colorScheme.primary,        shape: BoxShape.circle,
       ),
       child: Center(
         child: Text('$number', style: AppTextStyle.font14WhiteBold),
