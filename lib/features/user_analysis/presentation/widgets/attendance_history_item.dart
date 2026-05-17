@@ -5,6 +5,8 @@ import 'package:mobile_app/core/services/UI/spacing.dart';
 import 'package:mobile_app/core/themes/app_colors.dart';
 import 'package:mobile_app/core/themes/theme_cubit.dart';
 import 'package:mobile_app/features/attendance/domain/entities/attendance_history.dart';
+import 'package:mobile_app/features/user_analysis/presentation/widgets/icon_row.dart';
+import 'package:mobile_app/features/user_analysis/presentation/widgets/status_badge.dart';
 
 /// A single card showing one [AttendanceHistory] record.
 /// Fully theme-aware via [ThemeCubit] — uses [AppColors] only.
@@ -54,11 +56,9 @@ class AttendanceHistoryItem extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Status indicator pill ─────────────────────────────────────
-            _StatusBadge(status: record.status, isDark: isDark),
+            StatusBadge(status: record.status, isDark: isDark),
             const SizedBox(width: 14),
 
-            // ── Info column ───────────────────────────────────────────────
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,13 +74,13 @@ class AttendanceHistoryItem extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   verticalSpace(4),
-                  _IconRow(
+                  IconRow(
                     icon: Icons.location_on_outlined,
                     label: record.location,
                     color: subtitleColor,
                   ),
                   verticalSpace(3),
-                  _IconRow(
+                  IconRow(
                     icon: Icons.access_time_rounded,
                     label: _formatDateTime(record.checkInTime),
                     color: subtitleColor,
@@ -102,119 +102,3 @@ class AttendanceHistoryItem extends StatelessWidget {
 }
 
 // ─── Status Badge ─────────────────────────────────────────────────────────────
-
-class _StatusBadge extends StatelessWidget {
-  final AttendanceStatus status;
-  final bool isDark;
-
-  const _StatusBadge({required this.status, required this.isDark});
-
-  @override
-  Widget build(BuildContext context) {
-    final config = _resolveConfig();
-
-    return Container(
-      margin: const EdgeInsets.only(top: 2),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: config.bg,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        config.label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: config.text,
-          letterSpacing: 0.4,
-        ),
-      ),
-    );
-  }
-
-  _StatusConfig _resolveConfig() {
-    switch (status) {
-      case AttendanceStatus.present:
-        return isDark
-            ? const _StatusConfig(
-                bg: AppColors.statusGreenBackgroundDarkColor,
-                text: AppColors.statusGreenTextDarkColor_v2,
-                label: 'Present',
-              )
-            : const _StatusConfig(
-                bg: AppColors.statusGreenBackgroundColor,
-                text: AppColors.statusGreenTextColor,
-                label: 'Present',
-              );
-
-      case AttendanceStatus.late:
-        return isDark
-            ? const _StatusConfig(
-                bg: Color(0xFF3A2A00),
-                text: Color(0xFFFFCC80),
-                label: 'Late',
-              )
-            : const _StatusConfig(
-                bg: Color(0xFFFFF3E0),
-                text: Color(0xFFE65100),
-                label: 'Late',
-              );
-
-      case AttendanceStatus.absent:
-        return isDark
-            ? const _StatusConfig(
-                bg: Color(0xFF3A1A1A),
-                text: Color(0xFFEF9A9A),
-                label: 'Absent',
-              )
-            : const _StatusConfig(
-                bg: Color(0xFFFFEBEE),
-                text: Color(0xFFC62828),
-                label: 'Absent',
-              );
-    }
-  }
-}
-
-class _StatusConfig {
-  final Color bg;
-  final Color text;
-  final String label;
-  const _StatusConfig({
-    required this.bg,
-    required this.text,
-    required this.label,
-  });
-}
-
-// ─── Icon + label row ─────────────────────────────────────────────────────────
-
-class _IconRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
-
-  const _IconRow({
-    required this.icon,
-    required this.label,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 13, color: color),
-        const SizedBox(width: 4),
-        Expanded(
-          child: Text(
-            label,
-            style: TextStyle(fontSize: 12, color: color),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
-}
